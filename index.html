@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>TinVin Social</title>
+<style>
+:root{--bg:#0b1020;--card:#151c30;--line:#263049;--fg:#e8ecf5;--mut:#8f9ab3;--ac:#38bdf8;--up:#22c55e;--dn:#ef4444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:Arial,sans-serif;padding-bottom:70px}
+button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+header{position:sticky;top:0;z-index:5;background:#0b1020ee;border-bottom:1px solid var(--line);padding:13px 16px;font-weight:800;font-size:19px}
+header span{color:var(--ac)}
+.wrap{max-width:560px;margin:auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:12px}
+input,textarea{width:100%;padding:12px;margin:6px 0;background:#0e1427;color:var(--fg);border:1px solid var(--line);border-radius:10px;outline:none}
+textarea{min-height:70px;resize:vertical}
+.btn{background:var(--ac);color:#04121f;border:0;border-radius:10px;padding:10px 14px;font-weight:700}
+.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.ic{background:none;border:0;color:var(--fg);font-size:15px;padding:6px 8px}
+.row{display:flex;align-items:center;gap:10px}.sp{flex:1}
+.mut{color:var(--mut);font-size:12px}.err{color:#f87171;font-size:13px;min-height:18px}
+.u{cursor:pointer}
+.post img{width:100%;border-radius:10px;margin:8px 0;display:block}
+.post p{margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.cm{border-top:1px solid var(--line);margin-top:8px;padding-top:8px;font-size:14px}
+.cm div{margin:5px 0}.cm b{margin-right:6px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0b1020;border-top:1px solid var(--line)}
+nav button{flex:1;padding:14px;background:none;border:0;color:var(--mut);font-weight:700}nav .on{color:var(--ac)}
+.tabs{display:flex;gap:8px;margin-bottom:10px}.tabs button{flex:1}
+.stats{display:flex;justify-content:space-around;text-align:center;margin:12px 0}.stats b{display:block;font-size:18px}
+.sheet{position:fixed;inset:0;background:#000a;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet>div{background:var(--card);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:14px}
+.sheet button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--fg);padding:13px 4px}
+.sheet .d{color:#f87171}
+</style>
+</head>
+<body>
+<header>TinVin <span>Social</span></header>
+<div class="wrap">
+
+<div id="auth" class="card hidden">
+  <h2 id="aT">Welcome back</h2>
+  <input id="aE" type="email" placeholder="Email" autocomplete="email">
+  <input id="aU" placeholder="Username (letters, numbers, _)" class="hidden">
+  <input id="aP" type="password" placeholder="Password (8+ characters)" autocomplete="current-password">
+  <button class="btn" id="aB" style="width:100%">Login</button>
+  <div class="err" id="aM"></div>
+  <p class="mut" style="text-align:center"><span id="aS" style="color:var(--ac);cursor:pointer">Create account</span></p>
+</div>
+
+<div id="app" class="hidden"><div id="view"></div></div>
+</div>
+
+<nav id="nav" class="hidden">
+  <button data-v="home" class="on">Home</button>
+  <button data-v="me">Profile</button>
+  <button data-v="settings">Settings</button>
+</nav>
+<div id="sheet" class="sheet hidden"></div>
+
+<script>
+"use strict";
+const API="https://YOUR-SOCIAL-WORKER.workers.dev";
+let token=localStorage.getItem("tvs_token")||"",me=null,mode="login",tab=0;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ago=t=>{const s=Math.floor(Date.now()/1000)-t;return s<60?"now":s<3600?Math.floor(s/60)+"m":s<86400?Math.floor(s/3600)+"h":Math.floor(s/86400)+"d"};
+
+async function api(path,opt={}){
+  const h={...(opt.headers||{})};
+  if(!(opt.raw))h["Content-Type"]="application/json";
+  if(token)h.Authorization="Bearer "+token;
+  const r=await fetch(API+path,{...opt,headers:h});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){if(r.status===401&&token){logout(true)}throw new Error(d.error||"Request failed.")}
+  return d;
+}
+const post=(p,b)=>api(p,{method:"POST",body:JSON.stringify(b||{})});
+
+/* AUTH */
+$("aS").onclick=()=>{mode=mode==="login"?"signup":"login";
+  $("aT").textContent=mode==="login"?"Welcome back":"Create account";
+  $("aB").textContent=mode==="login"?"Login":"Sign up";
+  $("aS").textContent=mode==="login"?"Create account":"I have an account";
+  $("aU").classList.toggle("hidden",mode==="login");$("aM").textContent=""};
+$("aB").onclick=async()=>{
+  $("aM").textContent="";
+  try{
+    const d=await post("/api/"+mode,{email:$("aE").value,username:$("aU").value,password:$("aP").value});
+    token=d.token;localStorage.setItem("tvs_token",token);start();
+  }catch(e){$("aM").textContent=e.message}
+};
+function logout(silent){
+  if(!silent&&token)api("/api/logout",{method:"POST"}).catch(()=>{});
+  token="";me=null;localStorage.removeItem("tvs_token");
+  $("auth").classList.remove("hidden");$("app").classList.add("hidden");$("nav").classList.add("hidden");
+}
+async function start(){
+  try{me=(await api("/api/me")).user}catch{return logout(true)}
+  $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");
+  go("home");
+}
+
+/* NAV */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v,arg){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v==="home")return home();
+  if(v==="me")return profile(me.username);
+  if(v==="user")return profile(arg);
+  if(v==="settings")return settings();
+}
+
+/* POST CARD */
+function card(p,refresh){
+  const d=document.createElement("div");d.className="card post";
+  d.innerHTML=`<div class="row"><b class="u">@${esc(p.username)}</b><span class="mut">${ago(p.created_at)}</span><span class="sp"></span><button class="ic" data-m aria-label="More">&#8943;</button></div>
+  ${p.text?`<p>${esc(p.text)}</p>`:""}${p.image_key?`<img loading="lazy" src="${API}/img/${p.image_key}" alt="">`:""}
+  <div class="row"><button class="ic" data-l>${p.liked?"&#9829;":"&#9825;"} ${p.likes}</button><button class="ic" data-c>Comments ${p.comments}</button><button class="ic" data-s>Share</button></div>
+  <div class="cm hidden"></div>`;
+  d.querySelector(".u").onclick=()=>go("user",p.username);
+  d.querySelector("[data-l]").onclick=async()=>{await post("/api/like/"+p.id);refresh()};
+  d.querySelector("[data-s]").onclick=async()=>{
+    const data={title:"TinVin Social",text:(p.text||"Post by @"+p.username),url:location.href.split("#")[0]};
+    try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}
+  };
+  const cm=d.querySelector(".cm");
+  d.querySelector("[data-c]").onclick=()=>{cm.classList.toggle("hidden");if(!cm.classList.contains("hidden"))comments(p.id,cm,refresh)};
+  d.querySelector("[data-m]").onclick=()=>menu(p,refresh);
+  return d;
+}
+async function comments(id,box,refresh){
+  box.innerHTML="Loading...";
+  try{
+    const c=(await api("/api/comments/"+id)).comments;
+    box.innerHTML=c.map(x=>`<div><b>@${esc(x.username)}</b>${esc(x.text)}</div>`).join("")+
+      `<div class="row"><input placeholder="Add a comment" maxlength="300"><button class="btn">Send</button></div>`;
+    box.querySelector(".btn").onclick=async()=>{
+      const i=box.querySelector("input");if(!i.value.trim())return;
+      await post("/api/comments/"+id,{text:i.value});refresh();
+    };
+  }catch(e){box.textContent=e.message}
+}
+function menu(p,refresh){
+  const s=$("sheet");s.classList.remove("hidden");
+  const own=p.uid===me.id;
+  s.innerHTML=`<div>${own?`<button class="d" data-a="del">Delete post</button>`:
+    `<button data-r="Spam">Report: spam</button><button data-r="Harassment or hate">Report: harassment or hate</button>
+     <button data-r="Nudity or violence">Report: nudity or violence</button><button data-r="False information">Report: false information</button>
+     <button class="d" data-a="block">Block @${esc(p.username)}</button>`}<button data-a="x">Cancel</button></div>`;
+  s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
+  s.querySelectorAll("button").forEach(b=>b.onclick=async()=>{
+    s.classList.add("hidden");
+    try{
+      if(b.dataset.r){await post("/api/report/"+p.id,{reason:b.dataset.r});alert("Thanks. We will review this post.")}
+      else if(b.dataset.a==="block"){if(confirm("Block @"+p.username+"?"))await post("/api/block/"+p.uid)}
+      else if(b.dataset.a==="del"){if(confirm("Delete this post?"))await api("/api/post/"+p.id,{method:"DELETE"})}
+      refresh();
+    }catch(e){alert(e.message)}
+  });
+}
+
+/* HOME */
+async function home(){
+  $("view").innerHTML=`<div class="card"><textarea id="pT" maxlength="500" placeholder="What's on your mind?"></textarea>
+    <div class="row"><input id="pF" type="file" accept="image/jpeg,image/png,image/webp,image/gif" style="margin:0">
+    <button class="btn" id="pB">Post</button></div><div class="err" id="pM"></div></div>
+    <div class="tabs"><button class="btn ${tab?"ghost":""}" data-t="0">Everyone</button><button class="btn ${tab?"":"ghost"}" data-t="1">Following</button></div><div id="feed">Loading...</div>`;
+  document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tab=+b.dataset.t;home()});
+  $("pB").onclick=async()=>{
+    $("pM").textContent="";$("pB").disabled=true;
+    try{
+      let image=null;const f=$("pF").files[0];
+      if(f)image=(await api("/api/upload",{method:"POST",raw:true,headers:{"Content-Type":f.type},body:f})).key;
+      await post("/api/post",{text:$("pT").value,image});home();
+    }catch(e){$("pM").textContent=e.message;$("pB").disabled=false}
+  };
+  loadFeed();
+}
+async function loadFeed(){
+  try{
+    const posts=(await api("/api/feed?f="+tab)).posts;
+    const box=$("feed");box.innerHTML="";
+    if(!posts.length)box.innerHTML=`<p class="mut">No posts yet.</p>`;
+    posts.forEach(p=>box.appendChild(card(p,loadFeed)));
+  }catch(e){$("feed").textContent=e.message}
+}
+
+/* PROFILE */
+async function profile(name){
+  $("view").innerHTML="Loading...";
+  try{
+    const d=await api("/api/user/"+encodeURIComponent(name)),own=d.user.id===me.id;
+    $("view").innerHTML=`<div class="card"><h2 style="margin:0">@${esc(d.user.username)}</h2>
+      <p class="mut">${esc(d.user.bio||"")}</p>
+      <div class="stats"><div><b>${d.counts.posts}</b>Posts</div><div><b>${d.counts.followers}</b>Followers</div><div><b>${d.counts.following}</b>Following</div></div>
+      <div class="row">${own?`<button class="btn ghost sp" id="eB">Edit bio</button>`:
+      `<button class="btn sp" id="fB">${d.is_following?"Following":"Follow"}</button>`}
+      <button class="btn ghost sp" id="shB">Share profile</button></div></div><div id="pp"></div>`;
+    const re=()=>profile(name);
+    if(own)$("eB").onclick=async()=>{const b=prompt("Your bio (160 characters)",d.user.bio||"");if(b!==null){await post("/api/me",{bio:b});re()}};
+    else $("fB").onclick=async()=>{await post("/api/follow/"+d.user.id);re()};
+    $("shB").onclick=async()=>{const data={title:"TinVin Social",text:"@"+d.user.username+" on TinVin Social",url:location.href.split("#")[0]};
+      try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}};
+    if(!d.posts.length)$("pp").innerHTML=`<p class="mut">No posts yet.</p>`;
+    d.posts.forEach(p=>$("pp").appendChild(card(p,re)));
+  }catch(e){$("view").textContent=e.message}
+}
+
+/* SETTINGS */
+function settings(){
+  $("view").innerHTML=`<div class="card"><h3 style="margin-top:0">Settings</h3>
+    <p class="mut">Signed in as ${esc(me.email)}</p>
+    <p><a href="privacy.html" style="color:var(--ac)">Privacy policy</a></p>
+    <p><a href="terms.html" style="color:var(--ac)">Terms and community rules</a></p>
+    <button class="btn ghost" id="lo">Logout</button>
+    <p><button class="btn" id="del" style="background:var(--dn);color:#fff">Delete account</button></p>
+    <p class="mut">Deleting your account permanently removes your profile, posts, comments and likes.</p></div>`;
+  $("lo").onclick=()=>logout();
+  $("del").onclick=async()=>{
+    if(!confirm("Delete your account and all your content? This can't be undone."))return;
+    try{await api("/api/me",{method:"DELETE"});logout(true)}catch(e){alert(e.message)}
+  };
+}
+
+token?start():logout(true);
+</script>
+</body>
+</html>
