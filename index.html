@@ -55,6 +55,7 @@ nav button{flex:1;padding:14px;background:none;border:0;color:var(--mut);font-we
 
 <nav id="nav" class="hidden">
   <button data-v="home" class="on">Home</button>
+  <button data-v="search">Search</button>
   <button data-v="me">Profile</button>
   <button data-v="settings">Settings</button>
 </nav>
@@ -121,6 +122,7 @@ document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v)
 function go(v,arg){
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
   if(v==="home")return home();
+  if(v==="search")return search();
   if(v==="me")return profile(me.username);
   if(v==="user")return profile(arg);
   if(v==="settings")return settings();
@@ -199,6 +201,32 @@ async function loadFeed(){
     if(!posts.length)box.innerHTML=`<p class="mut">No posts yet.</p>`;
     posts.forEach(p=>box.appendChild(card(p,loadFeed)));
   }catch(e){$("feed").textContent=e.message}
+}
+
+/* SEARCH */
+let sq="";
+function search(){
+  $("view").innerHTML=`<div class="card"><input id="sI" placeholder="Search people or posts" maxlength="50" value="${esc(sq)}"></div><div id="sR"></div>`;
+  const hint=`<p class="mut">Type at least 2 characters.</p>`;
+  const run=async()=>{
+    sq=$("sI").value.trim();const box=$("sR");
+    if(sq.length<2){box.innerHTML=hint;return}
+    box.textContent="Searching...";
+    try{
+      const d=await api("/api/search?q="+encodeURIComponent(sq));
+      box.innerHTML="";
+      if(!d.users.length&&!d.posts.length){box.innerHTML=`<p class="mut">No results.</p>`;return}
+      if(d.users.length){
+        const c=document.createElement("div");c.className="card";
+        c.innerHTML=`<b>People</b>`+d.users.map(u=>`<div class="row u" data-n="${esc(u.username)}" style="padding:10px 0;border-top:1px solid var(--line)"><b>@${esc(u.username)}${vb(u.verified)}</b><span class="mut">${esc(u.bio||"")}</span></div>`).join("");
+        c.querySelectorAll("[data-n]").forEach(r=>r.onclick=()=>go("user",r.dataset.n));
+        box.appendChild(c);
+      }
+      d.posts.forEach(p=>box.appendChild(card(p,run)));
+    }catch(e){box.textContent=e.message}
+  };
+  let t;$("sI").oninput=()=>{clearTimeout(t);t=setTimeout(run,400)};
+  if(sq)run();else $("sR").innerHTML=hint;
 }
 
 /* PROFILE */
