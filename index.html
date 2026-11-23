@@ -43,9 +43,10 @@ nav button{flex:1;padding:14px;background:none;border:0;color:var(--mut);font-we
   <h2 id="aT">Welcome back</h2>
   <input id="aE" type="email" placeholder="Email" autocomplete="email">
   <input id="aU" placeholder="Username (letters, numbers, _)" class="hidden">
-  <input id="aP" type="password" placeholder="Password (8+ characters)" autocomplete="current-password">
+  <div style="position:relative"><input id="aP" type="password" placeholder="Password (8+ characters)" autocomplete="current-password" style="padding-right:46px"><button type="button" class="ic" id="aEye" aria-label="Show password" style="position:absolute;right:2px;top:7px;font-size:20px">&#128065;</button></div>
   <button class="btn" id="aB" style="width:100%">Login</button>
   <div class="err" id="aM"></div>
+  <p class="mut" style="text-align:center"><span id="aF" style="color:var(--ac);cursor:pointer">Forgot password?</span></p>
   <p class="mut" style="text-align:center"><span id="aS" style="color:var(--ac);cursor:pointer">Create account</span></p>
 </div>
 
@@ -61,10 +62,11 @@ nav button{flex:1;padding:14px;background:none;border:0;color:var(--mut);font-we
 
 <script>
 "use strict";
-const API="https://YOUR-SOCIAL-WORKER.workers.dev";
+const API="https://tinvin-social-api.aslan89aslan1.workers.dev";
 let token=localStorage.getItem("tvs_token")||"",me=null,mode="login",tab=0;
 const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const vb=v=>v?' <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle"><path fill="#1d9bf0" d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91C2.88 9.33 2 10.57 2 12s.88 2.67 2.19 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34z"/><path fill="#fff" d="M9.5 16.5l-3.5-3.5 1.4-1.4 2.1 2.1 5.1-5.1 1.4 1.4z"/></svg>':"";
 const ago=t=>{const s=Math.floor(Date.now()/1000)-t;return s<60?"now":s<3600?Math.floor(s/60)+"m":s<86400?Math.floor(s/3600)+"h":Math.floor(s/86400)+"d"};
 
 async function api(path,opt={}){
@@ -83,14 +85,25 @@ $("aS").onclick=()=>{mode=mode==="login"?"signup":"login";
   $("aT").textContent=mode==="login"?"Welcome back":"Create account";
   $("aB").textContent=mode==="login"?"Login":"Sign up";
   $("aS").textContent=mode==="login"?"Create account":"I have an account";
-  $("aU").classList.toggle("hidden",mode==="login");$("aM").textContent=""};
+  $("aU").classList.toggle("hidden",mode==="login");$("aF").classList.toggle("hidden",mode!=="login");$("aM").textContent=""};
 $("aB").onclick=async()=>{
-  $("aM").textContent="";
+  $("aM").textContent="";$("aM").style.color="";
+  if(mode==="reset"){try{await post("/api/reset",{token:resetTok,password:$("aP").value});alert("Password changed. Please log in.");history.replaceState(null,"",location.pathname);location.reload()}catch(e){$("aM").textContent=e.message}return}
   try{
     const d=await post("/api/"+mode,{email:$("aE").value,username:$("aU").value,password:$("aP").value});
     token=d.token;localStorage.setItem("tvs_token",token);start();
   }catch(e){$("aM").textContent=e.message}
 };
+let resetTok="";
+$("aEye").onclick=()=>{const p=$("aP");p.type=p.type==="password"?"text":"password"};
+$("aF").onclick=async()=>{
+  const em=$("aE").value.trim();
+  if(!em){$("aM").textContent="Enter your email first.";return}
+  try{await post("/api/forgot",{email:em});$("aM").style.color="#22c55e";$("aM").textContent="If this email exists, we sent a reset link."}catch(e){$("aM").textContent=e.message}
+};
+function resetMode(t){resetTok=t;mode="reset";$("aT").textContent="Set new password";
+  ["aE","aU","aF","aS"].forEach(i=>$(i).classList.add("hidden"));
+  $("aP").placeholder="New password (8+ characters)";$("aP").autocomplete="new-password";$("aB").textContent="Save password"}
 function logout(silent){
   if(!silent&&token)api("/api/logout",{method:"POST"}).catch(()=>{});
   token="";me=null;localStorage.removeItem("tvs_token");
@@ -115,7 +128,7 @@ function go(v,arg){
 /* POST CARD */
 function card(p,refresh){
   const d=document.createElement("div");d.className="card post";
-  d.innerHTML=`<div class="row"><b class="u">@${esc(p.username)}</b><span class="mut">${ago(p.created_at)}</span><span class="sp"></span><button class="ic" data-m aria-label="More">&#8943;</button></div>
+  d.innerHTML=`<div class="row"><b class="u">@${esc(p.username)}${vb(p.verified)}</b><span class="mut">${ago(p.created_at)}</span><span class="sp"></span><button class="ic" data-m aria-label="More">&#8943;</button></div>
   ${p.text?`<p>${esc(p.text)}</p>`:""}${p.image_key?`<img loading="lazy" src="${API}/img/${p.image_key}" alt="">`:""}
   <div class="row"><button class="ic" data-l>${p.liked?"&#9829;":"&#9825;"} ${p.likes}</button><button class="ic" data-c>Comments ${p.comments}</button><button class="ic" data-s>Share</button></div>
   <div class="cm hidden"></div>`;
@@ -134,7 +147,7 @@ async function comments(id,box,refresh){
   box.innerHTML="Loading...";
   try{
     const c=(await api("/api/comments/"+id)).comments;
-    box.innerHTML=c.map(x=>`<div><b>@${esc(x.username)}</b>${esc(x.text)}</div>`).join("")+
+    box.innerHTML=c.map(x=>`<div><b>@${esc(x.username)}${vb(x.verified)}</b>${esc(x.text)}</div>`).join("")+
       `<div class="row"><input placeholder="Add a comment" maxlength="300"><button class="btn">Send</button></div>`;
     box.querySelector(".btn").onclick=async()=>{
       const i=box.querySelector("input");if(!i.value.trim())return;
@@ -192,7 +205,7 @@ async function profile(name){
   $("view").innerHTML="Loading...";
   try{
     const d=await api("/api/user/"+encodeURIComponent(name)),own=d.user.id===me.id;
-    $("view").innerHTML=`<div class="card"><h2 style="margin:0">@${esc(d.user.username)}</h2>
+    $("view").innerHTML=`<div class="card"><h2 style="margin:0">@${esc(d.user.username)}${vb(d.user.verified)}</h2>
       <p class="mut">${esc(d.user.bio||"")}</p>
       <div class="stats"><div><b>${d.counts.posts}</b>Posts</div><div><b>${d.counts.followers}</b>Followers</div><div><b>${d.counts.following}</b>Following</div></div>
       <div class="row">${own?`<button class="btn ghost sp" id="eB">Edit bio</button>`:
@@ -224,7 +237,8 @@ function settings(){
   };
 }
 
-token?start():logout(true);
+const rt=(location.hash.match(/^#reset=(r_[a-f0-9]+)/)||[])[1];
+if(rt){logout(true);resetMode(rt)}else token?start():logout(true);
 </script>
 </body>
 </html>
