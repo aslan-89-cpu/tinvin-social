@@ -5,18 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TinVin</title>
   <style>
-    :root {
-      --bg-1: #090d16;
-      --bg-2: #141026;
-      --card: rgba(20, 26, 46, 0.72);
-      --border: rgba(255, 255, 255, 0.14);
-      --gold: #f5b942;
-      --green: #22c55e;
-      --red: #ef4444;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
@@ -30,55 +18,64 @@
       align-items: center;
       justify-content: center;
       padding: 20px;
-      color: var(--text);
+      color: #f4f6fb;
       background:
-        radial-gradient(circle at 20% 20%, rgba(245, 185, 66, 0.18), transparent 45%),
-        radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.16), transparent 45%),
-        linear-gradient(135deg, var(--bg-1), var(--bg-2));
+        radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.14), transparent 45%),
+        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.08), transparent 45%),
+        linear-gradient(160deg, #0b0d13 0%, #141824 55%, #0c0e14 100%);
     }
 
-    .card {
+    .glass-card {
       width: 100%;
       max-width: 400px;
-      background: var(--card);
-      backdrop-filter: blur(18px);
-      -webkit-backdrop-filter: blur(18px);
-      border: 1px solid var(--border);
-      border-radius: 22px;
-      padding: 26px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 26px;
+      padding: 28px 24px;
+      box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.55),
+        inset 0 1px 0 rgba(255, 255, 255, 0.22);
     }
 
-    h1 {
+    .title {
       text-align: center;
-      color: var(--gold);
-      font-size: 1.6rem;
-      margin-bottom: 18px;
+      font-size: 1.55rem;
+      font-weight: 700;
+      color: #ffffff;
+      margin-bottom: 20px;
+      letter-spacing: 0.4px;
     }
 
     .tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 8px;
-      background: rgba(255, 255, 255, 0.06);
       padding: 5px;
-      border-radius: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
       margin-bottom: 18px;
     }
 
     .tab-btn {
-      border: none;
-      background: transparent;
-      color: var(--muted);
       padding: 10px;
-      border-radius: 10px;
-      cursor: pointer;
+      border-radius: 12px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.95rem;
       font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s ease;
     }
 
     .tab-btn.active {
-      background: linear-gradient(135deg, var(--gold), #d99b1e);
-      color: #090d16;
+      background: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
     }
 
     .form {
@@ -91,135 +88,147 @@
       display: flex;
     }
 
-    input {
+    .glass-input {
       width: 100%;
-      padding: 12px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(9, 13, 22, 0.7);
-      color: var(--text);
+      padding: 13px 15px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      background: rgba(255, 255, 255, 0.05);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      color: #ffffff;
       font-size: 0.95rem;
       outline: none;
+      transition: 0.2s ease;
     }
 
-    input:focus {
-      border-color: var(--gold);
+    .glass-input::placeholder {
+      color: rgba(255, 255, 255, 0.52);
     }
 
-    .submit-btn {
+    .glass-input:focus {
+      border-color: rgba(255, 255, 255, 0.42);
+      background: rgba(255, 255, 255, 0.09);
+    }
+
+    .glass-btn {
       margin-top: 4px;
-      padding: 12px;
-      border: none;
-      border-radius: 12px;
-      background: linear-gradient(135deg, var(--green), #16a34a);
-      color: #051109;
+      width: 100%;
+      padding: 13px;
+      border-radius: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.28);
+      background: rgba(255, 255, 255, 0.15);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      color: #ffffff;
+      font-size: 0.98rem;
       font-weight: 700;
-      font-size: 1rem;
       cursor: pointer;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      transition: 0.2s ease;
     }
 
-    .submit-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+    .glass-btn:hover {
+      background: rgba(255, 255, 255, 0.22);
     }
 
     .link-btn {
       background: none;
       border: none;
-      color: var(--gold);
+      color: rgba(255, 255, 255, 0.78);
       font-size: 0.88rem;
-      cursor: pointer;
       text-align: right;
+      cursor: pointer;
       padding: 2px 0;
+    }
+
+    .link-btn:hover {
+      color: #ffffff;
     }
 
     .msg {
       margin-top: 14px;
-      padding: 10px 12px;
-      border-radius: 12px;
+      padding: 11px 14px;
+      border-radius: 14px;
       font-size: 0.88rem;
-      display: none;
       line-height: 1.5;
+      display: none;
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      color: #ffffff;
     }
 
-    .msg.error {
+    .msg.show {
       display: block;
-      background: rgba(239, 68, 68, 0.16);
-      border: 1px solid rgba(239, 68, 68, 0.4);
-      color: #fecaca;
-    }
-
-    .msg.success {
-      display: block;
-      background: rgba(34, 197, 94, 0.16);
-      border: 1px solid rgba(34, 197, 94, 0.4);
-      color: #bbf7d0;
     }
 
     .session-box {
       display: none;
-      text-align: center;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
+      text-align: center;
     }
 
     .session-box.active {
       display: flex;
     }
 
-    .logout-btn {
-      padding: 10px 14px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
-      background: rgba(255, 255, 255, 0.08);
-      color: var(--text);
-      cursor: pointer;
-      font-weight: 600;
+    .session-text {
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      line-height: 1.6;
+      font-size: 0.95rem;
     }
   </style>
 </head>
 <body>
-  <div class="card">
-    <h1>TinVin</h1>
+  <div class="glass-card">
+    <div class="title">TinVin</div>
 
     <div id="authSection">
       <div class="tabs">
-        <button type="button" class="tab-btn active" id="loginTab" onclick="switchView('login')">Login</button>
-        <button type="button" class="tab-btn" id="signupTab" onclick="switchView('signup')">Signup</button>
+        <button type="button" class="tab-btn active" id="loginTab" onclick="switchView('login')">چوونەژوورەوە</button>
+        <button type="button" class="tab-btn" id="signupTab" onclick="switchView('signup')">تۆمارکردن</button>
       </div>
 
-      <form id="loginForm" class="form active" onsubmit="handleAuth(event, '/login')">
-        <input type="email" name="email" placeholder="ئیمەیڵ" required />
-        <input type="password" name="password" placeholder="پاسۆرد" required />
-        <button type="button" class="link-btn" onclick="switchView('forgot')">پاسۆردت بیرچووە؟ (Forget Password)</button>
-        <button type="submit" class="submit-btn">چوونەژوورەوە</button>
+      <!-- چوونەژوورەوە: ئیمەیڵ + پاسۆرد -->
+      <form id="loginForm" class="form active" onsubmit="handleLogin(event)">
+        <input type="email" name="email" class="glass-input" placeholder="ئیمەیڵ" required />
+        <input type="password" name="password" class="glass-input" placeholder="پاسۆرد" required />
+        <button type="button" class="link-btn" onclick="switchView('forgot')">پاسۆردت بیرچووە؟</button>
+        <button type="submit" class="glass-btn">چوونەژوورەوە</button>
       </form>
 
-      <form id="signupForm" class="form" onsubmit="handleAuth(event, '/signup')">
-        <input type="text" name="username" placeholder="ناوی بەکارهێنەر (Username)" required />
-        <input type="email" name="email" placeholder="ئیمەیڵ" required />
-        <input type="password" name="password" placeholder="پاسۆرد" minlength="6" required />
-        <button type="submit" class="submit-btn">دروستکردنی هەژمار</button>
+      <!-- تۆمارکردن: ناوی بەکارهێنەر + ئیمەیڵ + پاسۆرد -->
+      <form id="signupForm" class="form" onsubmit="handleSignup(event)">
+        <input type="text" name="username" class="glass-input" placeholder="ناوی بەکارهێنەر" required />
+        <input type="email" name="email" class="glass-input" placeholder="ئیمەیڵ" required />
+        <input type="password" name="password" class="glass-input" placeholder="پاسۆرد" minlength="6" required />
+        <button type="submit" class="glass-btn">دروستکردنی هەژمار</button>
       </form>
 
-      <form id="forgotForm" class="form" onsubmit="handleAuth(event, '/forgot-password')">
-        <input type="email" name="email" placeholder="ئیمەیڵی هەژمارەکەت بنووسە" required />
-        <button type="submit" class="submit-btn">ناردنی داواکاری گەڕاندنەوە</button>
-        <button type="button" class="link-btn" onclick="switchView('login')">گەڕانەوە بۆ Login</button>
+      <!-- لەبیرچوونی پاسۆرد -->
+      <form id="forgotForm" class="form" onsubmit="handleForgot(event)">
+        <input type="email" name="email" class="glass-input" placeholder="ئیمەیڵی هەژمارەکەت بنووسە" required />
+        <input type="password" name="newPassword" class="glass-input" placeholder="پاسۆردی نوێ" minlength="6" required />
+        <button type="submit" class="glass-btn">نوێکردنەوەی پاسۆرد</button>
+        <button type="button" class="link-btn" onclick="switchView('login')">گەڕانەوە بۆ چوونەژوورەوە</button>
       </form>
     </div>
 
     <div id="sessionBox" class="session-box">
-      <p id="sessionInfo"></p>
-      <button type="button" class="logout-btn" onclick="logout()">چوونەدەرەوە</button>
+      <div id="sessionInfo" class="session-text"></div>
+      <button type="button" class="glass-btn" onclick="logout()">چوونەدەرەوە</button>
     </div>
 
     <div id="statusMsg" class="msg"></div>
   </div>
 
   <script>
-    const WORKER_URL = "https://your-tinvin-worker.workers.dev";
-    const STORAGE_KEY = "tinvin_auth_session";
+    const USERS_KEY = "tinvin_local_users";
+    const CURRENT_USER_KEY = "tinvin_current_user";
 
     const loginTab = document.getElementById("loginTab");
     const signupTab = document.getElementById("signupTab");
@@ -231,14 +240,26 @@
     const sessionInfo = document.getElementById("sessionInfo");
     const statusMsg = document.getElementById("statusMsg");
 
-    function showMessage(text, type) {
+    function getUsers() {
+      try {
+        return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
+      } catch {
+        return [];
+      }
+    }
+
+    function saveUsers(users) {
+      localStorage.setItem(USERS_KEY, JSON.stringify(users));
+    }
+
+    function showMessage(text) {
       statusMsg.textContent = text;
-      statusMsg.className = "msg " + type;
+      statusMsg.classList.add("show");
     }
 
     function clearMessage() {
       statusMsg.textContent = "";
-      statusMsg.className = "msg";
+      statusMsg.classList.remove("show");
     }
 
     function switchView(view) {
@@ -261,74 +282,100 @@
     }
 
     function renderSession() {
-      const raw = localStorage.getItem(STORAGE_KEY);
+      const raw = localStorage.getItem(CURRENT_USER_KEY);
       if (!raw) {
         authSection.style.display = "block";
         sessionBox.classList.remove("active");
         return;
       }
+
       try {
-        const data = JSON.parse(raw);
-        const label = data.username || data.email || "بەکارهێنەر";
-        sessionInfo.textContent = "چوویتە ژوورەوە وەک: " + label;
+        const user = JSON.parse(raw);
+        sessionInfo.innerHTML =
+          "بەخێربێیت <strong>" + user.username + "</strong><br/>ئیمەیڵ: " + user.email;
         authSection.style.display = "none";
         sessionBox.classList.add("active");
       } catch {
-        localStorage.removeItem(STORAGE_KEY);
+        localStorage.removeItem(CURRENT_USER_KEY);
       }
     }
 
-    function logout() {
-      localStorage.removeItem(STORAGE_KEY);
-      clearMessage();
-      renderSession();
-      switchView("login");
-    }
-
-    async function handleAuth(event, endpoint) {
+    function handleSignup(event) {
       event.preventDefault();
       clearMessage();
 
-      const form = event.target;
-      const btn = form.querySelector(".submit-btn");
-      const payload = Object.fromEntries(new FormData(form).entries());
+      const data = Object.fromEntries(new FormData(event.target).entries());
+      const username = data.username.trim();
+      const email = data.email.trim().toLowerCase();
+      const password = data.password;
 
-      btn.disabled = true;
-      try {
-        const res = await fetch(WORKER_URL + endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload)
-        });
-
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          showMessage(data.error || data.message || "هەڵەیەک ڕوویدا.", "error");
-          return;
-        }
-
-        if (endpoint === "/login" || endpoint === "/signup") {
-          const sessionData = {
-            token: data.token || null,
-            email: data.email || payload.email,
-            username: data.username || payload.username || null
-          };
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
-          showMessage(data.message || "بە سەرکەوتوویی چوویتە ژوورەوە.", "success");
-          renderSession();
-        } else {
-          showMessage(
-            data.message || "داواکاری گەڕاندنەوەی پاسۆرد نێردرا؛ ئیمەیڵەکەت بپشکنە.",
-            "success"
-          );
-          form.reset();
-        }
-      } catch {
-        showMessage("پەیوەندی بە Workerەکە سەرکەوتوو نەبوو.", "error");
-      } finally {
-        btn.disabled = false;
+      const users = getUsers();
+      if (users.some((u) => u.email === email)) {
+        showMessage("ئەم ئیمەیڵە پێشتر تۆمار کراوە.");
+        return;
       }
+
+      const newUser = { username, email, password };
+      users.push(newUser);
+      saveUsers(users);
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
+
+      event.target.reset();
+      showMessage("هەژمارەکەت بە سەرکەوتوویی دروست کرا.");
+      renderSession();
+    }
+
+    function handleLogin(event) {
+      event.preventDefault();
+      clearMessage();
+
+      const data = Object.fromEntries(new FormData(event.target).entries());
+      const email = data.email.trim().toLowerCase();
+      const password = data.password;
+
+      const users = getUsers();
+      const found = users.find((u) => u.email === email && u.password === password);
+
+      if (!found) {
+        showMessage("ئیمەیڵ یان پاسۆرد هەڵەیە.");
+        return;
+      }
+
+      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(found));
+      event.target.reset();
+      showMessage("بە سەرکەوتوویی چوویتە ژوورەوە.");
+      renderSession();
+    }
+
+    function handleForgot(event) {
+      event.preventDefault();
+      clearMessage();
+
+      const data = Object.fromEntries(new FormData(event.target).entries());
+      const email = data.email.trim().toLowerCase();
+      const newPassword = data.newPassword;
+
+      const users = getUsers();
+      const index = users.findIndex((u) => u.email === email);
+
+      if (index === -1) {
+        showMessage("هیچ هەژمارێک بەم ئیمەیڵە نەدۆزرایەوە.");
+        return;
+      }
+
+      users[index].password = newPassword;
+      saveUsers(users);
+
+      event.target.reset();
+      showMessage("پاسۆردەکەت بە سەرکەوتوویی نوێ کرایەوە؛ ئێستا دەتوانیت بچیتە ژوورەوە.");
+      switchView("login");
+    }
+
+    function logout() {
+      localStorage.removeItem(CURRENT_USER_KEY);
+      clearMessage();
+      renderSession();
+      switchView("login");
     }
 
     renderSession();
