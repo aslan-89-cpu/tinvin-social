@@ -3,218 +3,207 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#080a16">
+<meta name="theme-color" content="#070916">
 <title>TinVin Social</title>
 <style>
 :root{
-  --bg:#080a16;
-  --card:rgba(255,255,255,0.055);
-  --line:rgba(255,255,255,0.12);
-  --fg:#f3f4f8;
-  --mut:#9ca3af;
-  --ac:#c084fc;
-  --grad:linear-gradient(135deg,#8b5cf6 0%,#d946ef 100%);
-  --grad-cool:linear-gradient(135deg,#6366f1 0%,#a855f7 50%,#ec4899 100%);
+  --bg:#070916;
+  --glass:linear-gradient(150deg,rgba(255,255,255,0.14) 0%,rgba(168,85,247,0.08) 50%,rgba(56,189,248,0.09) 100%);
+  --glass-hi:linear-gradient(150deg,rgba(255,255,255,0.20) 0%,rgba(217,70,239,0.12) 55%,rgba(56,189,248,0.14) 100%);
+  --line:rgba(255,255,255,0.22);
+  --line-soft:rgba(255,255,255,0.12);
+  --fg:#f8fafc;
+  --mut:#cbd5e1;
+  --ac:#e879f9;
+  --grad:linear-gradient(135deg,#8b5cf6 0%,#c026d3 55%,#ec4899 100%);
+  --grad-cool:linear-gradient(135deg,#22d3ee 0%,#818cf8 45%,#d946ef 100%);
   --up:#22c55e;
   --dn:#ef4444;
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{
   margin:0;
-  background:var(--bg);
+  background:
+    radial-gradient(circle at 15% 8%,rgba(139,92,246,0.36),transparent 42%),
+    radial-gradient(circle at 88% 18%,rgba(34,211,238,0.22),transparent 45%),
+    radial-gradient(circle at 72% 88%,rgba(217,70,239,0.30),transparent 48%),
+    var(--bg);
   color:var(--fg);
   font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
-  padding-bottom:92px;
+  padding-bottom:96px;
   min-height:100vh;
   overflow-x:hidden;
 }
-
-/* پاشبنەمای گڵاسمۆرفیزمی درەوشاوە */
 body::before,body::after{
-  content:"";
-  position:fixed;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:-1;
-  filter:blur(75px);
+  content:"";position:fixed;border-radius:50%;pointer-events:none;z-index:-1;filter:blur(70px);
 }
 body::before{
-  width:280px;height:280px;
-  top:-70px;left:-70px;
-  background:radial-gradient(circle,rgba(139,92,246,0.45),transparent 70%);
+  width:270px;height:270px;top:-60px;left:-60px;
+  background:radial-gradient(circle,rgba(168,85,247,0.52),transparent 70%);
 }
 body::after{
-  width:320px;height:320px;
-  bottom:40px;right:-80px;
-  background:radial-gradient(circle,rgba(59,130,246,0.38),transparent 70%);
+  width:310px;height:310px;bottom:50px;right:-60px;
+  background:radial-gradient(circle,rgba(79,70,229,0.45),transparent 70%);
 }
-
 button,input,textarea{font:inherit}
 button{cursor:pointer;transition:all .2s ease}
 button:active{transform:scale(0.97)}
 .hidden{display:none!important}
 
-/* سەرپەڕە */
 header{
   position:sticky;top:0;z-index:10;
-  background:rgba(10,13,28,0.72);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
+  background:linear-gradient(180deg,rgba(255,255,255,0.12),rgba(13,16,38,0.72));
+  backdrop-filter:blur(28px) saturate(175%);
+  -webkit-backdrop-filter:blur(28px) saturate(175%);
   border-bottom:1px solid var(--line);
-  padding:13px 16px;
-  font-weight:800;font-size:20px;
-  display:flex;align-items:center;gap:10px;
-  letter-spacing:-0.3px;
+  box-shadow:inset 0 -1px 0 rgba(255,255,255,0.08),0 10px 30px rgba(0,0,0,0.38);
+  padding:12px 16px;font-weight:800;font-size:20px;
+  display:flex;align-items:center;gap:10px;letter-spacing:-0.3px;
 }
 .logo-mark{
-  width:30px;height:30px;border-radius:9px;
-  background:var(--grad-cool);
+  width:34px;height:34px;border-radius:11px;
+  background:linear-gradient(145deg,rgba(255,255,255,0.18),rgba(139,92,246,0.22));
+  border:1px solid rgba(255,255,255,0.26);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   display:inline-flex;align-items:center;justify-content:center;
-  box-shadow:0 0 16px rgba(168,85,247,0.55);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.45),0 0 20px rgba(168,85,247,0.55);
 }
 header span.brand-sub{
-  background:linear-gradient(90deg,#c084fc,#f472b6);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
+  background:linear-gradient(90deg,#e879f9,#c084fc,#67e8f9);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
 }
 
 .wrap{max-width:540px;margin:auto;padding:14px}
-
-/* کارتە شوشەییەکان */
 .card{
-  background:var(--card);
-  backdrop-filter:blur(22px);
-  -webkit-backdrop-filter:blur(22px);
+  position:relative;
+  background:var(--glass);
+  backdrop-filter:blur(28px) saturate(175%);
+  -webkit-backdrop-filter:blur(28px) saturate(175%);
   border:1px solid var(--line);
-  border-radius:22px;
-  padding:15px;
-  margin-bottom:14px;
-  box-shadow:0 10px 30px rgba(0,0,0,0.32);
+  border-radius:24px;padding:15px;margin-bottom:14px;
+  box-shadow:
+    inset 0 1px 1px rgba(255,255,255,0.28),
+    inset 0 -10px 24px rgba(168,85,247,0.08),
+    0 14px 36px rgba(0,0,0,0.45);
 }
-
-/* خانەکانی نووسین */
 input,textarea{
   width:100%;padding:12px 14px;margin:6px 0;
-  background:rgba(8,11,24,0.65);
-  color:var(--fg);
-  border:1px solid var(--line);
-  border-radius:14px;
-  outline:none;
-  transition:border-color .2s,box-shadow .2s;
+  background:linear-gradient(145deg,rgba(255,255,255,0.09),rgba(10,14,32,0.58));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  color:var(--fg);border:1px solid var(--line-soft);border-radius:15px;outline:none;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.14);
+  transition:border-color .2s,box-shadow .2s,background .2s;
 }
 input:focus,textarea:focus{
-  border-color:#a855f7;
-  box-shadow:0 0 0 3px rgba(168,85,247,0.2);
+  background:linear-gradient(145deg,rgba(255,255,255,0.14),rgba(18,22,48,0.68));
+  border-color:rgba(232,121,249,0.75);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.25),0 0 0 3px rgba(168,85,247,0.22);
 }
 textarea{min-height:76px;resize:vertical}
 input[type="file"]{padding:8px 10px;font-size:12px;color:var(--mut)}
 input[type="file"]::file-selector-button{
-  background:rgba(255,255,255,0.1);color:var(--fg);
-  border:1px solid var(--line);border-radius:9px;
-  padding:6px 10px;margin-right:8px;cursor:pointer;
+  background:rgba(255,255,255,0.14);color:#fff;
+  border:1px solid rgba(255,255,255,0.24);border-radius:10px;
+  padding:6px 11px;margin-right:8px;cursor:pointer;
 }
-
-/* دوگمەکان */
 .btn{
-  background:var(--grad);color:#fff;border:0;
-  border-radius:13px;padding:10px 16px;font-weight:700;
-  box-shadow:0 4px 18px rgba(168,85,247,0.4);
+  background:var(--grad);color:#fff;border:1px solid rgba(255,255,255,0.28);
+  border-radius:14px;padding:10px 16px;font-weight:700;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.45),0 6px 22px rgba(168,85,247,0.48);
 }
 .btn:hover{filter:brightness(1.08)}
 .btn:disabled{opacity:0.6;cursor:not-allowed}
 .ghost{
-  background:rgba(255,255,255,0.06);color:var(--fg);
-  border:1px solid var(--line);box-shadow:none;
+  background:linear-gradient(145deg,rgba(255,255,255,0.14),rgba(255,255,255,0.04));
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  color:var(--fg);border:1px solid var(--line);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.22);
 }
-.ghost:hover{background:rgba(255,255,255,0.12)}
-
+.ghost:hover{background:var(--glass-hi)}
 .ic{
-  background:none;border:0;color:var(--mut);
-  font-size:14px;padding:6px 8px;
-  display:inline-flex;align-items:center;gap:6px;
-  border-radius:10px;
+  background:none;border:0;color:var(--mut);font-size:14px;padding:6px 8px;
+  display:inline-flex;align-items:center;gap:6px;border-radius:11px;
 }
-.ic:hover{background:rgba(255,255,255,0.07);color:var(--fg)}
-.ic.liked{color:#f43f5e}
-
+.ic:hover{background:rgba(255,255,255,0.10);color:#fff}
+.ic.liked{color:#fb7185}
 .row{display:flex;align-items:center;gap:10px}
 .sp{flex:1}
 .mut{color:var(--mut);font-size:12.5px}
-.err{color:#fb7185;font-size:13px;min-height:18px;margin-top:4px}
+.err{color:#fda4af;font-size:13px;min-height:18px;margin-top:4px}
 .u{cursor:pointer}
 
-/* ئەڤاتاری بازنەیی */
 .av{
   width:38px;height:38px;border-radius:50%;
   background:var(--grad-cool);padding:2px;flex-shrink:0;
   display:inline-flex;align-items:center;justify-content:center;
+  box-shadow:0 0 14px rgba(168,85,247,0.4);
 }
 .av-in{
   width:100%;height:100%;border-radius:50%;
-  background:#11152b;
+  background:linear-gradient(145deg,rgba(30,27,75,0.88),rgba(15,23,42,0.94));
+  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   display:flex;align-items:center;justify-content:center;
-  font-weight:800;font-size:14px;color:#e9d5ff;
-  text-transform:uppercase;
+  font-weight:800;font-size:14px;color:#f3e8ff;text-transform:uppercase;
 }
-
-/* پۆستەکان */
 .post img{
-  width:100%;border-radius:16px;margin:10px 0;display:block;
-  border:1px solid rgba(255,255,255,0.08);
+  width:100%;border-radius:18px;margin:10px 0;display:block;
+  border:1px solid rgba(255,255,255,0.2);box-shadow:0 8px 24px rgba(0,0,0,0.35);
 }
-.post p{
-  margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere;
-  line-height:1.5;font-size:15px;color:#f1f5f9;
-}
-.post-actions{border-top:1px solid rgba(255,255,255,0.08);padding-top:8px;margin-top:6px}
-.cm{border-top:1px solid var(--line);margin-top:8px;padding-top:8px;font-size:14px}
+.post p{margin:10px 0;white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.5;font-size:15px;color:#f8fafc}
+.post-actions{border-top:1px solid rgba(255,255,255,0.12);padding-top:8px;margin-top:8px}
+.cm{border-top:1px solid var(--line-soft);margin-top:8px;padding-top:8px;font-size:14px}
 .cm div{margin:6px 0}
-.cm b{margin-right:6px;color:#e9d5ff}
+.cm b{margin-right:6px;color:#f0abfc}
 
-/* تابەکان */
 .tabs{
   display:flex;gap:8px;margin-bottom:14px;
-  background:rgba(255,255,255,0.04);padding:5px;border-radius:16px;
-  border:1px solid var(--line);
+  background:linear-gradient(145deg,rgba(255,255,255,0.10),rgba(255,255,255,0.03));
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  padding:5px;border-radius:17px;border:1px solid var(--line);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.2);
 }
 .tabs button{flex:1;padding:9px;border-radius:12px;font-size:13.5px}
 
-/* پڕۆفایل */
 .prof-card{padding:0;overflow:hidden}
 .prof-cover{
-  height:105px;
-  background:linear-gradient(125deg,#312e81 0%,#7e22ce 50%,#db2777 100%);
-  position:relative;
+  height:110px;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(56,189,248,0.55),transparent 55%),
+    radial-gradient(circle at 85% 30%,rgba(236,72,153,0.55),transparent 55%),
+    linear-gradient(125deg,rgba(79,70,229,0.78) 0%,rgba(147,51,234,0.78) 55%,rgba(219,39,119,0.78) 100%);
+  position:relative;border-bottom:1px solid rgba(255,255,255,0.22);
 }
 .prof-cover::after{
   content:"";position:absolute;inset:0;
-  background:radial-gradient(circle at 80% 20%,rgba(56,189,248,0.45),transparent 55%);
+  background:linear-gradient(180deg,rgba(255,255,255,0.18),transparent 65%);
 }
 .prof-body{padding:0 16px 16px}
 .prof-av{
-  width:76px;height:76px;border-radius:50%;
+  width:78px;height:78px;border-radius:50%;
   background:var(--grad-cool);padding:3px;
-  margin-top:-38px;position:relative;z-index:2;
-  box-shadow:0 8px 24px rgba(0,0,0,0.45);
+  margin-top:-39px;position:relative;z-index:2;
+  box-shadow:0 8px 26px rgba(0,0,0,0.55),0 0 20px rgba(168,85,247,0.45);
 }
 .prof-av .av-in{font-size:26px}
 .stats{
   display:grid;grid-template-columns:repeat(3,1fr);
   text-align:center;margin:14px 0;padding:11px 6px;
-  background:rgba(255,255,255,0.035);
-  border:1px solid rgba(255,255,255,0.07);border-radius:16px;
+  background:linear-gradient(145deg,rgba(255,255,255,0.10),rgba(255,255,255,0.03));
+  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  border:1px solid var(--line-soft);border-radius:17px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.18);
 }
 .stats div{font-size:11.5px;color:var(--mut)}
-.stats b{display:block;font-size:17px;color:var(--fg);margin-bottom:2px}
+.stats b{display:block;font-size:17px;color:#fff;margin-bottom:2px}
 
-/* مینیوی خوارەوە بە دوگمەی درەوشاوەی (+) */
 nav{
   position:fixed;bottom:0;left:0;right:0;z-index:15;
   display:flex;justify-content:space-around;align-items:center;
-  background:rgba(10,13,28,0.84);
-  backdrop-filter:blur(24px);
-  -webkit-backdrop-filter:blur(24px);
+  background:linear-gradient(180deg,rgba(255,255,255,0.13),rgba(12,15,34,0.80));
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
   border-top:1px solid var(--line);
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.25),0 -10px 30px rgba(0,0,0,0.45);
   padding:8px 6px calc(8px + env(safe-area-inset-bottom));
 }
 nav button.nav-item{
@@ -226,44 +215,51 @@ nav button.nav-item svg{
   width:20px;height:20px;stroke:currentColor;fill:none;
   stroke-width:2;stroke-linecap:round;stroke-linejoin:round;
 }
-nav button.on{color:#d8b4fe}
-nav button.on svg{filter:drop-shadow(0 0 8px rgba(192,132,252,0.75))}
-
+nav button.on{color:#f0abfc}
+nav button.on svg{filter:drop-shadow(0 0 10px rgba(232,121,249,0.85))}
 nav button.fab-plus{
-  width:46px;height:46px;flex:0 0 46px;
-  border-radius:50%;border:0;
-  background:var(--grad);color:#fff;
-  font-size:24px;line-height:1;font-weight:500;
+  width:48px;height:48px;flex:0 0 48px;border-radius:50%;
+  border:1px solid rgba(255,255,255,0.35);background:var(--grad);color:#fff;
+  font-size:25px;line-height:1;font-weight:500;
   display:inline-flex;align-items:center;justify-content:center;
-  margin-top:-18px;
-  box-shadow:0 0 22px rgba(168,85,247,0.65);
+  margin-top:-19px;box-shadow:inset 0 1px 1px rgba(255,255,255,0.5),0 0 24px rgba(168,85,247,0.75);
 }
 nav button.fab-plus:hover{filter:brightness(1.1)}
 
-/* شیتێتی خوارەوە */
 .sheet{
   position:fixed;inset:0;
-  background:rgba(3,5,14,0.72);backdrop-filter:blur(6px);
+  background:rgba(3,5,14,0.65);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
   z-index:30;display:flex;align-items:flex-end;justify-content:center;
 }
 .sheet>div{
-  background:#12172e;border:1px solid var(--line);border-bottom:0;
-  width:100%;max-width:540px;border-radius:24px 24px 0 0;padding:16px;
-  box-shadow:0 -10px 40px rgba(0,0,0,0.5);
+  background:linear-gradient(155deg,rgba(255,255,255,0.14),rgba(18,22,46,0.88));
+  backdrop-filter:blur(28px) saturate(175%);-webkit-backdrop-filter:blur(28px) saturate(175%);
+  border:1px solid var(--line);border-bottom:0;
+  width:100%;max-width:540px;border-radius:26px 26px 0 0;padding:16px;
+  box-shadow:inset 0 1px 1px rgba(255,255,255,0.28),0 -12px 40px rgba(0,0,0,0.55);
 }
 .sheet button{
   display:block;width:100%;text-align:left;
-  background:none;border:0;border-bottom:1px solid var(--line);
+  background:none;border:0;border-bottom:1px solid var(--line-soft);
   color:var(--fg);padding:14px 6px;font-weight:500;
 }
 .sheet button:last-child{border-bottom:0}
-.sheet .d{color:#fb7185}
+.sheet .d{color:#fda4af}
 </style>
 </head>
 <body>
 <header>
   <span class="logo-mark">
-    <svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M12 6v12M16 12l4 6"/></svg>
+    <svg viewBox="0 0 24 24" width="21" height="21" fill="none">
+      <defs>
+        <linearGradient id="tvMark" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#38bdf8"/>
+          <stop offset="50%" stop-color="#c084fc"/>
+          <stop offset="100%" stop-color="#f472b6"/>
+        </linearGradient>
+      </defs>
+      <path d="M4 5.5h16l-3.6 5.2H14V19l-4-2v-6.3H7.6z" fill="url(#tvMark)"/>
+    </svg>
   </span>
   <div>TinVin <span class="brand-sub">Social</span></div>
 </header>
@@ -285,7 +281,6 @@ nav button.fab-plus:hover{filter:brightness(1.1)}
   <p class="mut" style="text-align:center;margin-top:12px"><span id="aF" style="color:var(--ac);cursor:pointer">Forgot password?</span></p>
   <p class="mut" style="text-align:center"><span id="aS" style="color:var(--ac);cursor:pointer;font-weight:600">Create account</span></p>
 </div>
-
 <div id="app" class="hidden"><div id="view"></div></div>
 </div>
 
@@ -331,7 +326,6 @@ async function api(path,opt={}){
 }
 const post=(p,b)=>api(p,{method:"POST",body:JSON.stringify(b||{})});
 
-/* AUTH */
 $("aS").onclick=()=>{mode=mode==="login"?"signup":"login";
   $("aT").textContent=mode==="login"?"Welcome back":"Create account";
   $("aB").textContent=mode==="login"?"Login":"Sign up";
@@ -367,7 +361,6 @@ async function start(){
   go("home");
 }
 
-/* NAV & (+) BUTTON */
 document.querySelectorAll("nav button.nav-item").forEach(b=>b.onclick=()=>go(b.dataset.v));
 $("newPostBtn").onclick=async()=>{
   await go("home");
@@ -384,7 +377,6 @@ function go(v,arg){
   if(v==="settings")return settings();
 }
 
-/* POST CARD */
 function card(p,refresh){
   const d=document.createElement("div");d.className="card post";
   d.innerHTML=`<div class="row">
@@ -445,7 +437,6 @@ function menu(p,refresh){
   });
 }
 
-/* HOME */
 async function home(){
   $("view").innerHTML=`<div class="card">
     <div class="row" style="align-items:flex-start">
@@ -483,7 +474,6 @@ async function loadFeed(){
   }catch(e){$("feed").textContent=e.message}
 }
 
-/* SEARCH */
 let sq="";
 function search(){
   $("view").innerHTML=`<div class="card"><input id="sI" placeholder="Search people or posts..." maxlength="50" value="${esc(sq)}" style="margin:0"></div><div id="sR"></div>`;
@@ -498,7 +488,7 @@ function search(){
       if(!d.users.length&&!d.posts.length){box.innerHTML=`<p class="mut" style="text-align:center">No results.</p>`;return}
       if(d.users.length){
         const c=document.createElement("div");c.className="card";
-        c.innerHTML=`<b style="display:block;margin-bottom:6px;color:#d8b4fe">People</b>`+d.users.map(u=>`<div class="row u" data-n="${esc(u.username)}" style="padding:10px 0;border-top:1px solid var(--line)">
+        c.innerHTML=`<b style="display:block;margin-bottom:6px;color:#f0abfc">People</b>`+d.users.map(u=>`<div class="row u" data-n="${esc(u.username)}" style="padding:10px 0;border-top:1px solid var(--line-soft)">
           <div class="av" style="width:32px;height:32px"><div class="av-in" style="font-size:12px">${init(u.username)}</div></div>
           <div><b>@${esc(u.username)}${vb(u.verified)}</b><div class="mut">${esc(u.bio||"")}</div></div>
         </div>`).join("");
@@ -512,7 +502,6 @@ function search(){
   if(sq)run();else $("sR").innerHTML=hint;
 }
 
-/* PROFILE */
 async function profile(name){
   $("view").innerHTML="<p class='mut' style='text-align:center'>Loading...</p>";
   try{
@@ -525,7 +514,7 @@ async function profile(name){
           <button class="btn ghost" id="shB" style="padding:8px 13px;font-size:12.5px">Share profile</button>
         </div>
         <h2 style="margin:10px 0 2px;font-size:21px">@${esc(d.user.username)}${vb(d.user.verified)}</h2>
-        <p class="mut" style="margin:4px 0 0;font-size:13.5px;color:#cbd5e1">${esc(d.user.bio||"No bio yet.")}</p>
+        <p class="mut" style="margin:4px 0 0;font-size:13.5px;color:#e2e8f0">${esc(d.user.bio||"No bio yet.")}</p>
         <div class="stats">
           <div><b>${d.counts.posts}</b>Posts</div>
           <div><b>${d.counts.followers}</b>Followers</div>
@@ -548,7 +537,6 @@ async function profile(name){
   }catch(e){$("view").textContent=e.message}
 }
 
-/* SETTINGS */
 function settings(){
   $("view").innerHTML=`<div class="card"><h3 style="margin-top:0">Settings</h3>
     <p class="mut">Signed in as <b style="color:var(--fg)">${esc(me.email)}</b></p>
