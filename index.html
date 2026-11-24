@@ -1,384 +1,297 @@
 <!DOCTYPE html>
-<html lang="ku" dir="rtl">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TinVin</title>
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: system-ui, -apple-system, sans-serif;
-    }
-
-    body {
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      color: #f4f6fb;
-      background:
-        radial-gradient(circle at 50% 15%, rgba(255, 255, 255, 0.14), transparent 45%),
-        radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.08), transparent 45%),
-        linear-gradient(160deg, #0b0d13 0%, #141824 55%, #0c0e14 100%);
-    }
-
-    .glass-card {
-      width: 100%;
-      max-width: 400px;
-      background: rgba(255, 255, 255, 0.06);
-      backdrop-filter: blur(22px);
-      -webkit-backdrop-filter: blur(22px);
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 26px;
-      padding: 28px 24px;
-      box-shadow:
-        0 24px 60px rgba(0, 0, 0, 0.55),
-        inset 0 1px 0 rgba(255, 255, 255, 0.22);
-    }
-
-    .title {
-      text-align: center;
-      font-size: 1.55rem;
-      font-weight: 700;
-      color: #ffffff;
-      margin-bottom: 20px;
-      letter-spacing: 0.4px;
-    }
-
-    .tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding: 5px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      margin-bottom: 18px;
-    }
-
-    .tab-btn {
-      padding: 10px;
-      border-radius: 12px;
-      border: 1px solid transparent;
-      background: transparent;
-      color: rgba(255, 255, 255, 0.68);
-      font-size: 0.95rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s ease;
-    }
-
-    .tab-btn.active {
-      background: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.28);
-      color: #ffffff;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
-    }
-
-    .form {
-      display: none;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .form.active {
-      display: flex;
-    }
-
-    .glass-input {
-      width: 100%;
-      padding: 13px 15px;
-      border-radius: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      background: rgba(255, 255, 255, 0.05);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      color: #ffffff;
-      font-size: 0.95rem;
-      outline: none;
-      transition: 0.2s ease;
-    }
-
-    .glass-input::placeholder {
-      color: rgba(255, 255, 255, 0.52);
-    }
-
-    .glass-input:focus {
-      border-color: rgba(255, 255, 255, 0.42);
-      background: rgba(255, 255, 255, 0.09);
-    }
-
-    .glass-btn {
-      margin-top: 4px;
-      width: 100%;
-      padding: 13px;
-      border-radius: 15px;
-      border: 1px solid rgba(255, 255, 255, 0.28);
-      background: rgba(255, 255, 255, 0.15);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      color: #ffffff;
-      font-size: 0.98rem;
-      font-weight: 700;
-      cursor: pointer;
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-      transition: 0.2s ease;
-    }
-
-    .glass-btn:hover {
-      background: rgba(255, 255, 255, 0.22);
-    }
-
-    .link-btn {
-      background: none;
-      border: none;
-      color: rgba(255, 255, 255, 0.78);
-      font-size: 0.88rem;
-      text-align: right;
-      cursor: pointer;
-      padding: 2px 0;
-    }
-
-    .link-btn:hover {
-      color: #ffffff;
-    }
-
-    .msg {
-      margin-top: 14px;
-      padding: 11px 14px;
-      border-radius: 14px;
-      font-size: 0.88rem;
-      line-height: 1.5;
-      display: none;
-      background: rgba(255, 255, 255, 0.08);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: #ffffff;
-    }
-
-    .msg.show {
-      display: block;
-    }
-
-    .session-box {
-      display: none;
-      flex-direction: column;
-      gap: 14px;
-      text-align: center;
-    }
-
-    .session-box.active {
-      display: flex;
-    }
-
-    .session-text {
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid rgba(255, 255, 255, 0.16);
-      line-height: 1.6;
-      font-size: 0.95rem;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b1020">
+<title>TinVin Social</title>
+<style>
+:root{--bg:#0b1020;--card:#151c30;--line:#263049;--fg:#e8ecf5;--mut:#8f9ab3;--ac:#38bdf8;--up:#22c55e;--dn:#ef4444}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--fg);font-family:Arial,sans-serif;padding-bottom:70px}
+button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+header{position:sticky;top:0;z-index:5;background:#0b1020ee;border-bottom:1px solid var(--line);padding:13px 16px;font-weight:800;font-size:19px}
+header span{color:var(--ac)}
+.wrap{max-width:560px;margin:auto;padding:12px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px;margin-bottom:12px}
+input,textarea{width:100%;padding:12px;margin:6px 0;background:#0e1427;color:var(--fg);border:1px solid var(--line);border-radius:10px;outline:none}
+textarea{min-height:70px;resize:vertical}
+.btn{background:var(--ac);color:#04121f;border:0;border-radius:10px;padding:10px 14px;font-weight:700}
+.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.ic{background:none;border:0;color:var(--fg);font-size:15px;padding:6px 8px}
+.row{display:flex;align-items:center;gap:10px}.sp{flex:1}
+.mut{color:var(--mut);font-size:12px}.err{color:#f87171;font-size:13px;min-height:18px}
+.u{cursor:pointer}
+.post img{width:100%;border-radius:10px;margin:8px 0;display:block}
+.post p{margin:8px 0;white-space:pre-wrap;overflow-wrap:anywhere}
+.cm{border-top:1px solid var(--line);margin-top:8px;padding-top:8px;font-size:14px}
+.cm div{margin:5px 0}.cm b{margin-right:6px}
+nav{position:fixed;bottom:0;left:0;right:0;display:flex;background:#0b1020;border-top:1px solid var(--line)}
+nav button{flex:1;padding:14px;background:none;border:0;color:var(--mut);font-weight:700}nav .on{color:var(--ac)}
+.tabs{display:flex;gap:8px;margin-bottom:10px}.tabs button{flex:1}
+.stats{display:flex;justify-content:space-around;text-align:center;margin:12px 0}.stats b{display:block;font-size:18px}
+.sheet{position:fixed;inset:0;background:#000a;z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet>div{background:var(--card);width:100%;max-width:560px;border-radius:16px 16px 0 0;padding:14px}
+.sheet button{display:block;width:100%;text-align:left;background:none;border:0;border-bottom:1px solid var(--line);color:var(--fg);padding:13px 4px}
+.sheet .d{color:#f87171}
+</style>
 </head>
 <body>
-  <div class="glass-card">
-    <div class="title">TinVin</div>
+<header>TinVin <span>Social</span></header>
+<div class="wrap">
 
-    <div id="authSection">
-      <div class="tabs">
-        <button type="button" class="tab-btn active" id="loginTab" onclick="switchView('login')">چوونەژوورەوە</button>
-        <button type="button" class="tab-btn" id="signupTab" onclick="switchView('signup')">تۆمارکردن</button>
-      </div>
+<div id="auth" class="card hidden">
+  <h2 id="aT">Welcome back</h2>
+  <input id="aE" type="email" placeholder="Email" autocomplete="email">
+  <input id="aU" placeholder="Username (letters, numbers, _)" class="hidden">
+  <div style="position:relative"><input id="aP" type="password" placeholder="Password (8+ characters)" autocomplete="current-password" style="padding-right:46px"><button type="button" class="ic" id="aEye" aria-label="Show password" style="position:absolute;right:4px;top:9px;color:var(--mut);display:flex;line-height:0"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg></button></div>
+  <button class="btn" id="aB" style="width:100%">Login</button>
+  <div class="err" id="aM"></div>
+  <p class="mut" style="text-align:center"><span id="aF" style="color:var(--ac);cursor:pointer">Forgot password?</span></p>
+  <p class="mut" style="text-align:center"><span id="aS" style="color:var(--ac);cursor:pointer">Create account</span></p>
+</div>
 
-      <!-- چوونەژوورەوە: ئیمەیڵ + پاسۆرد -->
-      <form id="loginForm" class="form active" onsubmit="handleLogin(event)">
-        <input type="email" name="email" class="glass-input" placeholder="ئیمەیڵ" required />
-        <input type="password" name="password" class="glass-input" placeholder="پاسۆرد" required />
-        <button type="button" class="link-btn" onclick="switchView('forgot')">پاسۆردت بیرچووە؟</button>
-        <button type="submit" class="glass-btn">چوونەژوورەوە</button>
-      </form>
+<div id="app" class="hidden"><div id="view"></div></div>
+</div>
 
-      <!-- تۆمارکردن: ناوی بەکارهێنەر + ئیمەیڵ + پاسۆرد -->
-      <form id="signupForm" class="form" onsubmit="handleSignup(event)">
-        <input type="text" name="username" class="glass-input" placeholder="ناوی بەکارهێنەر" required />
-        <input type="email" name="email" class="glass-input" placeholder="ئیمەیڵ" required />
-        <input type="password" name="password" class="glass-input" placeholder="پاسۆرد" minlength="6" required />
-        <button type="submit" class="glass-btn">دروستکردنی هەژمار</button>
-      </form>
+<nav id="nav" class="hidden">
+  <button data-v="home" class="on">Home</button>
+  <button data-v="search">Search</button>
+  <button data-v="me">Profile</button>
+  <button data-v="settings">Settings</button>
+</nav>
+<div id="sheet" class="sheet hidden"></div>
 
-      <!-- لەبیرچوونی پاسۆرد -->
-      <form id="forgotForm" class="form" onsubmit="handleForgot(event)">
-        <input type="email" name="email" class="glass-input" placeholder="ئیمەیڵی هەژمارەکەت بنووسە" required />
-        <input type="password" name="newPassword" class="glass-input" placeholder="پاسۆردی نوێ" minlength="6" required />
-        <button type="submit" class="glass-btn">نوێکردنەوەی پاسۆرد</button>
-        <button type="button" class="link-btn" onclick="switchView('login')">گەڕانەوە بۆ چوونەژوورەوە</button>
-      </form>
-    </div>
+<script>
+"use strict";
+const API="https://tinvin-social-api.aslan89aslan1.workers.dev";
+let token=localStorage.getItem("tvs_token")||"",me=null,mode="login",tab=0;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const vb=v=>v?' <svg viewBox="0 0 24 24" width="16" height="16" style="vertical-align:middle"><path fill="#1d9bf0" d="M22.25 12c0-1.43-.88-2.67-2.19-3.34.46-1.39.2-2.9-.81-3.91s-2.52-1.27-3.91-.81c-.66-1.31-1.91-2.19-3.34-2.19s-2.67.88-3.33 2.19c-1.4-.46-2.91-.2-3.92.81s-1.26 2.52-.8 3.91C2.88 9.33 2 10.57 2 12s.88 2.67 2.19 3.34c-.46 1.39-.21 2.9.8 3.91s2.52 1.26 3.91.81c.67 1.31 1.91 2.19 3.34 2.19s2.68-.88 3.34-2.19c1.39.45 2.9.2 3.91-.81s1.27-2.52.81-3.91c1.31-.67 2.19-1.91 2.19-3.34z"/><path fill="#fff" d="M9.5 16.5l-3.5-3.5 1.4-1.4 2.1 2.1 5.1-5.1 1.4 1.4z"/></svg>':"";
+const ago=t=>{const s=Math.floor(Date.now()/1000)-t;return s<60?"now":s<3600?Math.floor(s/60)+"m":s<86400?Math.floor(s/3600)+"h":Math.floor(s/86400)+"d"};
 
-    <div id="sessionBox" class="session-box">
-      <div id="sessionInfo" class="session-text"></div>
-      <button type="button" class="glass-btn" onclick="logout()">چوونەدەرەوە</button>
-    </div>
+async function api(path,opt={}){
+  const h={...(opt.headers||{})};
+  if(!(opt.raw))h["Content-Type"]="application/json";
+  if(token)h.Authorization="Bearer "+token;
+  const r=await fetch(API+path,{...opt,headers:h});
+  const d=await r.json().catch(()=>({}));
+  if(!r.ok){if(r.status===401&&token){logout(true)}throw new Error(d.error||"Request failed.")}
+  return d;
+}
+const post=(p,b)=>api(p,{method:"POST",body:JSON.stringify(b||{})});
 
-    <div id="statusMsg" class="msg"></div>
-  </div>
+/* AUTH */
+$("aS").onclick=()=>{mode=mode==="login"?"signup":"login";
+  $("aT").textContent=mode==="login"?"Welcome back":"Create account";
+  $("aB").textContent=mode==="login"?"Login":"Sign up";
+  $("aS").textContent=mode==="login"?"Create account":"I have an account";
+  $("aU").classList.toggle("hidden",mode==="login");$("aF").classList.toggle("hidden",mode!=="login");$("aM").textContent=""};
+$("aB").onclick=async()=>{
+  $("aM").textContent="";$("aM").style.color="";
+  if(mode==="reset"){try{await post("/api/reset",{token:resetTok,password:$("aP").value});alert("Password changed. Please log in.");history.replaceState(null,"",location.pathname);location.reload()}catch(e){$("aM").textContent=e.message}return}
+  try{
+    const d=await post("/api/"+mode,{email:$("aE").value,username:$("aU").value,password:$("aP").value});
+    token=d.token;localStorage.setItem("tvs_token",token);start();
+  }catch(e){$("aM").textContent=e.message}
+};
+let resetTok="";
+const EYE='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>',EYEOFF='<svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/><path d="M3 3l18 18"/></svg>';
+$("aEye").onclick=()=>{const p=$("aP"),show=p.type==="password";p.type=show?"text":"password";$("aEye").innerHTML=show?EYE:EYEOFF};
+$("aF").onclick=async()=>{
+  const em=$("aE").value.trim();
+  if(!em){$("aM").textContent="Enter your email first.";return}
+  try{await post("/api/forgot",{email:em});$("aM").style.color="#22c55e";$("aM").textContent="If this email exists, we sent a reset link."}catch(e){$("aM").textContent=e.message}
+};
+function resetMode(t){resetTok=t;mode="reset";$("aT").textContent="Set new password";
+  ["aE","aU","aF","aS"].forEach(i=>$(i).classList.add("hidden"));
+  $("aP").placeholder="New password (8+ characters)";$("aP").autocomplete="new-password";$("aB").textContent="Save password"}
+function logout(silent){
+  if(!silent&&token)api("/api/logout",{method:"POST"}).catch(()=>{});
+  token="";me=null;localStorage.removeItem("tvs_token");
+  $("auth").classList.remove("hidden");$("app").classList.add("hidden");$("nav").classList.add("hidden");
+}
+async function start(){
+  try{me=(await api("/api/me")).user}catch{return logout(true)}
+  $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");
+  go("home");
+}
 
-  <script>
-    const USERS_KEY = "tinvin_local_users";
-    const CURRENT_USER_KEY = "tinvin_current_user";
+/* NAV */
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+function go(v,arg){
+  document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v==="home")return home();
+  if(v==="search")return search();
+  if(v==="me")return profile(me.username);
+  if(v==="user")return profile(arg);
+  if(v==="settings")return settings();
+}
 
-    const loginTab = document.getElementById("loginTab");
-    const signupTab = document.getElementById("signupTab");
-    const loginForm = document.getElementById("loginForm");
-    const signupForm = document.getElementById("signupForm");
-    const forgotForm = document.getElementById("forgotForm");
-    const authSection = document.getElementById("authSection");
-    const sessionBox = document.getElementById("sessionBox");
-    const sessionInfo = document.getElementById("sessionInfo");
-    const statusMsg = document.getElementById("statusMsg");
+/* POST CARD */
+function card(p,refresh){
+  const d=document.createElement("div");d.className="card post";
+  d.innerHTML=`<div class="row"><b class="u">@${esc(p.username)}${vb(p.verified)}</b><span class="mut">${ago(p.created_at)}</span><span class="sp"></span><button class="ic" data-m aria-label="More">&#8943;</button></div>
+  ${p.text?`<p>${esc(p.text)}</p>`:""}${p.image_key?`<img loading="lazy" src="${API}/img/${p.image_key}" alt="">`:""}
+  <div class="row"><button class="ic" data-l>${p.liked?"&#9829;":"&#9825;"} ${p.likes}</button><button class="ic" data-c>Comments ${p.comments}</button><button class="ic" data-s>Share</button></div>
+  <div class="cm hidden"></div>`;
+  d.querySelector(".u").onclick=()=>go("user",p.username);
+  d.querySelector("[data-l]").onclick=async()=>{await post("/api/like/"+p.id);refresh()};
+  d.querySelector("[data-s]").onclick=async()=>{
+    const data={title:"TinVin Social",text:(p.text||"Post by @"+p.username),url:location.href.split("#")[0]};
+    try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}
+  };
+  const cm=d.querySelector(".cm");
+  d.querySelector("[data-c]").onclick=()=>{cm.classList.toggle("hidden");if(!cm.classList.contains("hidden"))comments(p.id,cm,refresh)};
+  d.querySelector("[data-m]").onclick=()=>menu(p,refresh);
+  return d;
+}
+async function comments(id,box,refresh){
+  box.innerHTML="Loading...";
+  try{
+    const c=(await api("/api/comments/"+id)).comments;
+    box.innerHTML=c.map(x=>`<div><b>@${esc(x.username)}${vb(x.verified)}</b>${esc(x.text)}</div>`).join("")+
+      `<div class="row"><input placeholder="Add a comment" maxlength="300"><button class="btn">Send</button></div>`;
+    box.querySelector(".btn").onclick=async()=>{
+      const i=box.querySelector("input");if(!i.value.trim())return;
+      await post("/api/comments/"+id,{text:i.value});refresh();
+    };
+  }catch(e){box.textContent=e.message}
+}
+function menu(p,refresh){
+  const s=$("sheet");s.classList.remove("hidden");
+  const own=p.uid===me.id;
+  s.innerHTML=`<div>${own?`<button class="d" data-a="del">Delete post</button>`:
+    `<button data-r="Spam">Report: spam</button><button data-r="Harassment or hate">Report: harassment or hate</button>
+     <button data-r="Nudity or violence">Report: nudity or violence</button><button data-r="False information">Report: false information</button>
+     <button class="d" data-a="block">Block @${esc(p.username)}</button>`}<button data-a="x">Cancel</button></div>`;
+  s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
+  s.querySelectorAll("button").forEach(b=>b.onclick=async()=>{
+    s.classList.add("hidden");
+    try{
+      if(b.dataset.r){await post("/api/report/"+p.id,{reason:b.dataset.r});alert("Thanks. We will review this post.")}
+      else if(b.dataset.a==="block"){if(confirm("Block @"+p.username+"?"))await post("/api/block/"+p.uid)}
+      else if(b.dataset.a==="del"){if(confirm("Delete this post?"))await api("/api/post/"+p.id,{method:"DELETE"})}
+      refresh();
+    }catch(e){alert(e.message)}
+  });
+}
 
-    function getUsers() {
-      try {
-        return JSON.parse(localStorage.getItem(USERS_KEY)) || [];
-      } catch {
-        return [];
+/* HOME */
+async function home(){
+  $("view").innerHTML=`<div class="card"><textarea id="pT" maxlength="500" placeholder="What's on your mind?"></textarea>
+    <div class="row"><input id="pF" type="file" accept="image/jpeg,image/png,image/webp,image/gif" style="margin:0">
+    <button class="btn" id="pB">Post</button></div><div class="err" id="pM"></div></div>
+    <div class="tabs"><button class="btn ${tab?"ghost":""}" data-t="0">Everyone</button><button class="btn ${tab?"":"ghost"}" data-t="1">Following</button></div><div id="feed">Loading...</div>`;
+  document.querySelectorAll("[data-t]").forEach(b=>b.onclick=()=>{tab=+b.dataset.t;home()});
+  $("pB").onclick=async()=>{
+    $("pM").textContent="";$("pB").disabled=true;
+    try{
+      let image=null;const f=$("pF").files[0];
+      if(f)image=(await api("/api/upload",{method:"POST",raw:true,headers:{"Content-Type":f.type},body:f})).key;
+      await post("/api/post",{text:$("pT").value,image});home();
+    }catch(e){$("pM").textContent=e.message;$("pB").disabled=false}
+  };
+  loadFeed();
+}
+async function loadFeed(){
+  try{
+    const posts=(await api("/api/feed?f="+tab)).posts;
+    const box=$("feed");box.innerHTML="";
+    if(!posts.length)box.innerHTML=`<p class="mut">No posts yet.</p>`;
+    posts.forEach(p=>box.appendChild(card(p,loadFeed)));
+  }catch(e){$("feed").textContent=e.message}
+}
+
+/* SEARCH */
+let sq="";
+function search(){
+  $("view").innerHTML=`<div class="card"><input id="sI" placeholder="Search people or posts" maxlength="50" value="${esc(sq)}"></div><div id="sR"></div>`;
+  const hint=`<p class="mut">Type at least 2 characters.</p>`;
+  const run=async()=>{
+    sq=$("sI").value.trim();const box=$("sR");
+    if(sq.length<2){box.innerHTML=hint;return}
+    box.textContent="Searching...";
+    try{
+      const d=await api("/api/search?q="+encodeURIComponent(sq));
+      box.innerHTML="";
+      if(!d.users.length&&!d.posts.length){box.innerHTML=`<p class="mut">No results.</p>`;return}
+      if(d.users.length){
+        const c=document.createElement("div");c.className="card";
+        c.innerHTML=`<b>People</b>`+d.users.map(u=>`<div class="row u" data-n="${esc(u.username)}" style="padding:10px 0;border-top:1px solid var(--line)"><b>@${esc(u.username)}${vb(u.verified)}</b><span class="mut">${esc(u.bio||"")}</span></div>`).join("");
+        c.querySelectorAll("[data-n]").forEach(r=>r.onclick=()=>go("user",r.dataset.n));
+        box.appendChild(c);
       }
-    }
+      d.posts.forEach(p=>box.appendChild(card(p,run)));
+    }catch(e){box.textContent=e.message}
+  };
+  let t;$("sI").oninput=()=>{clearTimeout(t);t=setTimeout(run,400)};
+  if(sq)run();else $("sR").innerHTML=hint;
+}
 
-    function saveUsers(users) {
-      localStorage.setItem(USERS_KEY, JSON.stringify(users));
-    }
+/* PROFILE */
+async function profile(name){
+  $("view").innerHTML="Loading...";
+  try{
+    const d=await api("/api/user/"+encodeURIComponent(name)),own=d.user.id===me.id;
+    $("view").innerHTML=`<div class="card"><h2 style="margin:0">@${esc(d.user.username)}${vb(d.user.verified)}</h2>
+      <p class="mut">${esc(d.user.bio||"")}</p>
+      <div class="stats"><div><b>${d.counts.posts}</b>Posts</div><div><b>${d.counts.followers}</b>Followers</div><div><b>${d.counts.following}</b>Following</div></div>
+      <div class="row">${own?`<button class="btn ghost sp" id="eB">Edit bio</button><button class="btn ghost sp" id="eN">Edit name</button>`:
+      `<button class="btn sp" id="fB">${d.is_following?"Following":"Follow"}</button>`}
+      <button class="btn ghost sp" id="shB">Share profile</button></div></div><div id="pp"></div>`;
+    const re=()=>profile(name);
+    if(own){$("eN").onclick=async()=>{const n=prompt("New username (3-20 letters, numbers, _)",d.user.username);if(n===null||n.trim()===d.user.username)return;try{await post("/api/me",{username:n});me.username=n.trim();profile(n.trim())}catch(e){alert(e.message)}};
+      $("eB").onclick=async()=>{const b=prompt("Your bio (160 characters)",d.user.bio||"");if(b!==null){await post("/api/me",{bio:b});re()}};}
+    else $("fB").onclick=async()=>{await post("/api/follow/"+d.user.id);re()};
+    $("shB").onclick=async()=>{const data={title:"TinVin Social",text:"@"+d.user.username+" on TinVin Social",url:location.href.split("#")[0]};
+      try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}};
+    if(!d.posts.length)$("pp").innerHTML=`<p class="mut">No posts yet.</p>`;
+    d.posts.forEach(p=>$("pp").appendChild(card(p,re)));
+  }catch(e){$("view").textContent=e.message}
+}
 
-    function showMessage(text) {
-      statusMsg.textContent = text;
-      statusMsg.classList.add("show");
-    }
+/* SETTINGS */
+function settings(){
+  $("view").innerHTML=`<div class="card"><h3 style="margin-top:0">Account</h3>
+    <p class="mut">Signed in as ${esc(me.email)}</p>
+    <div class="row"><button class="btn ghost sp" id="sN">Change name</button><button class="btn ghost sp" id="sB">Edit bio</button></div></div>
+  <div class="card"><h3 style="margin-top:0">Security</h3>
+    <button class="btn ghost" id="sP">Change password</button>
+    <div id="pf" class="hidden"><input id="pC" type="password" placeholder="Current password" autocomplete="current-password">
+      <input id="pN" type="password" placeholder="New password (8+ characters)" autocomplete="new-password">
+      <button class="btn" id="pS">Save password</button><div class="err" id="pM2"></div></div>
+    <p><button class="btn ghost" id="sA">Log out of all devices</button></p></div>
+  <div class="card"><h3 style="margin-top:0">Blocked accounts</h3><div id="bl" class="mut">Loading...</div></div>
+  <div class="card"><p><a href="privacy.html" style="color:var(--ac)">Privacy policy</a></p>
+    <p><a href="terms.html" style="color:var(--ac)">Terms and community rules</a></p>
+    <button class="btn ghost" id="lo">Logout</button>
+    <p><button class="btn" id="del" style="background:var(--dn);color:#fff">Delete account</button></p>
+    <p class="mut">Deleting your account permanently removes your profile, posts, comments and likes.</p></div>`;
+  $("sN").onclick=async()=>{const n=prompt("New username (3-20 letters, numbers, _)",me.username);if(n===null||n.trim()===me.username)return;try{await post("/api/me",{username:n});me.username=n.trim();alert("Name changed.")}catch(e){alert(e.message)}};
+  $("sB").onclick=async()=>{const b=prompt("Your bio (160 characters)",me.bio||"");if(b===null)return;try{await post("/api/me",{bio:b});me.bio=b.slice(0,160);alert("Bio saved.")}catch(e){alert(e.message)}};
+  $("sP").onclick=()=>$("pf").classList.toggle("hidden");
+  $("pS").onclick=async()=>{const m=$("pM2");m.style.color="";m.textContent="";
+    try{await post("/api/password",{current:$("pC").value,password:$("pN").value});m.style.color="#22c55e";m.textContent="Password changed.";$("pC").value="";$("pN").value=""}catch(e){m.textContent=e.message}};
+  $("sA").onclick=async()=>{if(!confirm("Log out of all devices, including this one?"))return;try{await post("/api/logout-all");logout(true)}catch(e){alert(e.message)}};
+  (async()=>{const box=$("bl");
+    try{const l=(await api("/api/blocks")).users;
+      if(!l.length){box.textContent="No blocked accounts.";return}
+      box.innerHTML="";
+      l.forEach(u=>{const r=document.createElement("div");r.className="row";r.style.padding="6px 0";
+        r.innerHTML=`<b style="color:var(--fg)">@${esc(u.username)}</b><span class="sp"></span><button class="btn ghost">Unblock</button>`;
+        r.querySelector("button").onclick=async()=>{try{await post("/api/unblock/"+u.id);settings()}catch(e){alert(e.message)}};
+        box.appendChild(r)});
+    }catch(e){box.textContent=e.message}})();
+  $("lo").onclick=()=>logout();
+  $("del").onclick=async()=>{
+    if(!confirm("Delete your account and all your content? This can't be undone."))return;
+    try{await api("/api/me",{method:"DELETE"});logout(true)}catch(e){alert(e.message)}
+  };
+}
 
-    function clearMessage() {
-      statusMsg.textContent = "";
-      statusMsg.classList.remove("show");
-    }
-
-    function switchView(view) {
-      clearMessage();
-      loginForm.classList.remove("active");
-      signupForm.classList.remove("active");
-      forgotForm.classList.remove("active");
-      loginTab.classList.remove("active");
-      signupTab.classList.remove("active");
-
-      if (view === "login") {
-        loginForm.classList.add("active");
-        loginTab.classList.add("active");
-      } else if (view === "signup") {
-        signupForm.classList.add("active");
-        signupTab.classList.add("active");
-      } else if (view === "forgot") {
-        forgotForm.classList.add("active");
-      }
-    }
-
-    function renderSession() {
-      const raw = localStorage.getItem(CURRENT_USER_KEY);
-      if (!raw) {
-        authSection.style.display = "block";
-        sessionBox.classList.remove("active");
-        return;
-      }
-
-      try {
-        const user = JSON.parse(raw);
-        sessionInfo.innerHTML =
-          "بەخێربێیت <strong>" + user.username + "</strong><br/>ئیمەیڵ: " + user.email;
-        authSection.style.display = "none";
-        sessionBox.classList.add("active");
-      } catch {
-        localStorage.removeItem(CURRENT_USER_KEY);
-      }
-    }
-
-    function handleSignup(event) {
-      event.preventDefault();
-      clearMessage();
-
-      const data = Object.fromEntries(new FormData(event.target).entries());
-      const username = data.username.trim();
-      const email = data.email.trim().toLowerCase();
-      const password = data.password;
-
-      const users = getUsers();
-      if (users.some((u) => u.email === email)) {
-        showMessage("ئەم ئیمەیڵە پێشتر تۆمار کراوە.");
-        return;
-      }
-
-      const newUser = { username, email, password };
-      users.push(newUser);
-      saveUsers(users);
-      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(newUser));
-
-      event.target.reset();
-      showMessage("هەژمارەکەت بە سەرکەوتوویی دروست کرا.");
-      renderSession();
-    }
-
-    function handleLogin(event) {
-      event.preventDefault();
-      clearMessage();
-
-      const data = Object.fromEntries(new FormData(event.target).entries());
-      const email = data.email.trim().toLowerCase();
-      const password = data.password;
-
-      const users = getUsers();
-      const found = users.find((u) => u.email === email && u.password === password);
-
-      if (!found) {
-        showMessage("ئیمەیڵ یان پاسۆرد هەڵەیە.");
-        return;
-      }
-
-      localStorage.setItem(CURRENT_USER_KEY, JSON.stringify(found));
-      event.target.reset();
-      showMessage("بە سەرکەوتوویی چوویتە ژوورەوە.");
-      renderSession();
-    }
-
-    function handleForgot(event) {
-      event.preventDefault();
-      clearMessage();
-
-      const data = Object.fromEntries(new FormData(event.target).entries());
-      const email = data.email.trim().toLowerCase();
-      const newPassword = data.newPassword;
-
-      const users = getUsers();
-      const index = users.findIndex((u) => u.email === email);
-
-      if (index === -1) {
-        showMessage("هیچ هەژمارێک بەم ئیمەیڵە نەدۆزرایەوە.");
-        return;
-      }
-
-      users[index].password = newPassword;
-      saveUsers(users);
-
-      event.target.reset();
-      showMessage("پاسۆردەکەت بە سەرکەوتوویی نوێ کرایەوە؛ ئێستا دەتوانیت بچیتە ژوورەوە.");
-      switchView("login");
-    }
-
-    function logout() {
-      localStorage.removeItem(CURRENT_USER_KEY);
-      clearMessage();
-      renderSession();
-      switchView("login");
-    }
-
-    renderSession();
-  </script>
+const rt=(location.hash.match(/^#reset=(r_[a-f0-9]+)/)||[])[1];
+if(rt){logout(true);resetMode(rt)}else token?start():logout(true);
+</script>
 </body>
 </html>
