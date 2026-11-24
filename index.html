@@ -249,18 +249,34 @@ nav button.fab-plus:hover{filter:brightness(1.1)}
 </head>
 <body>
 <header>
-  <span class="logo-mark">
-    <svg viewBox="0 0 24 24" width="21" height="21" fill="none">
+    <span class="logo-mark">
+    <svg viewBox="0 0 24 24" width="22" height="22" fill="none">
       <defs>
-        <linearGradient id="tvMark" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stop-color="#38bdf8"/>
-          <stop offset="50%" stop-color="#c084fc"/>
+        <linearGradient id="tvArmL" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#60a5fa"/>
+          <stop offset="55%" stop-color="#c084fc"/>
           <stop offset="100%" stop-color="#f472b6"/>
         </linearGradient>
+        <linearGradient id="tvArmR" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#2dd4bf"/>
+          <stop offset="55%" stop-color="#38bdf8"/>
+          <stop offset="100%" stop-color="#818cf8"/>
+        </linearGradient>
+        <linearGradient id="tvLeg" x1="0%" y1="0%" x2="0%" y2="100%">
+          <stop offset="0%" stop-color="#e879f9"/>
+          <stop offset="55%" stop-color="#a855f7"/>
+          <stop offset="100%" stop-color="#38bdf8"/>
+        </linearGradient>
       </defs>
-      <path d="M4 5.5h16l-3.6 5.2H14V19l-4-2v-6.3H7.6z" fill="url(#tvMark)"/>
+      <!-- باڵی ڕاست و بەشی V-شێوەی پشتەوە -->
+      <path d="M13.2 4.5h5.2a2.6 2.6 0 0 1 2.2 4l-1.5 2.4c-.4.6-1.1.8-1.8.6l-1.2-.4-3.6 7.8c-.4.9-1.7.6-1.7-.4v-6.4l3.6-5.2z" fill="url(#tvArmR)"/>
+      <!-- باڵی چەپی سەرەوە -->
+      <path d="M4.8 4.5h6.8c.7 0 1.4.3 1.8.9l2.4 3.4c.5.7 0 1.7-.9 1.7H7.4a2.8 2.8 0 0 1-2.6-6z" fill="url(#tvArmL)"/>
+      <!-- قاچی ناوەڕاستی خوارەوە -->
+      <path d="M9.6 11.4h4.8v6.2a2.4 2.4 0 0 1-4.8 0z" fill="url(#tvLeg)"/>
     </svg>
   </span>
+
   <div>TinVin <span class="brand-sub">Social</span></div>
 </header>
 
