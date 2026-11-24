@@ -7,7 +7,7 @@
 <title>TinVin Social</title>
 <style>
 :root{--bg:#0b1020;--card:#151c30;--line:#263049;--fg:#e8ecf5;--mut:#8f9ab3;--ac:#38bdf8;--up:#22c55e;--dn:#ef4444}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(900px 500px at 20% -10%,rgba(90,70,255,.28),transparent),radial-gradient(700px 500px at 100% 10%,rgba(56,189,248,.18),transparent),var(--bg);background-attachment:fixed;color:var(--fg);font-family:Arial,sans-serif;padding-bottom:70px}
+*{box-sizing:border-box}body{margin:0;background:transparent;color:var(--fg);font-family:Arial,sans-serif;padding-bottom:70px}
 button,input,textarea{font:inherit}button{cursor:pointer}.hidden{display:none!important}
 header{position:sticky;top:0;z-index:5;background:#0b1020ee;border-bottom:1px solid var(--line);padding:13px 16px;font-weight:800;font-size:19px}
 header span{color:var(--ac)}
@@ -41,10 +41,36 @@ nav button{flex:1;padding:14px;background:none;border:0;color:var(--mut);font-we
 .pill{font-size:11px;background:rgba(167,139,250,.25);color:#c4b5fd;border-radius:99px;padding:2px 8px}
 .spanel{padding:4px 0 12px}
 .ava{width:64px;height:64px;border-radius:50%;margin:10px auto 6px;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:800;background:linear-gradient(135deg,#38bdf8,#a78bfa);color:#06101f;box-shadow:0 0 24px rgba(120,140,255,.5)}
+html{background:#0b1020;min-height:100%}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background:radial-gradient(800px 480px at 15% -8%,rgba(110,80,255,.35),transparent 70%),radial-gradient(700px 480px at 100% 12%,rgba(56,189,248,.20),transparent 70%),radial-gradient(600px 400px at 50% 110%,rgba(167,139,250,.22),transparent 70%),#0b1020}
+nav{padding-bottom:env(safe-area-inset-bottom,0px)}
+nav button{padding:14px 2px;font-size:13px;position:relative}
+nav .orb{flex:0 0 54px;height:54px;margin-top:-20px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#a5f3fc,#7c83ff 55%,#a78bfa);color:#06101f;font-size:32px;font-weight:300;line-height:1;box-shadow:0 0 22px rgba(124,131,255,.7);padding:0;align-self:flex-start}
+.bd{position:absolute;top:6px;right:14%;background:#ef4444;color:#fff;font-style:normal;font-size:10px;border-radius:99px;padding:1px 6px}
+.sheet .btn{background:var(--ac);color:#04121f;border:0;border-radius:10px;text-align:center;margin:8px 0}
+.str{display:flex;gap:12px;overflow-x:auto;padding:4px 2px 12px}
+.sc{flex:0 0 auto;width:64px;text-align:center;font-size:11px;color:var(--mut);cursor:pointer}
+.sr{width:60px;height:60px;border-radius:50%;padding:3px;background:linear-gradient(135deg,#38bdf8,#a78bfa);margin:0 auto 4px;box-shadow:0 0 14px rgba(120,140,255,.45)}
+.sr>div{width:100%;height:100%;border-radius:50%;background:#0e1427;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:var(--fg)}
+.sr.add{background:rgba(140,170,255,.28)}
+.sv{position:fixed;inset:0;z-index:50;background:#05060f;display:flex;flex-direction:column}
+.sb{display:flex;gap:4px;padding:10px 10px 0}.sb span{flex:1;height:3px;border-radius:3px;background:rgba(255,255,255,.25)}.sb span.on{background:#fff}
+.sh{display:flex;align-items:center;gap:8px;padding:10px 12px;position:relative;z-index:2}
+.sm{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;padding:10px;overflow:hidden}
+.sm img{max-width:100%;max-height:70vh;border-radius:12px}
+.sm p{font-size:22px;text-align:center;overflow-wrap:anywhere;white-space:pre-wrap;padding:0 14px;margin:0}
+.st{position:absolute;inset:90px 0 0;display:flex}.st i{flex:1}
+.msgs{display:flex;flex-direction:column;gap:6px;padding:4px 2px 80px}
+.bub{max-width:78%;padding:9px 13px;border-radius:16px;overflow-wrap:anywhere;white-space:pre-wrap;font-size:15px}
+.bub.me{align-self:flex-end;background:linear-gradient(135deg,#38bdf8,#818cf8);color:#06101f;border-bottom-right-radius:4px}
+.bub.th{align-self:flex-start;background:rgba(140,170,255,.16);border-bottom-left-radius:4px}
+.cbar{position:fixed;left:0;right:0;bottom:0;max-width:560px;margin:auto;display:flex;gap:8px;padding:8px 12px calc(8px + env(safe-area-inset-bottom,0px));background:rgba(11,16,32,.88);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.cbar input{margin:0}
+.ava2{width:42px;height:42px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;background:linear-gradient(135deg,#38bdf8,#a78bfa);color:#06101f;flex:0 0 auto}
 </style>
 </head>
 <body>
-<header>TinVin <span>Social</span></header>
+<header class="row"><div>TinVin <span>Social</span></div><span class="sp"></span><button class="ic hidden" id="gear" aria-label="Settings" style="font-size:22px">&#9881;</button></header>
 <div class="wrap">
 
 <div id="auth" class="card hidden">
@@ -62,10 +88,11 @@ nav button{flex:1;padding:14px;background:none;border:0;color:var(--mut);font-we
 </div>
 
 <nav id="nav" class="hidden">
-  <button data-v="home" class="on">Home</button>
-  <button data-v="search">Search</button>
-  <button data-v="me">Profile</button>
-  <button data-v="settings">Settings</button>
+  <button data-v="home" class="on"><span>Home</span></button>
+  <button data-v="search"><span>Search</span></button>
+  <button data-v="create" class="orb" aria-label="Create">+</button>
+  <button data-v="chats"><span>Chats</span><i id="cb" class="bd hidden"></i></button>
+  <button data-v="me"><span>Profile</span></button>
 </nav>
 <div id="sheet" class="sheet hidden"></div>
 
@@ -117,18 +144,21 @@ function resetMode(t){resetTok=t;mode="reset";$("aT").textContent="Set new passw
 function logout(silent){
   if(!silent&&token)api("/api/logout",{method:"POST"}).catch(()=>{});
   token="";me=null;localStorage.removeItem("tvs_token");
-  $("auth").classList.remove("hidden");$("app").classList.add("hidden");$("nav").classList.add("hidden");
+  $("auth").classList.remove("hidden");$("app").classList.add("hidden");$("nav").classList.add("hidden");$("gear").classList.add("hidden");clearInterval(unT);clearInterval(chatT);
 }
 async function start(){
   try{me=(await api("/api/me")).user}catch{return logout(true)}
-  $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");
-  go("home");
+  $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");$("gear").classList.remove("hidden");
+  go("home");pollUnread();clearInterval(unT);unT=setInterval(pollUnread,15000);
 }
 
 /* NAV */
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
 function go(v,arg){
+  clearInterval(chatT);$("nav").classList.remove("hidden");
+  if(v==="create")return create();
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
+  if(v==="chats")return chats();
   if(v==="home")return home();
   if(v==="search")return search();
   if(v==="me")return profile(me.username);
@@ -187,7 +217,7 @@ function menu(p,refresh){
 
 /* HOME */
 async function home(){
-  $("view").innerHTML=`<div class="card"><textarea id="pT" maxlength="500" placeholder="What's on your mind?"></textarea>
+  $("view").innerHTML=`<div class="str" id="str"></div><div class="card"><textarea id="pT" maxlength="500" placeholder="What's on your mind?"></textarea>
     <div class="row"><input id="pF" type="file" accept="image/jpeg,image/png,image/webp,image/gif" style="margin:0">
     <button class="btn" id="pB">Post</button></div><div class="err" id="pM"></div></div>
     <div class="tabs"><button class="btn ${tab?"ghost":""}" data-t="0">Everyone</button><button class="btn ${tab?"":"ghost"}" data-t="1">Following</button></div><div id="feed">Loading...</div>`;
@@ -200,7 +230,7 @@ async function home(){
       await post("/api/post",{text:$("pT").value,image});home();
     }catch(e){$("pM").textContent=e.message;$("pB").disabled=false}
   };
-  loadFeed();
+  loadStories();loadFeed();
 }
 async function loadFeed(){
   try{
@@ -237,6 +267,104 @@ function search(){
   if(sq)run();else $("sR").innerHTML=hint;
 }
 
+/* STORIES / CHATS */
+let chatT=null,unT=null;
+$("gear").onclick=()=>go("settings");
+async function pollUnread(){
+  try{const n=(await api("/api/unread")).n,b=$("cb");b.textContent=n>9?"9+":n;b.classList.toggle("hidden",!n)}catch{}
+}
+async function loadStories(){
+  const box=$("str");if(!box)return;
+  box.innerHTML=`<div class="sc" id="sAdd"><div class="sr add"><div>+</div></div>Add story</div>`;
+  $("sAdd").onclick=newStory;
+  try{
+    const all=(await api("/api/stories")).stories,by=new Map();
+    all.forEach(x=>{if(!by.has(x.uid))by.set(x.uid,[]);by.get(x.uid).push(x)});
+    [...by.values()].sort((a,b)=>(b[0].uid===me.id)-(a[0].uid===me.id)||b[b.length-1].id-a[a.length-1].id).forEach(l=>{
+      const c=document.createElement("div");c.className="sc";
+      c.innerHTML=`<div class="sr"><div>${esc(l[0].username[0].toUpperCase())}</div></div>${l[0].uid===me.id?"You":esc(l[0].username.slice(0,9))}`;
+      c.onclick=()=>viewStories(l);box.appendChild(c);
+    });
+  }catch{}
+}
+function viewStories(list,i=0){
+  const o=document.createElement("div");o.className="sv";document.body.appendChild(o);
+  let t;const close=()=>{clearTimeout(t);o.remove()};
+  const show=()=>{
+    clearTimeout(t);
+    if(i>=list.length)return close();
+    if(i<0)i=0;
+    const x=list[i];
+    o.innerHTML=`<div class="sb">${list.map((_,k)=>`<span class="${k<=i?"on":""}"></span>`).join("")}</div>
+      <div class="sh"><b>@${esc(x.username)}${vb(x.verified)}</b><span class="mut">${ago(x.created_at)}</span><span class="sp"></span>${x.uid===me.id?`<button class="ic" data-d aria-label="Delete">&#128465;</button>`:""}<button class="ic" data-x aria-label="Close" style="font-size:20px">&#10005;</button></div>
+      <div class="sm">${x.image_key?`<img src="${API}/img/${x.image_key}" alt="">`:""}${x.text?`<p>${esc(x.text)}</p>`:""}</div>
+      <div class="st"><i data-p></i><i data-n></i></div>`;
+    o.querySelector("[data-x]").onclick=close;
+    o.querySelector("[data-p]").onclick=()=>{i--;show()};
+    o.querySelector("[data-n]").onclick=()=>{i++;show()};
+    const dl=o.querySelector("[data-d]");
+    if(dl)dl.onclick=async()=>{if(!confirm("Delete this story?"))return;try{await api("/api/story/"+x.id,{method:"DELETE"});close();go("home")}catch(e){alert(e.message)}};
+    t=setTimeout(()=>{i++;show()},5000);
+  };
+  show();
+}
+function newStory(){
+  const s=$("sheet");s.classList.remove("hidden");
+  s.innerHTML=`<div><b>New story</b><p class="mut" style="margin:4px 0">Visible for 24 hours.</p><input id="stT" maxlength="200" placeholder="Text (optional)"><input id="stF" type="file" accept="image/jpeg,image/png,image/webp,image/gif"><div class="err" id="stM"></div><button class="btn" id="stS">Share story</button><button id="stX">Cancel</button></div>`;
+  s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
+  $("stX").onclick=()=>s.classList.add("hidden");
+  $("stS").onclick=async()=>{
+    $("stM").textContent="";$("stS").disabled=true;
+    try{
+      let image=null;const f=$("stF").files[0];
+      if(f)image=(await api("/api/upload",{method:"POST",raw:true,headers:{"Content-Type":f.type},body:f})).key;
+      await post("/api/story",{text:$("stT").value,image});
+      s.classList.add("hidden");go("home");
+    }catch(e){$("stM").textContent=e.message;$("stS").disabled=false}
+  };
+}
+function create(){
+  const s=$("sheet");s.classList.remove("hidden");
+  s.innerHTML=`<div><button data-c="p">New post</button><button data-c="s">New story (24 hours)</button><button data-c="x">Cancel</button></div>`;
+  s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
+  s.querySelectorAll("button").forEach(b=>b.onclick=()=>{
+    s.classList.add("hidden");
+    if(b.dataset.c==="p"){go("home");setTimeout(()=>{const t=$("pT");if(t)t.focus()},60)}
+    else if(b.dataset.c==="s")newStory();
+  });
+}
+async function chats(){
+  $("view").innerHTML=`<div class="glass"><h4>Chats</h4><div id="cl" class="mut">Loading...</div></div>`;
+  try{
+    const l=(await api("/api/chats")).chats,box=$("cl");
+    if(!l.length){box.textContent="No chats yet. Open someone's profile and tap Message.";return}
+    box.innerHTML="";
+    l.forEach(c=>{
+      const r=document.createElement("button");r.className="srow";
+      r.innerHTML=`<span class="ava2">${esc(c.username[0].toUpperCase())}</span><span class="sl"><b style="color:var(--fg)">@${esc(c.username)}${vb(c.verified)}</b><br><span class="mut">${c.from_id===me.id?"You: ":""}${esc((c.text||"").slice(0,40))}</span></span><span class="mut">${ago(c.created_at)}</span>${c.unread?`<span class="pill">${c.unread}</span>`:""}`;
+      r.onclick=()=>chat(c.id,c.username);box.appendChild(r);
+    });
+  }catch(e){$("cl").textContent=e.message}
+}
+async function chat(id,name){
+  clearInterval(chatT);$("nav").classList.add("hidden");
+  $("view").innerHTML=`<div class="glass" style="padding:10px 14px"><div class="row"><button class="ic" id="cBk" style="font-size:24px" aria-label="Back">&lsaquo;</button><b>@${esc(name)}</b></div></div><div class="msgs" id="msgs"></div><div class="cbar"><input id="mI" maxlength="1000" placeholder="Message..." autocomplete="off"><button class="btn" id="mS">Send</button></div>`;
+  let last=0;
+  const draw=async()=>{
+    const box=$("msgs");if(!box)return clearInterval(chatT);
+    try{
+      const m=(await api("/api/messages/"+id+"?after="+last)).messages;
+      if(!m.length)return;
+      m.forEach(x=>{last=Math.max(last,x.id);const d=document.createElement("div");d.className="bub "+(x.from_id===me.id?"me":"th");d.textContent=x.text;box.appendChild(d)});
+      window.scrollTo(0,document.body.scrollHeight);
+    }catch{}
+  };
+  const send=async()=>{const i=$("mI"),t=i.value.trim();if(!t)return;i.value="";try{await post("/api/message/"+id,{text:t});draw()}catch(e){alert(e.message);i.value=t}};
+  $("cBk").onclick=()=>go("chats");
+  $("mS").onclick=send;$("mI").onkeydown=e=>{if(e.key==="Enter")send()};
+  await draw();chatT=setInterval(draw,3500);pollUnread();
+}
+
 /* PROFILE */
 async function profile(name){
   $("view").innerHTML="Loading...";
@@ -246,12 +374,12 @@ async function profile(name){
       <p class="mut">${esc(d.user.bio||"")}</p>
       <div class="stats"><div><b>${d.counts.posts}</b>Posts</div><div><b>${d.counts.followers}</b>Followers</div><div><b>${d.counts.following}</b>Following</div></div>
       <div class="row">${own?`<button class="btn ghost sp" id="eB">Edit bio</button><button class="btn ghost sp" id="eN">Edit name</button>`:
-      `<button class="btn sp" id="fB">${d.is_following?"Following":"Follow"}</button>`}
+      `<button class="btn sp" id="fB">${d.is_following?"Following":"Follow"}</button><button class="btn ghost sp" id="mB">Message</button>`}
       <button class="btn ghost sp" id="shB">Share profile</button></div></div><div id="pp"></div>`;
     const re=()=>profile(name);
     if(own){$("eN").onclick=async()=>{const n=prompt("New username (3-20 letters, numbers, _)",d.user.username);if(n===null||n.trim()===d.user.username)return;try{await post("/api/me",{username:n});me.username=n.trim();profile(n.trim())}catch(e){alert(e.message)}};
       $("eB").onclick=async()=>{const b=prompt("Your bio (160 characters)",d.user.bio||"");if(b!==null){await post("/api/me",{bio:b});re()}};}
-    else $("fB").onclick=async()=>{await post("/api/follow/"+d.user.id);re()};
+    else{$("fB").onclick=async()=>{await post("/api/follow/"+d.user.id);re()};$("mB").onclick=()=>chat(d.user.id,d.user.username)}
     $("shB").onclick=async()=>{const data={title:"TinVin Social",text:"@"+d.user.username+" on TinVin Social",url:location.href.split("#")[0]};
       try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}};
     if(!d.posts.length)$("pp").innerHTML=`<p class="mut">No posts yet.</p>`;
@@ -263,13 +391,13 @@ async function profile(name){
 const LANGS={en:"English",ckb:"کوردی",ar:"العربية"};
 let lang=localStorage.getItem("tvs_lang")||"en";
 const I={
-ckb:{Home:"سەرەکی",Search:"گەڕان",Profile:"پرۆفایل",Settings:"ڕێکخستنەکان",Account:"ئەکاونت",Security:"ئاسایش",About:"دەربارە","Change name":"گۆڕینی ناو","Change email":"گۆڕینی ئیمەیڵ","Change password":"گۆڕینی پاسۆرد",Language:"زمان","Two-factor authentication":"ڕاستکردنەوەی دوو هەنگاوی","Log out of all devices":"دەرچوون لە هەموو ئامێرەکان","Blocked accounts":"ئەکاونتە بلۆککراوەکان","Privacy policy":"سیاسەتی نهێنی","Terms and community rules":"مەرج و یاساکانی کۆمەڵگا",Logout:"دەرچوون","Delete account":"سڕینەوەی ئەکاونت",Save:"پاشەکەوت",Soon:"بەم زووانە","Current password":"پاسۆردی ئێستا","New password (8+ characters)":"پاسۆردی نوێ (٨+ پیت)","New email":"ئیمەیڵی نوێ",Password:"پاسۆرد",Unblock:"لابردنی بلۆک","No blocked accounts.":"هیچ ئەکاونتێکی بلۆککراو نییە."},
-ar:{Home:"الرئيسية",Search:"بحث",Profile:"الملف الشخصي",Settings:"الإعدادات",Account:"الحساب",Security:"الأمان",About:"حول","Change name":"تغيير الاسم","Change email":"تغيير البريد الإلكتروني","Change password":"تغيير كلمة المرور",Language:"اللغة","Two-factor authentication":"المصادقة الثنائية","Log out of all devices":"تسجيل الخروج من كل الأجهزة","Blocked accounts":"الحسابات المحظورة","Privacy policy":"سياسة الخصوصية","Terms and community rules":"الشروط وقواعد المجتمع",Logout:"تسجيل الخروج","Delete account":"حذف الحساب",Save:"حفظ",Soon:"قريباً","Current password":"كلمة المرور الحالية","New password (8+ characters)":"كلمة المرور الجديدة (8+ أحرف)","New email":"البريد الإلكتروني الجديد",Password:"كلمة المرور",Unblock:"إلغاء الحظر","No blocked accounts.":"لا توجد حسابات محظورة."}
+ckb:{Chats:"گفتوگۆ",Home:"سەرەکی",Search:"گەڕان",Profile:"پرۆفایل",Settings:"ڕێکخستنەکان",Account:"ئەکاونت",Security:"ئاسایش",About:"دەربارە","Change name":"گۆڕینی ناو","Change email":"گۆڕینی ئیمەیڵ","Change password":"گۆڕینی پاسۆرد",Language:"زمان","Two-factor authentication":"ڕاستکردنەوەی دوو هەنگاوی","Log out of all devices":"دەرچوون لە هەموو ئامێرەکان","Blocked accounts":"ئەکاونتە بلۆککراوەکان","Privacy policy":"سیاسەتی نهێنی","Terms and community rules":"مەرج و یاساکانی کۆمەڵگا",Logout:"دەرچوون","Delete account":"سڕینەوەی ئەکاونت",Save:"پاشەکەوت",Soon:"بەم زووانە","Current password":"پاسۆردی ئێستا","New password (8+ characters)":"پاسۆردی نوێ (٨+ پیت)","New email":"ئیمەیڵی نوێ",Password:"پاسۆرد",Unblock:"لابردنی بلۆک","No blocked accounts.":"هیچ ئەکاونتێکی بلۆککراو نییە."},
+ar:{Chats:"الدردشة",Home:"الرئيسية",Search:"بحث",Profile:"الملف الشخصي",Settings:"الإعدادات",Account:"الحساب",Security:"الأمان",About:"حول","Change name":"تغيير الاسم","Change email":"تغيير البريد الإلكتروني","Change password":"تغيير كلمة المرور",Language:"اللغة","Two-factor authentication":"المصادقة الثنائية","Log out of all devices":"تسجيل الخروج من كل الأجهزة","Blocked accounts":"الحسابات المحظورة","Privacy policy":"سياسة الخصوصية","Terms and community rules":"الشروط وقواعد المجتمع",Logout:"تسجيل الخروج","Delete account":"حذف الحساب",Save:"حفظ",Soon:"قريباً","Current password":"كلمة المرور الحالية","New password (8+ characters)":"كلمة المرور الجديدة (8+ أحرف)","New email":"البريد الإلكتروني الجديد",Password:"كلمة المرور",Unblock:"إلغاء الحظر","No blocked accounts.":"لا توجد حسابات محظورة."}
 };
 const T=k=>(I[lang]&&I[lang][k])||k;
 function applyLang(){
-  const n={home:"Home",search:"Search",me:"Profile",settings:"Settings"};
-  document.querySelectorAll("nav button").forEach(b=>b.textContent=T(n[b.dataset.v]));
+  const n={home:"Home",search:"Search",chats:"Chats",me:"Profile"};
+  document.querySelectorAll("nav button").forEach(b=>{const sp=b.querySelector("span");if(sp)sp.textContent=T(n[b.dataset.v])});
 }
 
 /* SETTINGS */
