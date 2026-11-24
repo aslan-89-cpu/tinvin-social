@@ -368,13 +368,21 @@ async function chats(){
 async function chat(id,name){
   clearInterval(chatT);$("nav").classList.add("hidden");
   $("view").innerHTML=`<div class="glass" style="padding:10px 14px"><div class="row"><button class="ic" id="cBk" style="font-size:24px" aria-label="Back">&lsaquo;</button><b>@${esc(name)}</b></div></div><div class="msgs" id="msgs"></div><div class="cbar"><input id="mI" maxlength="1000" placeholder="Message..." autocomplete="off"><button class="btn" id="mS">Send</button></div>`;
-  let last=0;
+  let sig="";
+  const del=x=>{
+    const s=$("sheet");s.classList.remove("hidden");
+    s.innerHTML=`<div><button class="d" id="dm">Delete message</button><button id="dc">Cancel</button></div>`;
+    s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
+    $("dc").onclick=()=>s.classList.add("hidden");
+    $("dm").onclick=async()=>{s.classList.add("hidden");try{await api("/api/message/"+x.id,{method:"DELETE"});sig="";draw()}catch(e){alert(e.message)}};
+  };
   const draw=async()=>{
     const box=$("msgs");if(!box)return clearInterval(chatT);
     try{
-      const m=(await api("/api/messages/"+id+"?after="+last)).messages;
-      if(!m.length)return;
-      m.forEach(x=>{last=Math.max(last,x.id);const d=document.createElement("div");d.className="bub "+(x.from_id===me.id?"me":"th");d.textContent=x.text;box.appendChild(d)});
+      const m=(await api("/api/messages/"+id+"?after=0")).messages,g=m.map(x=>x.id).join();
+      if(g===sig)return;
+      sig=g;box.innerHTML="";
+      m.forEach(x=>{const d=document.createElement("div");d.className="bub "+(x.from_id===me.id?"me":"th");d.textContent=x.text;if(x.from_id===me.id)d.onclick=()=>del(x);box.appendChild(d)});
       window.scrollTo(0,document.body.scrollHeight);
     }catch{}
   };
@@ -422,12 +430,23 @@ async function profile(name){
 }
 
 /* LANGUAGE */
-const LANGS={en:"English",ckb:"کوردی",ar:"العربية"};
+const LANGS={en:"English",ckb:"کوردی",kmr:"Kurmancî",ar:"العربية",fa:"فارسی",tr:"Türkçe",de:"Deutsch",fr:"Français",es:"Español"};
+const RTL=["ckb","ar","fa"];
 let lang=localStorage.getItem("tvs_lang")||"en";
 const I={
 ckb:{Chats:"گفتوگۆ",Home:"سەرەکی",Search:"گەڕان",Profile:"پرۆفایل",Settings:"ڕێکخستنەکان",Account:"ئەکاونت",Security:"ئاسایش",About:"دەربارە","Change name":"گۆڕینی ناو","Change email":"گۆڕینی ئیمەیڵ","Change password":"گۆڕینی پاسۆرد",Language:"زمان","Two-factor authentication":"ڕاستکردنەوەی دوو هەنگاوی","Log out of all devices":"دەرچوون لە هەموو ئامێرەکان","Blocked accounts":"ئەکاونتە بلۆککراوەکان","Privacy policy":"سیاسەتی نهێنی","Terms and community rules":"مەرج و یاساکانی کۆمەڵگا",Logout:"دەرچوون","Delete account":"سڕینەوەی ئەکاونت",Save:"پاشەکەوت",Soon:"بەم زووانە","Current password":"پاسۆردی ئێستا","New password (8+ characters)":"پاسۆردی نوێ (٨+ پیت)","New email":"ئیمەیڵی نوێ",Password:"پاسۆرد",Unblock:"لابردنی بلۆک","No blocked accounts.":"هیچ ئەکاونتێکی بلۆککراو نییە."},
 ar:{Chats:"الدردشة",Home:"الرئيسية",Search:"بحث",Profile:"الملف الشخصي",Settings:"الإعدادات",Account:"الحساب",Security:"الأمان",About:"حول","Change name":"تغيير الاسم","Change email":"تغيير البريد الإلكتروني","Change password":"تغيير كلمة المرور",Language:"اللغة","Two-factor authentication":"المصادقة الثنائية","Log out of all devices":"تسجيل الخروج من كل الأجهزة","Blocked accounts":"الحسابات المحظورة","Privacy policy":"سياسة الخصوصية","Terms and community rules":"الشروط وقواعد المجتمع",Logout:"تسجيل الخروج","Delete account":"حذف الحساب",Save:"حفظ",Soon:"قريباً","Current password":"كلمة المرور الحالية","New password (8+ characters)":"كلمة المرور الجديدة (8+ أحرف)","New email":"البريد الإلكتروني الجديد",Password:"كلمة المرور",Unblock:"إلغاء الحظر","No blocked accounts.":"لا توجد حسابات محظورة."}
 };
+const KEYS=["Chats","Home","Search","Profile","Settings","Account","Security","About","Change name","Change email","Change password","Language","Two-factor authentication","Log out of all devices","Blocked accounts","Privacy policy","Terms and community rules","Logout","Delete account","Save","Soon","Current password","New password (8+ characters)","New email","Password","Unblock","No blocked accounts."];
+const ADD={
+kmr:["Peyam","Mal","Lêgerîn","Profîl","Mîheng","Hesab","Ewlehî","Der barê","Navê biguhere","E-nameyê biguhere","Şîfreyê biguhere","Ziman","Piştrastkirina du-gavî","Ji hemû amûran derkeve","Hesabên astengkirî","Siyaseta nepenîtiyê","Mercên bikaranînê û rêzikên civakê","Derkeve","Hesabê jê bibe","Tomar bike","Zû","Şîfreya heyî","Şîfreya nû (8+ tîp)","E-nameya nû","Şîfre","Astengiyê rake","Tu hesabê astengkirî tune."],
+fa:["گفتگوها","خانه","جستجو","پروفایل","تنظیمات","حساب","امنیت","درباره","تغییر نام","تغییر ایمیل","تغییر رمز عبور","زبان","تأیید دو مرحله‌ای","خروج از همه دستگاه‌ها","حساب‌های مسدود","سیاست حفظ حریم خصوصی","شرایط و قوانین جامعه","خروج","حذف حساب","ذخیره","به‌زودی","رمز عبور فعلی","رمز عبور جدید (حداقل ۸ نویسه)","ایمیل جدید","رمز عبور","رفع مسدودیت","حساب مسدودی وجود ندارد."],
+tr:["Sohbetler","Ana sayfa","Ara","Profil","Ayarlar","Hesap","Güvenlik","Hakkında","Adı değiştir","E-postayı değiştir","Şifreyi değiştir","Dil","İki adımlı doğrulama","Tüm cihazlardan çık","Engellenen hesaplar","Gizlilik politikası","Şartlar ve topluluk kuralları","Çıkış yap","Hesabı sil","Kaydet","Yakında","Mevcut şifre","Yeni şifre (8+ karakter)","Yeni e-posta","Şifre","Engeli kaldır","Engellenen hesap yok."],
+de:["Chats","Start","Suche","Profil","Einstellungen","Konto","Sicherheit","Info","Namen ändern","E-Mail ändern","Passwort ändern","Sprache","Zwei-Faktor-Authentifizierung","Auf allen Geräten abmelden","Blockierte Konten","Datenschutzerklärung","Nutzungsbedingungen und Community-Regeln","Abmelden","Konto löschen","Speichern","Bald","Aktuelles Passwort","Neues Passwort (mind. 8 Zeichen)","Neue E-Mail","Passwort","Entsperren","Keine blockierten Konten."],
+fr:["Discussions","Accueil","Rechercher","Profil","Paramètres","Compte","Sécurité","À propos","Changer le nom","Changer l'e-mail","Changer le mot de passe","Langue","Authentification à deux facteurs","Se déconnecter de tous les appareils","Comptes bloqués","Politique de confidentialité","Conditions et règles de la communauté","Se déconnecter","Supprimer le compte","Enregistrer","Bientôt","Mot de passe actuel","Nouveau mot de passe (8+ caractères)","Nouvel e-mail","Mot de passe","Débloquer","Aucun compte bloqué."],
+es:["Chats","Inicio","Buscar","Perfil","Ajustes","Cuenta","Seguridad","Acerca de","Cambiar nombre","Cambiar correo","Cambiar contraseña","Idioma","Autenticación en dos pasos","Cerrar sesión en todos los dispositivos","Cuentas bloqueadas","Política de privacidad","Términos y normas de la comunidad","Cerrar sesión","Eliminar cuenta","Guardar","Pronto","Contraseña actual","Nueva contraseña (8+ caracteres)","Nuevo correo","Contraseña","Desbloquear","No hay cuentas bloqueadas."]
+};
+for(const k in ADD)I[k]=Object.fromEntries(KEYS.map((key,i)=>[key,ADD[k][i]]));
 const T=k=>(I[lang]&&I[lang][k])||k;
 function applyLang(){
   const n={home:"Home",search:"Search",chats:"Chats",me:"Profile"};
@@ -440,7 +459,7 @@ const ico=n=>`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke
 const R=(id,ic,label,extra="",cls="")=>`<button class="srow ${cls}" id="${id}"><span class="si">${ico(ic)}</span><span class="sl">${T(label)}</span>${extra}<span class="ch">&rsaquo;</span></button>`;
 const LK=(href,label)=>`<a class="srow" href="${href}" style="text-decoration:none"><span class="si">${ico("doc")}</span><span class="sl">${T(label)}</span><span class="ch">&rsaquo;</span></a>`;
 function settings(){
-  const dir=lang==="en"?"ltr":"rtl";
+  const dir=RTL.includes(lang)?"rtl":"ltr";
   $("view").innerHTML=`<div dir="${dir}">
   <div class="glass" style="text-align:center"><div class="ava">${esc((me.username||"?")[0].toUpperCase())}</div>
     <b style="font-size:18px">@${esc(me.username)}${vb(me.verified)}</b><p class="mut" style="margin:4px 0 12px">${esc(me.email)}</p></div>
