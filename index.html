@@ -1,2773 +1,337 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" class="dark">
+<html lang="ku" dir="rtl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>TinVin Social</title>
-  <!-- Load Inter font family for crisp legibility over glass layers -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <!-- Tailwind CSS via CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-          },
-        },
-      },
-    };
-  </script>
+  <title>TinVin</title>
   <style>
     :root {
-      --glass-bg: rgba(20, 26, 56, 0.36);
-      --glass-bg-elevated: rgba(28, 36, 76, 0.48);
-      --glass-border: rgba(204, 224, 255, 0.30);
-      --glass-highlight: rgba(255, 255, 255, 0.38);
-      --glow-cyan: rgba(78, 212, 255, 0.56);
-      --glow-violet: rgba(176, 102, 255, 0.56);
+      --bg-1: #090d16;
+      --bg-2: #141026;
+      --card: rgba(20, 26, 46, 0.72);
+      --border: rgba(255, 255, 255, 0.14);
+      --gold: #f5b942;
+      --green: #22c55e;
+      --red: #ef4444;
+      --text: #f8fafc;
+      --muted: #94a3b8;
     }
 
     * {
       box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-    }
-
-    html, body {
       margin: 0;
       padding: 0;
-      min-height: 100dvh;
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      background-color: #050712;
-      color: #f4f7ff;
-      overflow-x: hidden;
+      font-family: system-ui, -apple-system, sans-serif;
     }
 
-    /* Deep cosmos gradient backdrop */
-    .cosmos-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background:
-        radial-gradient(circle at 18% 14%, rgba(56, 189, 248, 0.28), transparent 46%),
-        radial-gradient(circle at 82% 22%, rgba(168, 85, 247, 0.30), transparent 50%),
-        radial-gradient(circle at 52% 62%, rgba(99, 102, 241, 0.22), transparent 56%),
-        linear-gradient(175deg, #060917 0%, #0b0f26 52%, #050712 100%);
-      overflow: hidden;
-    }
-
-    /* Ambient glowing aura orbs behind glass layers */
-    .aura-orb {
-      position: absolute;
-      border-radius: 9999px;
-      filter: blur(62px);
-      opacity: 0.78;
-      animation: floatOrb 12s ease-in-out infinite alternate;
-    }
-
-    .orb-blue {
-      width: 260px;
-      height: 260px;
-      top: 7%;
-      left: -46px;
-      background: radial-gradient(circle, rgba(78, 212, 255, 0.84) 0%, rgba(59, 130, 246, 0.10) 72%);
-    }
-
-    .orb-violet {
-      width: 280px;
-      height: 280px;
-      top: 25%;
-      right: -58px;
-      background: radial-gradient(circle, rgba(176, 102, 255, 0.82) 0%, rgba(126, 34, 206, 0.10) 72%);
-      animation-delay: -4s;
-    }
-
-    .orb-cyan {
-      width: 240px;
-      height: 240px;
-      top: 46%;
-      left: 16%;
-      background: radial-gradient(circle, rgba(103, 232, 249, 0.58) 0%, rgba(99, 102, 241, 0.08) 72%);
-      animation-delay: -8s;
-    }
-
-    .orb-indigo {
-      width: 270px;
-      height: 270px;
-      bottom: 7%;
-      right: 4%;
-      background: radial-gradient(circle, rgba(192, 132, 252, 0.66) 0%, rgba(79, 70, 229, 0.08) 72%);
-      animation-delay: -2s;
-    }
-
-    /* Subtle floating polyhedra silhouettes in cosmos background */
-    .poly-shape {
-      position: absolute;
-      opacity: 0.38;
-      filter: drop-shadow(0 0 20px rgba(168, 85, 247, 0.52));
-      animation: driftPoly 16s ease-in-out infinite alternate;
-    }
-
-    .poly-top-right {
-      top: 13%;
-      right: 6%;
-      width: 64px;
-      height: 64px;
-    }
-
-    .poly-bottom-left {
-      bottom: 22%;
-      left: 5%;
-      width: 72px;
-      height: 72px;
-      animation-delay: -6s;
-    }
-
-    @keyframes floatOrb {
-      0% { transform: translate3d(0px, 0px, 0) scale(1); }
-      50% { transform: translate3d(12px, -16px, 0) scale(1.06); }
-      100% { transform: translate3d(-10px, 14px, 0) scale(0.97); }
-    }
-
-    @keyframes driftPoly {
-      0% { transform: translateY(0px) rotate(0deg); }
-      100% { transform: translateY(-14px) rotate(16deg); }
-    }
-
-    /* Full glass phone & card surfaces */
-    .glass-phone-shell {
-      background: linear-gradient(168deg, rgba(28, 36, 78, 0.42) 0%, rgba(14, 20, 46, 0.28) 55%, rgba(22, 18, 54, 0.36) 100%);
-      backdrop-filter: blur(26px) saturate(180%);
-      -webkit-backdrop-filter: blur(26px) saturate(180%);
-      border: 1px solid rgba(210, 228, 255, 0.34);
-      box-shadow:
-        inset 0 1px 1.5px rgba(255, 255, 255, 0.45),
-        inset 0 -1px 1.5px rgba(192, 132, 252, 0.32),
-        0 24px 56px -16px rgba(2, 6, 23, 0.88),
-        0 0 44px rgba(129, 140, 248, 0.20);
-    }
-
-    .glass-panel {
-      background: linear-gradient(155deg, rgba(30, 38, 78, 0.38) 0%, rgba(16, 22, 48, 0.28) 100%);
-      backdrop-filter: blur(24px) saturate(175%);
-      -webkit-backdrop-filter: blur(24px) saturate(175%);
-      border: 1px solid rgba(206, 226, 255, 0.28);
-      box-shadow:
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.38),
-        0 14px 34px -12px rgba(2, 6, 23, 0.72),
-        0 0 22px rgba(99, 102, 241, 0.12);
-    }
-
-    .glass-elevated {
-      background: linear-gradient(160deg, rgba(36, 46, 92, 0.54) 0%, rgba(18, 24, 54, 0.44) 100%);
-      backdrop-filter: blur(28px) saturate(185%);
-      -webkit-backdrop-filter: blur(28px) saturate(185%);
-      border: 1px solid rgba(214, 232, 255, 0.34);
-      box-shadow:
-        inset 0 1px 0 0 rgba(255, 255, 255, 0.42),
-        0 20px 46px -14px rgba(3, 7, 18, 0.84),
-        0 0 28px rgba(168, 85, 247, 0.16);
-    }
-
-    /* Layered depth behind post cards */
-    .glass-card-stack {
-      position: relative;
-      padding-bottom: 8px;
-    }
-
-    .glass-card-stack::before {
-      content: "";
-      position: absolute;
-      inset: 8px 10px 0px 10px;
-      border-radius: 26px;
-      background: linear-gradient(180deg, rgba(125, 211, 252, 0.10) 0%, rgba(192, 132, 252, 0.14) 100%);
-      border: 1px solid rgba(205, 224, 255, 0.20);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
-      z-index: -1;
-      pointer-events: none;
-    }
-
-    /* Glowing story rings */
-    .story-ring {
-      background: linear-gradient(135deg, #67e8f9 0%, #818cf8 55%, #d8b4fe 100%);
-      box-shadow: 0 0 16px rgba(129, 140, 248, 0.45), 0 0 24px rgba(103, 232, 249, 0.26);
-    }
-
-    .story-ring-center {
-      background: linear-gradient(135deg, #a5f3fc 0%, #7dd3fc 42%, #e879f9 100%);
-      box-shadow: 0 0 24px rgba(125, 211, 252, 0.72), 0 0 40px rgba(216, 180, 254, 0.50);
-    }
-
-    .story-connector {
-      height: 1.5px;
-      flex: 1;
-      min-width: 10px;
-      background: linear-gradient(90deg, rgba(168, 85, 247, 0.30), rgba(125, 211, 252, 0.85), rgba(216, 180, 254, 0.30));
-    }
-
-    /* Faceted Crystalline Orb Emblem */
-    .crystal-orb-surface {
-      background:
-        radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.68) 0%, rgba(125, 211, 252, 0.28) 38%, rgba(49, 46, 129, 0.56) 76%, rgba(126, 34, 206, 0.78) 100%);
-      border: 1.5px solid rgba(224, 242, 254, 0.74);
-      box-shadow:
-        inset 0 2px 7px rgba(255, 255, 255, 0.80),
-        inset 0 -6px 14px rgba(192, 132, 252, 0.62),
-        0 0 26px rgba(103, 232, 249, 0.64),
-        0 0 42px rgba(192, 132, 252, 0.52);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .crystal-orb-surface:hover {
-      transform: translateY(-2px) scale(1.05);
-      box-shadow:
-        inset 0 2px 8px rgba(255, 255, 255, 0.90),
-        inset 0 -6px 16px rgba(216, 180, 254, 0.72),
-        0 0 32px rgba(103, 232, 249, 0.80),
-        0 0 48px rgba(216, 180, 254, 0.64);
-    }
-
-    .crystal-orb-surface:active {
-      transform: scale(0.95);
-    }
-
-    /* Curved full-glass bottom navigation dock */
-    .curved-glass-dock {
-      position: relative;
-      width: 100%;
-      background: linear-gradient(180deg, rgba(32, 40, 82, 0.56) 0%, rgba(16, 22, 50, 0.76) 100%);
-      backdrop-filter: blur(28px) saturate(180%);
-      -webkit-backdrop-filter: blur(28px) saturate(180%);
-      border-top: 1px solid rgba(210, 228, 255, 0.36);
-      border-bottom-left-radius: 34px;
-      border-bottom-right-radius: 34px;
-      box-shadow:
-        inset 0 1px 0 rgba(255, 255, 255, 0.36),
-        0 -10px 30px rgba(2, 6, 23, 0.70);
-    }
-
-    .curved-glass-dock::after {
-      content: "";
-      position: absolute;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      height: 16px;
-      pointer-events: none;
-      border-bottom-left-radius: 34px;
-      border-bottom-right-radius: 34px;
-      background: radial-gradient(ellipse 72% 100% at 50% 100%, rgba(5, 7, 17, 0.78) 0%, rgba(5, 7, 17, 0) 76%);
-    }
-
-    .nav-item-btn {
+    body {
+      min-height: 100vh;
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
-      gap: 3px;
-      min-width: 0;
-      padding: 6px 4px;
-      border-radius: 16px;
-      font-size: 10px;
-      line-height: 1.15;
-      white-space: nowrap;
-      transition: color 0.18s ease, background-color 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+      padding: 20px;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 20% 20%, rgba(245, 185, 66, 0.18), transparent 45%),
+        radial-gradient(circle at 80% 80%, rgba(34, 197, 94, 0.16), transparent 45%),
+        linear-gradient(135deg, var(--bg-1), var(--bg-2));
     }
 
-    .nav-active-pill {
-      background: linear-gradient(180deg, rgba(103, 232, 249, 0.24) 0%, rgba(192, 132, 252, 0.20) 100%);
-      border: 1px solid rgba(165, 243, 252, 0.42);
-      box-shadow: 0 0 18px rgba(129, 140, 248, 0.38);
+    .card {
+      width: 100%;
+      max-width: 400px;
+      background: var(--card);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      padding: 26px;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
     }
 
-    .no-scrollbar::-webkit-scrollbar {
+    h1 {
+      text-align: center;
+      color: var(--gold);
+      font-size: 1.6rem;
+      margin-bottom: 18px;
+    }
+
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 5px;
+      border-radius: 14px;
+      margin-bottom: 18px;
+    }
+
+    .tab-btn {
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      padding: 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, var(--gold), #d99b1e);
+      color: #090d16;
+    }
+
+    .form {
       display: none;
+      flex-direction: column;
+      gap: 12px;
     }
-    .no-scrollbar {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
+
+    .form.active {
+      display: flex;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(9, 13, 22, 0.7);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: var(--gold);
+    }
+
+    .submit-btn {
+      margin-top: 4px;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--green), #16a34a);
+      color: #051109;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .link-btn {
+      background: none;
+      border: none;
+      color: var(--gold);
+      font-size: 0.88rem;
+      cursor: pointer;
+      text-align: right;
+      padding: 2px 0;
+    }
+
+    .msg {
+      margin-top: 14px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 0.88rem;
+      display: none;
+      line-height: 1.5;
+    }
+
+    .msg.error {
+      display: block;
+      background: rgba(239, 68, 68, 0.16);
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      color: #fecaca;
+    }
+
+    .msg.success {
+      display: block;
+      background: rgba(34, 197, 94, 0.16);
+      border: 1px solid rgba(34, 197, 94, 0.4);
+      color: #bbf7d0;
+    }
+
+    .session-box {
+      display: none;
+      text-align: center;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .session-box.active {
+      display: flex;
+    }
+
+    .logout-btn {
+      padding: 10px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--text);
+      cursor: pointer;
+      font-weight: 600;
     }
   </style>
 </head>
-<body class="text-slate-100 antialiased selection:bg-cyan-400/30 selection:text-white">
-  <!-- Background Cosmos, Glowing Aura Orbs & Floating Polyhedra -->
-  <div class="cosmos-backdrop" aria-hidden="true">
-    <div class="aura-orb orb-blue"></div>
-    <div class="aura-orb orb-violet"></div>
-    <div class="aura-orb orb-cyan"></div>
-    <div class="aura-orb orb-indigo"></div>
+<body>
+  <div class="card">
+    <h1>TinVin</h1>
 
-    <!-- Floating faceted polyhedra -->
-    <svg class="poly-shape poly-top-right" viewBox="0 0 80 80" fill="none">
-      <polygon points="40,6 72,26 60,68 20,68 8,26" stroke="rgba(192,132,252,0.65)" stroke-width="1.5" fill="rgba(168,85,247,0.12)" />
-      <polygon points="40,6 72,26 40,42 8,26" fill="rgba(103,232,249,0.14)" />
-      <line x1="40" y1="42" x2="40" y2="74" stroke="rgba(125,211,252,0.45)" stroke-width="1.2" />
-    </svg>
-
-    <svg class="poly-shape poly-bottom-left" viewBox="0 0 80 80" fill="none">
-      <polygon points="40,8 70,32 56,70 24,70 10,32" stroke="rgba(103,232,249,0.6)" stroke-width="1.5" fill="rgba(59,130,246,0.12)" />
-      <polygon points="40,8 70,32 40,46 10,32" fill="rgba(192,132,252,0.15)" />
-      <line x1="40" y1="46" x2="40" y2="70" stroke="rgba(192,132,252,0.45)" stroke-width="1.2" />
-    </svg>
-  </div>
-  <!-- Reusable SVG Defs for TinVin Social Merged TV Crystalline Emblem -->
-  <svg width="0" height="0" class="sr-only" aria-hidden="true">
-    <defs>
-      <linearGradient id="tvCrystalTop" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#e0f2fe" />
-        <stop offset="45%" stop-color="#60a5fa" />
-        <stop offset="100%" stop-color="#818cf8" />
-      </linearGradient>
-      <linearGradient id="tvCrystalLeftV" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#bae6fd" />
-        <stop offset="50%" stop-color="#22d3ee" />
-        <stop offset="100%" stop-color="#6366f1" />
-      </linearGradient>
-      <linearGradient id="tvCrystalRightV" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#c4b5fd" />
-        <stop offset="50%" stop-color="#a855f7" />
-        <stop offset="100%" stop-color="#38bdf8" />
-      </linearGradient>
-    </defs>
-  </svg>
-
-  <!-- Centered Mobile Full-Glass Frame -->
-  <div class="relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col px-3 pt-3 pb-4">
-    <div class="glass-phone-shell relative flex min-h-[calc(100dvh-1.75rem)] flex-1 flex-col overflow-hidden rounded-[34px]">
-      <!-- Top Header with Merged TV Crystalline Emblem, Home/Title & Messages/Notifications -->
-      <header class="sticky top-0 z-30 px-4 pt-3.5 pb-2">
-        <div class="glass-panel flex items-center justify-between rounded-2xl px-3.5 py-2.5">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <!-- Faceted Three-Segment Crystal Mark Inside Glowing Glass Orb -->
-            <button
-              type="button"
-              onclick="switchTab('home')"
-              aria-label="TinVin Social Home"
-              class="crystal-orb-surface flex h-10 w-10 shrink-0 items-center justify-center rounded-full"
-            >
-              <svg class="h-6 w-6" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                <!-- 1. Wide top horizontal crystal bar with faceted angled ends -->
-                <polygon points="7,14 34,14 31,26 11,26 6,20" fill="url(#tvCrystalTop)" stroke="rgba(255,255,255,0.9)" stroke-width="1.25" stroke-linejoin="round" />
-                <polygon points="10,16 32,16 30,21 9,21" fill="#ffffff" opacity="0.28" />
-                <!-- 2. Right angled faceted crystal wing/arm piece -->
-                <polygon points="37,14 57,14 55,22 44,43 36,37 39,24" fill="url(#tvCrystalRightV)" stroke="rgba(255,255,255,0.9)" stroke-width="1.25" stroke-linejoin="round" />
-                <polygon points="41,17 53,17 44,36" fill="#e0f2fe" opacity="0.32" />
-                <!-- 3. Lower-left/vertical faceted crystal prism piece -->
-                <polygon points="14,34 23,34 23,46 14,41" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.86)" stroke-width="1.2" stroke-linejoin="round" />
-                <polygon points="26,34 38,34 38,51 32,56 26,51" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.9)" stroke-width="1.25" stroke-linejoin="round" />
-                <polygon points="28,36 33,36 33,53 28,49" fill="#ffffff" opacity="0.34" />
-              </svg>
-            </button>
-
-            <div class="min-w-0">
-              <div class="flex items-center gap-1.5">
-                <h1 id="header-title" class="truncate text-base font-bold tracking-tight text-white">Home</h1>
-                <span class="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-2 py-0.5 text-[10px] font-semibold text-cyan-200">
-                  TinVin Social
-                </span>
-              </div>
-              <p id="header-subtitle" class="truncate text-[11px] text-slate-300/80">Full Glass Stream</p>
-            </div>
-          </div>
-
-          <!-- Top Right Action Icons: Messages & Activity -->
-          <div class="flex items-center gap-2 shrink-0">
-            <button
-              type="button"
-              onclick="switchTab('messages')"
-              data-i18n-aria="navMessages"
-              aria-label="Messages"
-              class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/8 text-slate-100 transition hover:border-cyan-300/45 hover:bg-white/15 hover:text-cyan-200 active:scale-95"
-            >
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
-              </svg>
-              <span id="messages-unread-dot" class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.95)]"></span>
-            </button>
-
-            <button
-              type="button"
-              onclick="switchTab('activity')"
-              data-i18n-aria="navActivity"
-              aria-label="Activity"
-              class="relative flex h-9 w-9 items-center justify-center rounded-xl border border-white/15 bg-white/8 text-slate-100 transition hover:border-fuchsia-300/45 hover:bg-white/15 hover:text-fuchsia-200 active:scale-95"
-            >
-              <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-                <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-              </svg>
-              <span class="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-fuchsia-400 shadow-[0_0_8px_rgba(232,121,249,0.95)]"></span>
-            </button>
-          </div>
-        </div>
-      </header>
-
-      <!-- Toast / Status Banner (replaces alert()) -->
-      <div id="toast-banner" class="pointer-events-none fixed top-20 left-1/2 z-50 w-[86%] max-w-xs -translate-x-1/2 opacity-0 transition-all duration-300">
-        <div id="toast-inner" class="glass-elevated flex items-center gap-2.5 rounded-2xl px-3.5 py-2.5 text-xs font-medium text-white">
-          <span id="toast-dot" class="h-2 w-2 shrink-0 rounded-full bg-cyan-300"></span>
-          <span id="toast-text">Ready</span>
-        </div>
+    <div id="authSection">
+      <div class="tabs">
+        <button type="button" class="tab-btn active" id="loginTab" onclick="switchView('login')">Login</button>
+        <button type="button" class="tab-btn" id="signupTab" onclick="switchView('signup')">Signup</button>
       </div>
 
-      <!-- Scrollable Main Content -->
-      <main class="flex-1 space-y-4 overflow-y-auto px-4 pt-1 pb-24">
-        <!-- ==================== HOME VIEW ==================== -->
-        <section id="view-home" class="space-y-4">
-          <!-- Story Row with Highlighted Center Avatar & Connected Side Avatars -->
-          <div class="glass-panel rounded-3xl px-3 py-3.5">
-            <div class="mb-2 flex items-center justify-between px-1">
-              <span data-i18n="storiesTitle" class="text-xs font-semibold tracking-wide text-slate-200">Stories</span>
-              <span data-i18n="storyLabel" class="text-[11px] font-medium text-cyan-300">Story</span>
-            </div>
+      <form id="loginForm" class="form active" onsubmit="handleAuth(event, '/login')">
+        <input type="email" name="email" placeholder="ئیمەیڵ" required />
+        <input type="password" name="password" placeholder="پاسۆرد" required />
+        <button type="button" class="link-btn" onclick="switchView('forgot')">پاسۆردت بیرچووە؟ (Forget Password)</button>
+        <button type="submit" class="submit-btn">چوونەژوورەوە</button>
+      </form>
 
-            <div id="stories-strip" class="no-scrollbar flex items-center justify-between gap-1.5 overflow-x-auto px-1 py-1">
-              <!-- Populated via JS -->
-            </div>
-          </div>
+      <form id="signupForm" class="form" onsubmit="handleAuth(event, '/signup')">
+        <input type="text" name="username" placeholder="ناوی بەکارهێنەر (Username)" required />
+        <input type="email" name="email" placeholder="ئیمەیڵ" required />
+        <input type="password" name="password" placeholder="پاسۆرد" minlength="6" required />
+        <button type="submit" class="submit-btn">دروستکردنی هەژمار</button>
+      </form>
 
-          <!-- Layered Glassmorphic Feed Post Cards -->
-          <div id="feed-list" class="space-y-4">
-            <!-- Populated via JS -->
-          </div>
-        </section>
-
-        <!-- ==================== EXPLORE VIEW ==================== -->
-        <section id="view-explore" class="hidden space-y-4">
-          <div class="glass-panel rounded-3xl p-4">
-            <h2 data-i18n="exploreTitle" class="text-sm font-semibold text-white">Explore</h2>
-            <p data-i18n="exploreSubtitle" class="mt-0.5 text-xs text-slate-300/85">Discover glass dispatches and creators</p>
-
-            <div class="mt-3 flex items-center gap-2 rounded-2xl border border-white/15 bg-slate-950/35 px-3.5 py-2.5">
-              <svg class="h-4 w-4 text-cyan-300" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
-              <input
-                id="explore-search"
-                type="text"
-                data-i18n-placeholder="searchPlaceholder"
-                placeholder="Search posts or creators..."
-                oninput="renderExploreGrid()"
-                class="w-full bg-transparent text-xs text-white placeholder-slate-400 focus:outline-none"
-              />
-            </div>
-
-            <div id="explore-chips" class="mt-3 flex flex-wrap gap-2">
-              <!-- Populated via JS -->
-            </div>
-          </div>
-
-          <div id="explore-grid" class="grid grid-cols-2 gap-3">
-            <!-- Populated via JS -->
-          </div>
-        </section>
-
-        <!-- ==================== ACTIVITY VIEW ==================== -->
-        <section id="view-activity" class="hidden space-y-3">
-          <div class="glass-panel rounded-3xl p-4">
-            <div class="flex items-center justify-between mb-2">
-              <h2 data-i18n="activityTitle" class="text-sm font-semibold text-white">Activity</h2>
-              <span class="rounded-full border border-fuchsia-300/35 bg-fuchsia-400/15 px-2 py-0.5 text-[10px] font-medium text-fuchsia-200">Live</span>
-            </div>
-            <div id="activity-list" class="space-y-2.5">
-              <!-- Populated via JS -->
-            </div>
-          </div>
-        </section>
-
-        <!-- ==================== PROFILE VIEW ==================== -->
-        <section id="view-profile" class="hidden space-y-4">
-          <div class="glass-panel rounded-3xl p-4">
-            <div class="flex items-center gap-3.5">
-              <!-- Profile Picture inside Glowing Glass Ring with Crystal Emblem Badge -->
-              <div class="relative shrink-0">
-                <div class="story-ring-center h-16 w-16 rounded-full p-[2.5px]">
-                  <img
-                    id="profile-avatar-img"
-                    src="https://placehold.co/160x160/1e1b4b/e0f2fe?text=AV"
-                    alt="Profile picture"
-                    onerror="this.src='https://placehold.co/160x160/1e1b4b/e0f2fe?text=AV'"
-                    class="h-full w-full rounded-full object-cover"
-                  />
-                </div>
-                <span class="crystal-orb-surface absolute -right-1 -bottom-1 flex h-6 w-6 items-center justify-center rounded-full" aria-hidden="true">
-                  <svg class="h-3.5 w-3.5" viewBox="0 0 64 64" fill="none">
-                    <polygon points="7,14 34,14 31,26 11,26 6,20" fill="url(#tvCrystalTop)" stroke="rgba(255,255,255,0.88)" stroke-width="1.4" />
-                    <polygon points="37,14 57,14 55,22 44,43 36,37 39,24" fill="url(#tvCrystalRightV)" stroke="rgba(255,255,255,0.88)" stroke-width="1.4" />
-                    <polygon points="14,34 23,34 23,46 14,41" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" />
-                    <polygon points="26,34 38,34 38,51 32,56 26,51" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.88)" stroke-width="1.4" />
-                  </svg>
-                </span>
-              </div>
-
-              <div class="min-w-0 flex-1">
-                <div class="flex items-center gap-1.5 flex-wrap">
-                  <h2 id="profile-display-name" class="truncate text-base font-bold text-white">Aria Vance</h2>
-                  <span id="profile-verified-badge" onclick="openVerifiedModal()" class="inline-flex cursor-pointer items-center gap-1 rounded-full border border-cyan-300/45 bg-cyan-400/20 px-2 py-0.5 text-[10px] font-semibold text-cyan-200 shadow-[0_0_12px_rgba(56,189,248,0.35)]">
-                    <span>✓</span>
-                    <span id="profile-verified-label">Verified</span>
-                  </span>
-                </div>
-                <p id="profile-handle-label" class="truncate text-xs text-cyan-200/85">@ariavance • TinVin Social</p>
-                <p data-i18n="profileBio" class="mt-1.5 text-xs leading-relaxed text-slate-200/90">
-                  Exploring luminous glass interfaces and fast mobile sharing.
-                </p>
-              </div>
-            </div>
-
-            <div class="mt-4 grid grid-cols-3 gap-2.5 text-center">
-              <div class="rounded-2xl border border-white/12 bg-white/5 px-2 py-2.5">
-                <div id="profile-post-count" class="text-sm font-bold text-white">3</div>
-                <div data-i18n="statPosts" class="text-[11px] text-slate-300/80">Posts</div>
-              </div>
-              <div class="rounded-2xl border border-white/12 bg-white/5 px-2 py-2.5">
-                <div class="text-sm font-bold text-cyan-200">4.8K</div>
-                <div data-i18n="statFollowers" class="text-[11px] text-slate-300/80">Followers</div>
-              </div>
-              <div class="rounded-2xl border border-white/12 bg-white/5 px-2 py-2.5">
-                <div class="text-sm font-bold text-fuchsia-200">312</div>
-                <div data-i18n="statFollowing" class="text-[11px] text-slate-300/80">Following</div>
-              </div>
-            </div>
-
-            <div class="mt-4 flex gap-2">
-              <button
-                type="button"
-                onclick="openCreateModal()"
-                data-i18n="newPostBtn"
-                class="flex flex-1 items-center justify-center gap-2 rounded-2xl border border-cyan-300/35 bg-gradient-to-r from-sky-500/30 via-indigo-500/30 to-fuchsia-500/30 py-2.5 text-xs font-semibold text-white shadow-[0_0_20px_rgba(99,102,241,0.35)] transition hover:brightness-110 active:scale-[0.99]"
-              >
-                + Create Post
-              </button>
-              <button
-                type="button"
-                onclick="openVerifiedModal()"
-                class="flex items-center justify-center gap-1 rounded-2xl border border-fuchsia-300/35 bg-fuchsia-500/15 px-3 py-2.5 text-xs font-semibold text-fuchsia-100 transition hover:bg-fuchsia-500/25 active:scale-[0.99]"
-              >
-                <span>✓</span>
-                <span id="profile-verified-btn-label">Verified</span>
-              </button>
-              <button
-                type="button"
-                onclick="switchTab('settings')"
-                data-i18n="settingsTab"
-                class="flex items-center justify-center gap-1.5 rounded-2xl border border-white/15 bg-white/8 px-3.5 py-2.5 text-xs font-semibold text-cyan-100 transition hover:bg-white/15 active:scale-[0.99]"
-              >
-                Settings
-              </button>
-            </div>
-          </div>
-
-          <div class="glass-panel rounded-3xl p-4">
-            <h3 data-i18n="yourPostsTitle" class="mb-3 text-xs font-semibold tracking-wide text-slate-200">Posts</h3>
-            <div id="profile-gallery" class="grid grid-cols-3 gap-2">
-              <!-- Populated via JS -->
-            </div>
-          </div>
-        </section>
-
-        <!-- ==================== MESSAGES VIEW ==================== -->
-        <section id="view-messages" class="hidden space-y-4">
-          <div class="glass-panel rounded-3xl p-4">
-            <div class="flex items-center justify-between gap-2">
-              <div>
-                <h2 data-i18n="messagesTitle" class="text-sm font-bold text-white">Messages</h2>
-                <p data-i18n="messagesSubtitle" class="text-[11px] text-slate-300/80">Direct conversations on TinVin Social</p>
-              </div>
-              <button
-                type="button"
-                onclick="switchTab('home')"
-                data-i18n="backHomeBtn"
-                class="rounded-xl border border-white/15 bg-white/8 px-3 py-1.5 text-[11px] font-medium text-cyan-200 hover:bg-white/15"
-              >
-                Home
-              </button>
-            </div>
-
-            <div id="messages-list" class="mt-3 space-y-2.5">
-              <!-- Populated via JS -->
-            </div>
-          </div>
-        </section>
-
-        <!-- ==================== SETTINGS VIEW ==================== -->
-        <section id="view-settings" class="hidden space-y-4">
-          <!-- Language & Preferences -->
-          <div class="glass-elevated rounded-3xl p-4 space-y-2.5">
-            <div class="flex items-center justify-between px-1">
-              <div>
-                <h2 data-i18n="settingsTitle" class="text-sm font-bold text-white">Settings</h2>
-                <p data-i18n="settingsSubtitle" class="text-[11px] text-slate-300/80">Language, security, privacy & account</p>
-              </div>
-              <span class="crystal-orb-surface flex h-8 w-8 items-center justify-center rounded-full" aria-hidden="true">
-                <svg class="h-4 w-4" viewBox="0 0 64 64" fill="none">
-                  <polygon points="7,14 34,14 31,26 11,26 6,20" fill="url(#tvCrystalTop)" stroke="rgba(255,255,255,0.88)" stroke-width="1.4" />
-                  <polygon points="37,14 57,14 55,22 44,43 36,37 39,24" fill="url(#tvCrystalRightV)" stroke="rgba(255,255,255,0.88)" stroke-width="1.4" />
-                  <polygon points="14,34 23,34 23,46 14,41" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.85)" stroke-width="1.3" />
-                  <polygon points="26,34 38,34 38,51 32,56 26,51" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.88)" stroke-width="1.4" />
-                </svg>
-              </span>
-            </div>
-
-            <!-- Verified Membership Row in Settings -->
-            <button
-              type="button"
-              onclick="openVerifiedModal()"
-              class="flex w-full items-center justify-between rounded-2xl border border-cyan-300/30 bg-gradient-to-r from-sky-500/15 via-indigo-500/15 to-fuchsia-500/15 px-3.5 py-3 text-left transition hover:border-cyan-300/55 hover:brightness-110 active:scale-[0.99]"
-            >
-              <div class="min-w-0 pr-2">
-                <div class="flex items-center gap-1.5">
-                  <span class="text-xs font-semibold text-white">Verified</span>
-                  <span id="settings-verified-plan-badge" class="rounded-full border border-cyan-300/35 bg-cyan-400/20 px-2 py-0.5 text-[10px] font-semibold text-cyan-200">$4.99 / $9.99 / $99.99</span>
-                </div>
-                <div id="settings-verified-status-text" class="truncate text-[11px] text-cyan-100/85">First-time $4.99 • Monthly $9.99 • Yearly $99.99</div>
-              </div>
-              <span class="shrink-0 text-xs font-semibold text-cyan-200">✓</span>
-            </button>
-
-            <!-- Language Selector -->
-            <div class="rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3">
-              <div class="flex items-center justify-between gap-3">
-                <div class="min-w-0">
-                  <div data-i18n="languageLabel" class="text-xs font-semibold text-white">Language</div>
-                  <div id="settings-language-meta" class="truncate text-[11px] text-cyan-200/85">English (EN)</div>
-                </div>
-                <select
-                  id="language-select"
-                  onchange="changeAppLanguage(this.value)"
-                  aria-label="Language"
-                  class="rounded-xl border border-cyan-300/35 bg-slate-950/70 px-3 py-1.5 text-xs font-medium text-white focus:border-cyan-300 focus:outline-none"
-                >
-                  <option value="en">English</option>
-                  <option value="ar">العربية</option>
-                  <option value="es">Español</option>
-                  <option value="fr">Français</option>
-                  <option value="de">Deutsch</option>
-                  <option value="tr">Türkçe</option>
-                  <option value="ja">日本語</option>
-                </select>
-              </div>
-            </div>
-
-            <!-- Auto-Compress Images (< 3 MB) Toggle -->
-            <div class="flex items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3">
-              <div class="min-w-0 pr-3">
-                <div data-i18n="autoCompressLabel" class="text-xs font-semibold text-white">Auto-Compress Images (&lt; 3 MB)</div>
-                <div id="settings-compress-status" class="truncate text-[11px] text-cyan-200/85">Active</div>
-              </div>
-              <button
-                id="toggle-compress-btn"
-                type="button"
-                onclick="toggleAutoCompress()"
-                aria-pressed="true"
-                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-cyan-300/40 bg-cyan-400/35 p-0.5 transition"
-              >
-                <span id="toggle-compress-knob" class="h-5 w-5 translate-x-5 rounded-full bg-white shadow-[0_0_10px_rgba(103,232,249,0.9)] transition-transform"></span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Account & Security Section -->
-          <div class="glass-panel rounded-3xl p-4 space-y-2.5">
-            <div class="px-1">
-              <h3 data-i18n="accountSecurityTitle" class="text-xs font-bold tracking-wide text-slate-200">Account &amp; Security</h3>
-            </div>
-
-            <!-- Change Name -->
-            <button
-              type="button"
-              onclick="openSettingsModal('name')"
-              class="flex w-full items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3 text-left transition hover:border-cyan-300/35 hover:bg-white/10 active:scale-[0.99]"
-            >
-              <div class="min-w-0 pr-2">
-                <div data-i18n="changeNameLabel" class="text-xs font-semibold text-white">Change Name</div>
-                <div id="settings-current-name" class="truncate text-[11px] text-cyan-200/85">Aria Vance (@ariavance)</div>
-              </div>
-              <span data-i18n="editAction" class="shrink-0 text-xs text-slate-300">Edit</span>
-            </button>
-
-            <!-- Change Password -->
-            <button
-              type="button"
-              onclick="openSettingsModal('password')"
-              class="flex w-full items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3 text-left transition hover:border-cyan-300/35 hover:bg-white/10 active:scale-[0.99]"
-            >
-              <div class="min-w-0 pr-2">
-                <div data-i18n="changePasswordLabel" class="text-xs font-semibold text-white">Change Password</div>
-                <div id="settings-password-meta" class="truncate text-[11px] text-slate-300/80">Protected</div>
-              </div>
-              <span data-i18n="updateAction" class="shrink-0 text-xs text-slate-300">Update</span>
-            </button>
-
-            <!-- Email -->
-            <button
-              type="button"
-              onclick="openSettingsModal('email')"
-              class="flex w-full items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3 text-left transition hover:border-cyan-300/35 hover:bg-white/10 active:scale-[0.99]"
-            >
-              <div class="min-w-0 pr-2">
-                <div data-i18n="emailLabel" class="text-xs font-semibold text-white">Email</div>
-                <div id="settings-current-email" class="truncate text-[11px] text-cyan-200/85">aria.vance@tin-vin.com</div>
-              </div>
-              <span data-i18n="manageAction" class="shrink-0 text-xs text-slate-300">Manage</span>
-            </button>
-
-            <!-- Two-Factor Authentication -->
-            <div class="flex items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3">
-              <div class="min-w-0 pr-3">
-                <div data-i18n="twoFactorLabel" class="text-xs font-semibold text-white">Two-Factor Authentication</div>
-                <div id="settings-2fa-status" class="truncate text-[11px] text-slate-300/80">Enabled</div>
-              </div>
-              <button
-                id="toggle-2fa-btn"
-                type="button"
-                onclick="toggleTwoFactor()"
-                aria-pressed="true"
-                class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-cyan-300/40 bg-cyan-400/35 p-0.5 transition"
-              >
-                <span id="toggle-2fa-knob" class="h-5 w-5 translate-x-5 rounded-full bg-white shadow-[0_0_10px_rgba(103,232,249,0.9)] transition-transform"></span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Privacy & Terms Section -->
-          <div class="glass-panel rounded-3xl p-4 space-y-2.5">
-            <div class="px-1">
-              <h3 data-i18n="privacyLegalTitle" class="text-xs font-bold tracking-wide text-slate-200">Privacy &amp; Terms</h3>
-            </div>
-
-            <!-- Privacy -->
-            <button
-              type="button"
-              onclick="openSettingsModal('privacy')"
-              class="flex w-full items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3 text-left transition hover:border-fuchsia-300/35 hover:bg-white/10 active:scale-[0.99]"
-            >
-              <div class="min-w-0 pr-2">
-                <div data-i18n="privacyLabel" class="text-xs font-semibold text-white">Privacy</div>
-                <div id="settings-privacy-summary" class="truncate text-[11px] text-fuchsia-200/85">Public Profile • DMs Open</div>
-              </div>
-              <span data-i18n="configureAction" class="shrink-0 text-xs text-slate-300">Configure</span>
-            </button>
-
-            <!-- Terms -->
-            <button
-              type="button"
-              onclick="openSettingsModal('terms')"
-              class="flex w-full items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-3 text-left transition hover:border-cyan-300/35 hover:bg-white/10 active:scale-[0.99]"
-            >
-              <div class="min-w-0 pr-2">
-                <div data-i18n="termsLabel" class="text-xs font-semibold text-white">Terms</div>
-                <div data-i18n="termsSubtitle" class="truncate text-[11px] text-slate-300/80">Usage &amp; media rules</div>
-              </div>
-              <span data-i18n="readAction" class="shrink-0 text-xs text-slate-300">Read</span>
-            </button>
-          </div>
-
-          <!-- Session & Delete Account Section -->
-          <div class="glass-panel rounded-3xl p-4 space-y-2.5">
-            <button
-              type="button"
-              onclick="handleLogOut()"
-              class="flex w-full items-center justify-between rounded-2xl border border-amber-300/25 bg-amber-400/10 px-3.5 py-3 text-left transition hover:border-amber-300/45 hover:bg-amber-400/15 active:scale-[0.99]"
-            >
-              <div>
-                <div data-i18n="logOutLabel" class="text-xs font-semibold text-amber-200">Log Out</div>
-                <div data-i18n="logOutSubtitle" class="text-[11px] text-amber-100/75">Sign out of current session</div>
-              </div>
-              <span data-i18n="logOutLabel" class="text-xs font-semibold text-amber-200">Log Out</span>
-            </button>
-
-            <button
-              type="button"
-              onclick="openSettingsModal('delete')"
-              class="flex w-full items-center justify-between rounded-2xl border border-rose-400/30 bg-rose-500/12 px-3.5 py-3 text-left transition hover:border-rose-300/55 hover:bg-rose-500/20 active:scale-[0.99]"
-            >
-              <div>
-                <div data-i18n="deleteAccountLabel" class="text-xs font-semibold text-rose-200">Delete Account</div>
-                <div data-i18n="deleteAccountSubtitle" class="text-[11px] text-rose-100/75">Permanently remove account data</div>
-              </div>
-              <span data-i18n="deleteAction" class="text-xs font-semibold text-rose-200">Delete</span>
-            </button>
-          </div>
-        </section>
-      </main>
-
-      <!-- Curved Full-Glass Bottom Navigation Dock (Home, Explore, Center Crystalline Create Post Orb, Activity, Profile) -->
-      <nav aria-label="Primary navigation" class="curved-glass-dock relative z-40 mt-auto shrink-0">
-        <div class="grid grid-cols-5 items-end gap-1 px-2 pt-2 pb-3">
-          <!-- 1. Home -->
-          <button
-            id="nav-home"
-            type="button"
-            onclick="switchTab('home')"
-            class="nav-item-btn nav-active-pill font-semibold text-cyan-200"
-          >
-            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-              <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
-            <span data-i18n="navHome" class="w-full truncate text-center">Home</span>
-          </button>
-
-          <!-- 2. Explore -->
-          <button
-            id="nav-explore"
-            type="button"
-            onclick="switchTab('explore')"
-            class="nav-item-btn font-medium text-slate-300/85 hover:bg-white/5 hover:text-white"
-          >
-            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
-            <span data-i18n="navExplore" class="w-full truncate text-center">Explore</span>
-          </button>
-
-          <!-- 3. Center Crystalline Orb Button: Create -->
-          <div class="flex flex-col items-center justify-end -mt-4 min-w-0">
-            <button
-              id="nav-create"
-              type="button"
-              onclick="openCreateModal()"
-              data-i18n-aria="createPostTitle"
-              aria-label="Create Post"
-              class="crystal-orb-surface flex h-12 w-12 shrink-0 items-center justify-center rounded-full"
-            >
-              <svg class="h-7 w-7 drop-shadow-[0_0_8px_rgba(103,232,249,0.75)]" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                <!-- Wide top horizontal crystal bar with faceted angled ends -->
-                <polygon points="7,14 34,14 31,26 11,26 6,20" fill="url(#tvCrystalTop)" stroke="rgba(255,255,255,0.9)" stroke-width="1.25" stroke-linejoin="round" />
-                <polygon points="10,16 32,16 30,21 9,21" fill="#ffffff" opacity="0.28" />
-                <!-- Right angled faceted crystal wing/arm piece -->
-                <polygon points="37,14 57,14 55,22 44,43 36,37 39,24" fill="url(#tvCrystalRightV)" stroke="rgba(255,255,255,0.9)" stroke-width="1.25" stroke-linejoin="round" />
-                <polygon points="41,17 53,17 44,36" fill="#e0f2fe" opacity="0.32" />
-                <!-- Lower-left/vertical faceted crystal prism piece -->
-                <polygon points="14,34 23,34 23,46 14,41" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.86)" stroke-width="1.2" stroke-linejoin="round" />
-                <polygon points="26,34 38,34 38,51 32,56 26,51" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.9)" stroke-width="1.25" stroke-linejoin="round" />
-                <polygon points="28,36 33,36 33,53 28,49" fill="#ffffff" opacity="0.34" />
-              </svg>
-            </button>
-            <span data-i18n="navCreateShort" class="mt-1 w-full truncate text-center text-[10px] leading-none font-semibold text-cyan-200">Create</span>
-          </div>
-
-          <!-- 4. Activity -->
-          <button
-            id="nav-activity"
-            type="button"
-            onclick="switchTab('activity')"
-            class="nav-item-btn font-medium text-slate-300/85 hover:bg-white/5 hover:text-white"
-          >
-            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
-              <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
-            </svg>
-            <span data-i18n="navActivity" class="w-full truncate text-center">Activity</span>
-          </button>
-
-          <!-- 5. Profile -->
-          <button
-            id="nav-profile"
-            type="button"
-            onclick="switchTab('profile')"
-            class="nav-item-btn font-medium text-slate-300/85 hover:bg-white/5 hover:text-white"
-          >
-            <svg class="h-4 w-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
-              <circle cx="12" cy="7" r="4"></circle>
-            </svg>
-            <span data-i18n="navProfile" class="w-full truncate text-center">Profile</span>
-          </button>
-        </div>
-      </nav>
-    </div>
-  </div>
-
-  <!-- Story Preview Modal -->
-  <div id="story-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-950/80 p-4 backdrop-blur-md">
-    <div class="glass-elevated w-full max-w-sm rounded-3xl p-4">
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <img id="story-modal-avatar" src="" alt="Story avatar" class="h-9 w-9 rounded-full border border-cyan-300/40 object-cover" />
-          <div>
-            <div id="story-modal-name" class="text-xs font-bold text-white"></div>
-            <div id="story-modal-time" class="text-[10px] text-cyan-200/80"></div>
-          </div>
-        </div>
-        <button
-          type="button"
-          onclick="closeStoryModal()"
-          aria-label="Close story"
-          class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/10 text-xs text-white hover:bg-white/20"
-        >
-          ✕
-        </button>
-      </div>
-
-      <div class="mt-3 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/40">
-        <img id="story-modal-image" src="" alt="Story media" class="h-52 w-full object-cover" />
-      </div>
-      <p id="story-modal-caption" class="mt-3 text-xs leading-relaxed text-slate-100"></p>
-    </div>
-  </div>
-
-  <!-- Interactive Settings Modal -->
-  <div id="settings-modal" class="fixed inset-0 z-50 hidden items-end justify-center bg-slate-950/75 sm:items-center sm:p-4 backdrop-blur-md">
-    <div class="glass-elevated w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5">
-      <div class="mx-auto mb-3 h-1 w-10 rounded-full bg-white/25 sm:hidden"></div>
-      <div class="flex items-center justify-between">
-        <div>
-          <h3 id="settings-modal-title" class="text-base font-bold text-white">Settings</h3>
-          <p id="settings-modal-subtitle" class="text-[11px] text-slate-300/80"></p>
-        </div>
-        <button
-          type="button"
-          onclick="closeSettingsModal()"
-          aria-label="Close settings modal"
-          class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/10 text-xs text-slate-200 hover:bg-white/20"
-        >
-          ✕
-        </button>
-      </div>
-      <div id="settings-modal-body" class="mt-4 space-y-3">
-        <!-- Populated dynamically -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Create Post Modal with Auto-Compression (< 3 MB via HTML5 Canvas) -->
-  <div id="create-modal" class="fixed inset-0 z-50 hidden items-end justify-center bg-slate-950/75 sm:items-center sm:p-4 backdrop-blur-md">
-    <div class="glass-elevated w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5">
-      <div class="mx-auto mb-3 h-1 w-10 rounded-full bg-white/25 sm:hidden"></div>
-
-      <div class="flex items-center justify-between">
-        <div class="flex items-center gap-2.5">
-          <div class="crystal-orb-surface flex h-9 w-9 items-center justify-center rounded-full" aria-hidden="true">
-            <svg class="h-5 w-5" viewBox="0 0 64 64" fill="none">
-              <polygon points="7,14 34,14 31,26 11,26 6,20" fill="url(#tvCrystalTop)" stroke="rgba(255,255,255,0.88)" stroke-width="1.3" />
-              <polygon points="37,14 57,14 55,22 44,43 36,37 39,24" fill="url(#tvCrystalRightV)" stroke="rgba(255,255,255,0.88)" stroke-width="1.3" />
-              <polygon points="14,34 23,34 23,46 14,41" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.85)" stroke-width="1.2" />
-              <polygon points="26,34 38,34 38,51 32,56 26,51" fill="url(#tvCrystalLeftV)" stroke="rgba(255,255,255,0.88)" stroke-width="1.3" />
-            </svg>
-          </div>
-          <div>
-            <h2 data-i18n="createPostTitle" class="text-base font-bold text-white">Create Post</h2>
-            <p data-i18n="createPostLimitHint" class="text-[11px] text-slate-300/85">Images over 3 MB auto-compress below 3 MB</p>
-          </div>
-        </div>
-        <button
-          type="button"
-          onclick="closeCreateModal()"
-          aria-label="Close modal"
-          class="flex h-8 w-8 items-center justify-center rounded-full border border-white/15 bg-white/10 text-xs text-slate-200 hover:bg-white/20"
-        >
-          ✕
-        </button>
-      </div>
-
-      <form id="create-post-form" onsubmit="handlePublishPost(event)" class="mt-4 space-y-3.5">
-        <div>
-          <label for="post-text-input" data-i18n="postCaptionLabel" class="mb-1 block text-xs font-medium text-slate-200">Message</label>
-          <textarea
-            id="post-text-input"
-            rows="3"
-            data-i18n-placeholder="postCaptionPlaceholder"
-            placeholder="Share something with TinVin Social..."
-            class="w-full rounded-2xl border border-white/15 bg-slate-950/40 p-3 text-xs text-white placeholder-slate-400 focus:border-cyan-300/50 focus:outline-none"
-          ></textarea>
-        </div>
-
-        <div>
-          <label data-i18n="attachImageLabel" class="mb-1.5 block text-xs font-medium text-slate-200">Image (Max 3 MB)</label>
-          <label class="flex cursor-pointer items-center justify-between gap-3 rounded-2xl border border-dashed border-cyan-300/35 bg-white/5 px-3.5 py-3 transition hover:border-cyan-300/65 hover:bg-white/10">
-            <div class="flex items-center gap-2.5 min-w-0">
-              <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-cyan-400/20 text-cyan-200">
-                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                  <polyline points="21 15 16 10 5 21"></polyline>
-                </svg>
-              </div>
-              <div class="min-w-0">
-                <div id="file-picker-label" data-i18n="chooseImageText" class="truncate text-xs font-medium text-white">Choose File</div>
-                <div data-i18n="imageFormatsHint" class="text-[11px] text-slate-300/75">JPG, PNG, WEBP</div>
-              </div>
-            </div>
-            <span data-i18n="browseBtn" class="shrink-0 rounded-xl border border-white/15 bg-white/10 px-2.5 py-1 text-[11px] font-medium text-cyan-200">Browse</span>
-            <input
-              id="post-image-input"
-              type="file"
-              accept="image/*"
-              onchange="handleImageSelection(event)"
-              class="hidden"
-            />
-          </label>
-        </div>
-
-        <div id="compression-status-box" class="hidden rounded-2xl border border-white/15 bg-slate-950/40 p-3">
-          <div class="flex flex-wrap items-center justify-between gap-2">
-            <span id="compression-badge" class="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/35 bg-cyan-400/15 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-200">
-              Checking...
-            </span>
-            <span id="compression-details" class="text-[11px] text-slate-300"></span>
-          </div>
-
-          <div id="image-preview-wrap" class="mt-2.5 hidden overflow-hidden rounded-xl border border-white/10">
-            <img id="image-preview-img" src="" alt="Selected post preview" class="max-h-40 w-full object-cover" />
-          </div>
-        </div>
-
-        <div class="flex items-center justify-end gap-2.5 pt-1">
-          <button
-            type="button"
-            onclick="closeCreateModal()"
-            data-i18n="cancelBtn"
-            class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-medium text-slate-200 hover:bg-white/10"
-          >
-            Cancel
-          </button>
-          <button
-            id="publish-post-btn"
-            type="submit"
-            data-i18n="publishBtn"
-            class="rounded-2xl border border-cyan-300/40 bg-gradient-to-r from-sky-500/45 via-indigo-500/45 to-fuchsia-500/45 px-5 py-2.5 text-xs font-semibold text-white shadow-[0_0_20px_rgba(99,102,241,0.4)] transition hover:brightness-110 active:scale-95"
-          >
-            Post
-          </button>
-        </div>
+      <form id="forgotForm" class="form" onsubmit="handleAuth(event, '/forgot-password')">
+        <input type="email" name="email" placeholder="ئیمەیڵی هەژمارەکەت بنووسە" required />
+        <button type="submit" class="submit-btn">ناردنی داواکاری گەڕاندنەوە</button>
+        <button type="button" class="link-btn" onclick="switchView('login')">گەڕانەوە بۆ Login</button>
       </form>
     </div>
+
+    <div id="sessionBox" class="session-box">
+      <p id="sessionInfo"></p>
+      <button type="button" class="logout-btn" onclick="logout()">چوونەدەرەوە</button>
+    </div>
+
+    <div id="statusMsg" class="msg"></div>
   </div>
 
   <script>
-    // 3 MB byte limit (3 * 1024 * 1024 bytes)
-    const MAX_IMAGE_BYTES = 3 * 1024 * 1024;
+    const WORKER_URL = "https://your-tinvin-worker.workers.dev";
+    const STORAGE_KEY = "tinvin_auth_session";
 
-    // Multi-language dictionary (zero Kurdish text anywhere)
-    const TRANSLATIONS = {
-      en: {
-        dir: 'ltr',
-        label: 'English (EN)',
-        navHome: 'Home',
-        navExplore: 'Explore',
-        navCreateShort: 'Create',
-        navActivity: 'Activity',
-        navProfile: 'Profile',
-        navMessages: 'Messages',
-        settingsTab: 'Settings',
-        subtitleHome: 'Full Glass Stream',
-        subtitleExplore: 'Discover Topics',
-        subtitleActivity: 'Recent Alerts',
-        subtitleProfile: 'Member Profile',
-        subtitleMessages: 'Direct Chats',
-        subtitleSettings: 'Preferences & Security',
-        storiesTitle: 'Stories',
-        storyLabel: 'Story',
-        exploreTitle: 'Explore',
-        exploreSubtitle: 'Browse glass posts and creators',
-        searchPlaceholder: 'Search posts or creators...',
-        topicAll: 'All',
-        topicGlass: 'Glass UI',
-        topicCosmos: 'Cosmos',
-        topicOrbs: 'Orbs',
-        activityTitle: 'Activity',
-        profileBio: 'Exploring luminous glass interfaces and fast mobile sharing.',
-        statPosts: 'Posts',
-        statFollowers: 'Followers',
-        statFollowing: 'Following',
-        newPostBtn: '+ Create Post',
-        yourPostsTitle: 'Posts',
-        messagesTitle: 'Messages',
-        messagesSubtitle: 'Direct conversations on TinVin Social',
-        backHomeBtn: 'Home',
-        settingsTitle: 'Settings',
-        settingsSubtitle: 'Language, security, privacy & account',
-        languageLabel: 'Language',
-        autoCompressLabel: 'Auto-Compress Images (< 3 MB)',
-        autoCompressActive: 'Active (< 3 MB)',
-        autoCompressOff: 'Off (3 MB limit)',
-        accountSecurityTitle: 'Account & Security',
-        changeNameLabel: 'Change Name',
-        changePasswordLabel: 'Change Password',
-        emailLabel: 'Email',
-        twoFactorLabel: 'Two-Factor Authentication',
-        twoFactorOn: 'Enabled',
-        twoFactorOff: 'Disabled',
-        privacyLegalTitle: 'Privacy & Terms',
-        privacyLabel: 'Privacy',
-        privacyPublic: 'Public Profile',
-        privacyPrivate: 'Private Account',
-        dmOpen: 'DMs Open',
-        dmRestricted: 'DMs Restricted',
-        termsLabel: 'Terms',
-        termsSubtitle: 'Usage & media rules',
-        logOutLabel: 'Log Out',
-        logOutSubtitle: 'Sign out of current session',
-        deleteAccountLabel: 'Delete Account',
-        deleteAccountSubtitle: 'Permanently remove account data',
-        editAction: 'Edit',
-        updateAction: 'Update',
-        manageAction: 'Manage',
-        configureAction: 'Configure',
-        readAction: 'Read',
-        deleteAction: 'Delete',
-        createPostTitle: 'Create Post',
-        createPostLimitHint: 'Images over 3 MB auto-compress below 3 MB',
-        postCaptionLabel: 'Message',
-        postCaptionPlaceholder: 'Share something with TinVin Social...',
-        attachImageLabel: 'Image (Max 3 MB)',
-        chooseImageText: 'Choose File',
-        imageFormatsHint: 'JPG, PNG, WEBP',
-        browseBtn: 'Browse',
-        cancelBtn: 'Cancel',
-        publishBtn: 'Post',
-        saveBtn: 'Save',
-        doneBtn: 'Done',
-        confirmDeleteBtn: 'Confirm Delete'
-      },
-      ar: {
-        dir: 'rtl',
-        label: 'العربية (AR)',
-        navHome: 'الرئيسية',
-        navExplore: 'استكشاف',
-        navCreateShort: 'نشر',
-        navActivity: 'النشاط',
-        navProfile: 'الملف',
-        navMessages: 'الرسائل',
-        settingsTab: 'الإعدادات',
-        subtitleHome: 'تدفق زجاجي كامل',
-        subtitleExplore: 'اكتشف المواضيع',
-        subtitleActivity: 'التنبيهات الأخيرة',
-        subtitleProfile: 'الملف الشخصي',
-        subtitleMessages: 'المحادثات المباشرة',
-        subtitleSettings: 'التفضيلات والأمان',
-        storiesTitle: 'القصص',
-        storyLabel: 'قصة',
-        exploreTitle: 'استكشاف',
-        exploreSubtitle: 'تصفح المنشورات والمبدعين',
-        searchPlaceholder: 'ابحث عن منشور أو مستخدم...',
-        topicAll: 'الكل',
-        topicGlass: 'واجهة زجاجية',
-        topicCosmos: 'الفضاء',
-        topicOrbs: 'أجرام',
-        activityTitle: 'النشاط',
-        profileBio: 'استكشاف واجهات زجاجية مضيئة ومشاركة سريعة عبر الهاتف.',
-        statPosts: 'المنشورات',
-        statFollowers: 'المتابعون',
-        statFollowing: 'المتابَعون',
-        newPostBtn: '+ إنشاء منشور',
-        yourPostsTitle: 'المنشورات',
-        messagesTitle: 'الرسائل',
-        messagesSubtitle: 'محادثات مباشرة في تين فين سوشيال',
-        backHomeBtn: 'الرئيسية',
-        settingsTitle: 'الإعدادات',
-        settingsSubtitle: 'اللغة والأمان والخصوصية والحساب',
-        languageLabel: 'اللغة',
-        autoCompressLabel: 'ضغط الصور تلقائياً (أقل من 3 ميغابايت)',
-        autoCompressActive: 'مفعل (< 3 MB)',
-        autoCompressOff: 'متوقف (حد 3 MB)',
-        accountSecurityTitle: 'الحساب والأمان',
-        changeNameLabel: 'تغيير الاسم',
-        changePasswordLabel: 'تغيير كلمة المرور',
-        emailLabel: 'البريد الإلكتروني',
-        twoFactorLabel: 'المصادقة الثنائية',
-        twoFactorOn: 'مفعلة',
-        twoFactorOff: 'معطلة',
-        privacyLegalTitle: 'الخصوصية والشروط',
-        privacyLabel: 'الخصوصية',
-        privacyPublic: 'ملف عام',
-        privacyPrivate: 'حساب خاص',
-        dmOpen: 'الرسائل مفتوحة',
-        dmRestricted: 'الرسائل مقيدة',
-        termsLabel: 'الشروط',
-        termsSubtitle: 'قواعد الاستخدام والوسائط',
-        logOutLabel: 'تسجيل الخروج',
-        logOutSubtitle: 'إنهاء الجلسة الحالية',
-        deleteAccountLabel: 'حذف الحساب',
-        deleteAccountSubtitle: 'إزالة بيانات الحساب نهائياً',
-        editAction: 'تعديل',
-        updateAction: 'تحديث',
-        manageAction: 'إدارة',
-        configureAction: 'ضبط',
-        readAction: 'قراءة',
-        deleteAction: 'حذف',
-        createPostTitle: 'إنشاء منشور',
-        createPostLimitHint: 'الصور فوق 3 MB تُضغط تلقائياً لأقل من 3 MB',
-        postCaptionLabel: 'الرسالة',
-        postCaptionPlaceholder: 'شارك شيئاً مع TinVin Social...',
-        attachImageLabel: 'صورة (بحد أقصى 3 MB)',
-        chooseImageText: 'اختر ملفاً',
-        imageFormatsHint: 'JPG, PNG, WEBP',
-        browseBtn: 'استعراض',
-        cancelBtn: 'إلغاء',
-        publishBtn: 'نشر',
-        saveBtn: 'حفظ',
-        doneBtn: 'تم',
-        confirmDeleteBtn: 'تأكيد الحذف'
-      },
-      es: {
-        dir: 'ltr',
-        label: 'Español (ES)',
-        navHome: 'Inicio',
-        navExplore: 'Explorar',
-        navCreateShort: 'Crear',
-        navActivity: 'Actividad',
-        navProfile: 'Perfil',
-        navMessages: 'Mensajes',
-        settingsTab: 'Ajustes',
-        subtitleHome: 'Flujo Cristalino',
-        subtitleExplore: 'Explorar Temas',
-        subtitleActivity: 'Alertas Recientes',
-        subtitleProfile: 'Tu Perfil',
-        subtitleMessages: 'Chats Directos',
-        subtitleSettings: 'Preferencias y Seguridad',
-        storiesTitle: 'Historias',
-        storyLabel: 'Historia',
-        exploreTitle: 'Explorar',
-        exploreSubtitle: 'Descubre publicaciones y creadores',
-        searchPlaceholder: 'Buscar publicaciones o creadores...',
-        topicAll: 'Todo',
-        topicGlass: 'Glass UI',
-        topicCosmos: 'Cosmos',
-        topicOrbs: 'Orbes',
-        activityTitle: 'Actividad',
-        profileBio: 'Explorando interfaces de cristal luminoso y móvil rápido.',
-        statPosts: 'Publicaciones',
-        statFollowers: 'Seguidores',
-        statFollowing: 'Siguiendo',
-        newPostBtn: '+ Crear Publicación',
-        yourPostsTitle: 'Publicaciones',
-        messagesTitle: 'Mensajes',
-        messagesSubtitle: 'Conversaciones directas en TinVin Social',
-        backHomeBtn: 'Inicio',
-        settingsTitle: 'Ajustes',
-        settingsSubtitle: 'Idioma, seguridad, privacidad y cuenta',
-        languageLabel: 'Idioma',
-        autoCompressLabel: 'Auto-comprimir Imágenes (< 3 MB)',
-        autoCompressActive: 'Activo (< 3 MB)',
-        autoCompressOff: 'Desactivado',
-        accountSecurityTitle: 'Cuenta y Seguridad',
-        changeNameLabel: 'Cambiar Nombre',
-        changePasswordLabel: 'Cambiar Contraseña',
-        emailLabel: 'Correo Electrónico',
-        twoFactorLabel: 'Autenticación en Dos Pasos',
-        twoFactorOn: 'Activada',
-        twoFactorOff: 'Desactivada',
-        privacyLegalTitle: 'Privacidad y Términos',
-        privacyLabel: 'Privacidad',
-        privacyPublic: 'Perfil Público',
-        privacyPrivate: 'Cuenta Privada',
-        dmOpen: 'MD Abiertos',
-        dmRestricted: 'MD Restringidos',
-        termsLabel: 'Términos',
-        termsSubtitle: 'Normas de uso y medios',
-        logOutLabel: 'Cerrar Sesión',
-        logOutSubtitle: 'Salir de la sesión actual',
-        deleteAccountLabel: 'Eliminar Cuenta',
-        deleteAccountSubtitle: 'Borrar permanentemente los datos',
-        editAction: 'Editar',
-        updateAction: 'Actualizar',
-        manageAction: 'Gestionar',
-        configureAction: 'Configurar',
-        readAction: 'Leer',
-        deleteAction: 'Eliminar',
-        createPostTitle: 'Crear Publicación',
-        createPostLimitHint: 'Imágenes mayores a 3 MB se comprimen bajo 3 MB',
-        postCaptionLabel: 'Mensaje',
-        postCaptionPlaceholder: 'Comparte algo en TinVin Social...',
-        attachImageLabel: 'Imagen (Máx. 3 MB)',
-        chooseImageText: 'Elegir Archivo',
-        imageFormatsHint: 'JPG, PNG, WEBP',
-        browseBtn: 'Buscar',
-        cancelBtn: 'Cancelar',
-        publishBtn: 'Publicar',
-        saveBtn: 'Guardar',
-        doneBtn: 'Listo',
-        confirmDeleteBtn: 'Confirmar Eliminación'
-      },
-      fr: {
-        dir: 'ltr',
-        label: 'Français (FR)',
-        navHome: 'Accueil',
-        navExplore: 'Explorer',
-        navCreateShort: 'Créer',
-        navActivity: 'Activité',
-        navProfile: 'Profil',
-        navMessages: 'Messages',
-        settingsTab: 'Paramètres',
-        subtitleHome: 'Flux Verre Complet',
-        subtitleExplore: 'Découvrir',
-        subtitleActivity: 'Alertes Récentes',
-        subtitleProfile: 'Votre Profil',
-        subtitleMessages: 'Discussions Directes',
-        subtitleSettings: 'Préférences et Sécurité',
-        storiesTitle: 'Stories',
-        storyLabel: 'Story',
-        exploreTitle: 'Explorer',
-        exploreSubtitle: 'Parcourir les publications et créateurs',
-        searchPlaceholder: 'Rechercher des posts ou créateurs...',
-        topicAll: 'Tout',
-        topicGlass: 'Glass UI',
-        topicCosmos: 'Cosmos',
-        topicOrbs: 'Orbes',
-        activityTitle: 'Activité',
-        profileBio: 'Interfaces lumineuses en verre et partage mobile fluide.',
-        statPosts: 'Posts',
-        statFollowers: 'Abonnés',
-        statFollowing: 'Abonnements',
-        newPostBtn: '+ Créer un Post',
-        yourPostsTitle: 'Posts',
-        messagesTitle: 'Messages',
-        messagesSubtitle: 'Discussions directes sur TinVin Social',
-        backHomeBtn: 'Accueil',
-        settingsTitle: 'Paramètres',
-        settingsSubtitle: 'Langue, sécurité, confidentialité et compte',
-        languageLabel: 'Langue',
-        autoCompressLabel: 'Compression Auto Images (< 3 Mo)',
-        autoCompressActive: 'Actif (< 3 Mo)',
-        autoCompressOff: 'Désactivé',
-        accountSecurityTitle: 'Compte et Sécurité',
-        changeNameLabel: 'Changer le Nom',
-        changePasswordLabel: 'Changer le Mot de Passe',
-        emailLabel: 'E-mail',
-        twoFactorLabel: 'Authentification à Deux Facteurs',
-        twoFactorOn: 'Activée',
-        twoFactorOff: 'Désactivée',
-        privacyLegalTitle: 'Confidentialité et Conditions',
-        privacyLabel: 'Confidentialité',
-        privacyPublic: 'Profil Public',
-        privacyPrivate: 'Compte Privé',
-        dmOpen: 'MP Ouverts',
-        dmRestricted: 'MP Restreints',
-        termsLabel: 'Conditions',
-        termsSubtitle: 'Règles d’utilisation et médias',
-        logOutLabel: 'Déconnexion',
-        logOutSubtitle: 'Fermer la session actuelle',
-        deleteAccountLabel: 'Supprimer le Compte',
-        deleteAccountSubtitle: 'Supprimer définitivement le compte',
-        editAction: 'Modifier',
-        updateAction: 'Mettre à jour',
-        manageAction: 'Gérer',
-        configureAction: 'Configurer',
-        readAction: 'Lire',
-        deleteAction: 'Supprimer',
-        createPostTitle: 'Créer un Post',
-        createPostLimitHint: 'Les images > 3 Mo sont compressées sous 3 Mo',
-        postCaptionLabel: 'Message',
-        postCaptionPlaceholder: 'Partagez quelque chose sur TinVin Social...',
-        attachImageLabel: 'Image (Max 3 Mo)',
-        chooseImageText: 'Choisir un Fichier',
-        imageFormatsHint: 'JPG, PNG, WEBP',
-        browseBtn: 'Parcourir',
-        cancelBtn: 'Annuler',
-        publishBtn: 'Publier',
-        saveBtn: 'Enregistrer',
-        doneBtn: 'OK',
-        confirmDeleteBtn: 'Confirmer la Suppression'
-      },
-      de: {
-        dir: 'ltr',
-        label: 'Deutsch (DE)',
-        navHome: 'Start',
-        navExplore: 'Entdecken',
-        navCreateShort: 'Erstellen',
-        navActivity: 'Aktivität',
-        navProfile: 'Profil',
-        navMessages: 'Nachrichten',
-        settingsTab: 'Einstellungen',
-        subtitleHome: 'Full-Glass-Stream',
-        subtitleExplore: 'Themen Entdecken',
-        subtitleActivity: 'Neuigkeiten',
-        subtitleProfile: 'Dein Profil',
-        subtitleMessages: 'Direktnachrichten',
-        subtitleSettings: 'Optionen & Sicherheit',
-        storiesTitle: 'Stories',
-        storyLabel: 'Story',
-        exploreTitle: 'Entdecken',
-        exploreSubtitle: 'Beiträge und Creator durchsuchen',
-        searchPlaceholder: 'Beiträge oder Creator suchen...',
-        topicAll: 'Alle',
-        topicGlass: 'Glass UI',
-        topicCosmos: 'Kosmos',
-        topicOrbs: 'Orbs',
-        activityTitle: 'Aktivität',
-        profileBio: 'Leuchtende Glasoberflächen und schnelles Teilen mobil.',
-        statPosts: 'Beiträge',
-        statFollowers: 'Follower',
-        statFollowing: 'Folgt',
-        newPostBtn: '+ Beitrag Erstellen',
-        yourPostsTitle: 'Beiträge',
-        messagesTitle: 'Nachrichten',
-        messagesSubtitle: 'Direkte Chats auf TinVin Social',
-        backHomeBtn: 'Start',
-        settingsTitle: 'Einstellungen',
-        settingsSubtitle: 'Sprache, Sicherheit, Datenschutz & Konto',
-        languageLabel: 'Sprache',
-        autoCompressLabel: 'Bilder Auto-Komprimieren (< 3 MB)',
-        autoCompressActive: 'Aktiv (< 3 MB)',
-        autoCompressOff: 'Aus',
-        accountSecurityTitle: 'Konto & Sicherheit',
-        changeNameLabel: 'Name Ändern',
-        changePasswordLabel: 'Passwort Ändern',
-        emailLabel: 'E-Mail',
-        twoFactorLabel: 'Zwei-Faktor-Authentifizierung',
-        twoFactorOn: 'Aktiviert',
-        twoFactorOff: 'Deaktiviert',
-        privacyLegalTitle: 'Datenschutz & Bedingungen',
-        privacyLabel: 'Datenschutz',
-        privacyPublic: 'Öffentliches Profil',
-        privacyPrivate: 'Privates Konto',
-        dmOpen: 'DMs Offen',
-        dmRestricted: 'DMs Eingeschränkt',
-        termsLabel: 'Bedingungen',
-        termsSubtitle: 'Nutzungs- & Medienregeln',
-        logOutLabel: 'Abmelden',
-        logOutSubtitle: 'Aktuelle Sitzung beenden',
-        deleteAccountLabel: 'Konto Löschen',
-        deleteAccountSubtitle: 'Kontodaten dauerhaft löschen',
-        editAction: 'Bearbeiten',
-        updateAction: 'Aktualisieren',
-        manageAction: 'Verwalten',
-        configureAction: 'Anpassen',
-        readAction: 'Lesen',
-        deleteAction: 'Löschen',
-        createPostTitle: 'Beitrag Erstellen',
-        createPostLimitHint: 'Bilder über 3 MB werden unter 3 MB komprimiert',
-        postCaptionLabel: 'Nachricht',
-        postCaptionPlaceholder: 'Teile etwas mit TinVin Social...',
-        attachImageLabel: 'Bild (Max. 3 MB)',
-        chooseImageText: 'Datei Wählen',
-        imageFormatsHint: 'JPG, PNG, WEBP',
-        browseBtn: 'Auswählen',
-        cancelBtn: 'Abbrechen',
-        publishBtn: 'Posten',
-        saveBtn: 'Speichern',
-        doneBtn: 'Fertig',
-        confirmDeleteBtn: 'Löschen Bestätigen'
-      },
-      tr: {
-        dir: 'ltr',
-        label: 'Türkçe (TR)',
-        navHome: 'Ana Sayfa',
-        navExplore: 'Keşfet',
-        navCreateShort: 'Oluştur',
-        navActivity: 'Hareketler',
-        navProfile: 'Profil',
-        navMessages: 'Mesajlar',
-        settingsTab: 'Ayarlar',
-        subtitleHome: 'Tam Cam Akış',
-        subtitleExplore: 'Konuları Keşfet',
-        subtitleActivity: 'Son Bildirimler',
-        subtitleProfile: 'Üye Profili',
-        subtitleMessages: 'Doğrudan Sohbetler',
-        subtitleSettings: 'Tercihler ve Güvenlik',
-        storiesTitle: 'Hikayeler',
-        storyLabel: 'Hikaye',
-        exploreTitle: 'Keşfet',
-        exploreSubtitle: 'Gönderileri ve içerik üreticilerini gör',
-        searchPlaceholder: 'Gönderi veya kişi ara...',
-        topicAll: 'Tümü',
-        topicGlass: 'Cam UI',
-        topicCosmos: 'Kozmos',
-        topicOrbs: 'Küreler',
-        activityTitle: 'Hareketler',
-        profileBio: 'Işıltılı cam arayüzler ve hızlı mobil paylaşım.',
-        statPosts: 'Gönderi',
-        statFollowers: 'Takipçi',
-        statFollowing: 'Takip',
-        newPostBtn: '+ Gönderi Oluştur',
-        yourPostsTitle: 'Gönderiler',
-        messagesTitle: 'Mesajlar',
-        messagesSubtitle: 'TinVin Social doğrudan sohbetleri',
-        backHomeBtn: 'Ana Sayfa',
-        settingsTitle: 'Ayarlar',
-        settingsSubtitle: 'Dil, güvenlik, gizlilik ve hesap',
-        languageLabel: 'Dil',
-        autoCompressLabel: 'Görselleri Otomatik Sıkıştır (< 3 MB)',
-        autoCompressActive: 'Aktif (< 3 MB)',
-        autoCompressOff: 'Kapalı',
-        accountSecurityTitle: 'Hesap ve Güvenlik',
-        changeNameLabel: 'Adı Değiştir',
-        changePasswordLabel: 'Şifreyi Değiştir',
-        emailLabel: 'E-posta',
-        twoFactorLabel: 'İki Faktörlü Kimlik Doğrulama',
-        twoFactorOn: 'Açık',
-        twoFactorOff: 'Kapalı',
-        privacyLegalTitle: 'Gizlilik ve Koşullar',
-        privacyLabel: 'Gizlilik',
-        privacyPublic: 'Herkese Açık',
-        privacyPrivate: 'Gizli Hesap',
-        dmOpen: 'DM Açık',
-        dmRestricted: 'DM Kısıtlı',
-        termsLabel: 'Koşullar',
-        termsSubtitle: 'Kullanım ve medya kuralları',
-        logOutLabel: 'Çıkış Yap',
-        logOutSubtitle: 'Mevcut oturumu kapat',
-        deleteAccountLabel: 'Hesabı Sil',
-        deleteAccountSubtitle: 'Hesap verilerini kalıcı sil',
-        editAction: 'Düzenle',
-        updateAction: 'Güncelle',
-        manageAction: 'Yönet',
-        configureAction: 'Ayarla',
-        readAction: 'Oku',
-        deleteAction: 'Sil',
-        createPostTitle: 'Gönderi Oluştur',
-        createPostLimitHint: '3 MB üzeri görseller 3 MB altına sıkıştırılır',
-        postCaptionLabel: 'Mesaj',
-        postCaptionPlaceholder: 'TinVin Social ile bir şey paylaş...',
-        attachImageLabel: 'Görsel (Maks. 3 MB)',
-        chooseImageText: 'Dosya Seç',
-        imageFormatsHint: 'JPG, PNG, WEBP',
-        browseBtn: 'Gözat',
-        cancelBtn: 'İptal',
-        publishBtn: 'Paylaş',
-        saveBtn: 'Kaydet',
-        doneBtn: 'Tamam',
-        confirmDeleteBtn: 'Silmeyi Onayla'
-      },
-      ja: {
-        dir: 'ltr',
-        label: '日本語 (JA)',
-        navHome: 'ホーム',
-        navExplore: '発見',
-        navCreateShort: '作成',
-        navActivity: 'アクティビティ',
-        navProfile: 'プロフィール',
-        navMessages: 'メッセージ',
-        settingsTab: '設定',
-        subtitleHome: 'フルグラス・ストリーム',
-        subtitleExplore: 'トピックを探す',
-        subtitleActivity: '最近の通知',
-        subtitleProfile: 'メンバープロフィール',
-        subtitleMessages: 'ダイレクトチャット',
-        subtitleSettings: '環境設定とセキュリティ',
-        storiesTitle: 'ストーリーズ',
-        storyLabel: 'ストーリー',
-        exploreTitle: '発見',
-        exploreSubtitle: '投稿やクリエイターを探索',
-        searchPlaceholder: '投稿やクリエイターを検索...',
-        topicAll: 'すべて',
-        topicGlass: 'グラスUI',
-        topicCosmos: 'コスモス',
-        topicOrbs: 'オーブ',
-        activityTitle: 'アクティビティ',
-        profileBio: '光るグラスUIと快適なモバイル共有を楽しんでいます。',
-        statPosts: '投稿',
-        statFollowers: 'フォロワー',
-        statFollowing: 'フォロー中',
-        newPostBtn: '+ 投稿を作成',
-        yourPostsTitle: '投稿',
-        messagesTitle: 'メッセージ',
-        messagesSubtitle: 'TinVin Social ダイレクトメッセージ',
-        backHomeBtn: 'ホーム',
-        settingsTitle: '設定',
-        settingsSubtitle: '言語・セキュリティ・プライバシー・アカウント',
-        languageLabel: '言語',
-        autoCompressLabel: '画像を自動圧縮 (< 3 MB)',
-        autoCompressActive: '有効 (< 3 MB)',
-        autoCompressOff: 'オフ',
-        accountSecurityTitle: 'アカウントとセキュリティ',
-        changeNameLabel: '名前を変更',
-        changePasswordLabel: 'パスワードを変更',
-        emailLabel: 'メール',
-        twoFactorLabel: '二段階認証',
-        twoFactorOn: 'オン',
-        twoFactorOff: 'オフ',
-        privacyLegalTitle: 'プライバシーと規約',
-        privacyLabel: 'プライバシー',
-        privacyPublic: '公開プロフィール',
-        privacyPrivate: '非公開アカウント',
-        dmOpen: 'DM受信可',
-        dmRestricted: 'DM制限中',
-        termsLabel: '利用規約',
-        termsSubtitle: '利用ルールとメディア規定',
-        logOutLabel: 'ログアウト',
-        logOutSubtitle: '現在のセッションを終了',
-        deleteAccountLabel: 'アカウント削除',
-        deleteAccountSubtitle: 'アカウントデータを完全に削除',
-        editAction: '編集',
-        updateAction: '更新',
-        manageAction: '管理',
-        configureAction: '設定',
-        readAction: '読む',
-        deleteAction: '削除',
-        createPostTitle: '投稿を作成',
-        createPostLimitHint: '3 MB超の画像は3 MB未満に自動圧縮されます',
-        postCaptionLabel: 'メッセージ',
-        postCaptionPlaceholder: 'TinVin Socialに投稿する...',
-        attachImageLabel: '画像（最大3 MB）',
-        chooseImageText: 'ファイルを選択',
-        imageFormatsHint: 'JPG, PNG, WEBP',
-        browseBtn: '参照',
-        cancelBtn: 'キャンセル',
-        publishBtn: '投稿',
-        saveBtn: '保存',
-        doneBtn: '完了',
-        confirmDeleteBtn: '削除を確定'
+    const loginTab = document.getElementById("loginTab");
+    const signupTab = document.getElementById("signupTab");
+    const loginForm = document.getElementById("loginForm");
+    const signupForm = document.getElementById("signupForm");
+    const forgotForm = document.getElementById("forgotForm");
+    const authSection = document.getElementById("authSection");
+    const sessionBox = document.getElementById("sessionBox");
+    const sessionInfo = document.getElementById("sessionInfo");
+    const statusMsg = document.getElementById("statusMsg");
+
+    function showMessage(text, type) {
+      statusMsg.textContent = text;
+      statusMsg.className = "msg " + type;
+    }
+
+    function clearMessage() {
+      statusMsg.textContent = "";
+      statusMsg.className = "msg";
+    }
+
+    function switchView(view) {
+      clearMessage();
+      loginForm.classList.remove("active");
+      signupForm.classList.remove("active");
+      forgotForm.classList.remove("active");
+      loginTab.classList.remove("active");
+      signupTab.classList.remove("active");
+
+      if (view === "login") {
+        loginForm.classList.add("active");
+        loginTab.classList.add("active");
+      } else if (view === "signup") {
+        signupForm.classList.add("active");
+        signupTab.classList.add("active");
+      } else if (view === "forgot") {
+        forgotForm.classList.add("active");
       }
-    };
-
-    // Stories data (with center highlighted story)
-    const storiesData = [
-      {
-        id: 's1',
-        name: 'Elena',
-        time: '12m',
-        isCenter: false,
-        avatar: 'https://placehold.co/120x120/1e293b/bae6fd?text=EL',
-        image: 'https://placehold.co/600x400/0f172a/67e8f9?text=Blue+Prism',
-        caption: 'Light refracting through a full-glass cosmos layer.'
-      },
-      {
-        id: 's2',
-        name: 'Michael',
-        time: '25m',
-        isCenter: false,
-        avatar: 'https://placehold.co/120x120/311042/f5d0fe?text=MK',
-        image: 'https://placehold.co/600x400/1e1b4b/e879f9?text=Violet+Aura',
-        caption: 'Soft violet glow behind translucent cards.'
-      },
-      {
-        id: 's3',
-        name: 'Story',
-        time: 'Live',
-        isCenter: true,
-        avatar: 'https://placehold.co/160x160/0c4a6e/e0f2fe?text=TV',
-        image: 'https://placehold.co/600x400/172554/93c5fd?text=TinVin+Crystalline+Orb',
-        caption: 'Featured TinVin Social glass story.'
-      },
-      {
-        id: 's4',
-        name: 'Devon',
-        time: '1h',
-        isCenter: false,
-        avatar: 'https://placehold.co/120x120/134e4a/99f6e4?text=DV',
-        image: 'https://placehold.co/600x400/083344/22d3ee?text=Cyan+Facet',
-        caption: 'Faceted cyan crystal geometry in deep space.'
-      },
-      {
-        id: 's5',
-        name: 'Emma',
-        time: '2h',
-        isCenter: false,
-        avatar: 'https://placehold.co/120x120/3b0764/e9d5ff?text=EM',
-        image: 'https://placehold.co/600x400/1e1b4b/c084fc?text=Glass+Dock',
-        caption: 'Clean navigation and rapid mobile uploads.'
-      }
-    ];
-
-    // Feed posts data
-    let postsData = [
-      {
-        id: 'p1',
-        author: 'Alex Morgan',
-        handle: '@alexmorgan',
-        verified: true,
-        time: '14m',
-        topicKey: 'topicGlass',
-        avatar: 'https://placehold.co/120x120/1e3a8a/dbeafe?text=AM',
-        text: 'Layered frosted glass cards over glowing violet and cyan orbs keep every line of text easy to read.',
-        image: 'https://placehold.co/640x360/0f172a/7dd3fc?text=TinVin+Glass+Card',
-        likes: 128,
-        comments: 14,
-        shares: 9,
-        liked: false,
-        bookmarked: false
-      },
-      {
-        id: 'p2',
-        author: 'Nadia Lin',
-        handle: '@nadialin',
-        verified: false,
-        time: '46m',
-        topicKey: 'topicOrbs',
-        avatar: 'https://placehold.co/120x120/4c1d95/ede9fe?text=NL',
-        text: 'Any photo above 3 MB automatically compresses below 3 MB in the browser before posting.',
-        image: '',
-        likes: 94,
-        comments: 8,
-        shares: 5,
-        liked: true,
-        bookmarked: false
-      },
-      {
-        id: 'p3',
-        author: 'Kaelen Ross',
-        handle: '@kaelenross',
-        verified: true,
-        time: '2h',
-        topicKey: 'topicCosmos',
-        avatar: 'https://placehold.co/120x120/164e63/cffafe?text=KR',
-        text: 'Crystalline gemstone emblems and floating polyhedra give the cosmic glass frame a distinct identity.',
-        image: 'https://placehold.co/640x360/172554/d8b4fe?text=Cosmic+Glass+Horizon',
-        likes: 215,
-        comments: 21,
-        shares: 17,
-        liked: false,
-        bookmarked: true
-      }
-    ];
-
-    const activityData = [
-      { id: 'a1', text: 'Elena liked your post', time: '5m', accent: 'text-cyan-300' },
-      { id: 'a2', text: 'Michael shared a glass card', time: '32m', accent: 'text-fuchsia-300' },
-      { id: 'a3', text: 'Devon started following you', time: '1h', accent: 'text-indigo-300' }
-    ];
-
-    const messagesData = [
-      { id: 'm1', name: 'Elena Rostova', preview: 'The crystalline orb emblem looks great!', time: '3m', unread: true },
-      { id: 'm2', name: 'Michael Chen', preview: 'Testing 3 MB auto-compression right now.', time: '24m', unread: false },
-      { id: 'm3', name: 'Devon Brooks', preview: 'Checked out the new language options.', time: '2h', unread: false }
-    ];
-
-    const userSettingsState = {
-      language: 'en',
-      name: 'Aria Vance',
-      handle: '@ariavance',
-      email: 'aria.vance@tin-vin.com',
-      twoFactorEnabled: true,
-      autoCompressEnabled: true,
-      privateAccount: false,
-      allowDirectMessages: true,
-      passwordUpdated: 'Protected',
-      verifiedActive: false,
-      verifiedPlan: 'first_time',
-      verifiedPrice: '$4.99'
-    };
-
-    let activeTab = 'home';
-    let activeExploreTopic = 'topicAll';
-
-    let pendingImage = {
-      dataUrl: '',
-      fileName: '',
-      originalBytes: 0,
-      finalBytes: 0,
-      compressed: false,
-      tooLargeEvenAfterCompression: false
-    };
-
-    function t(key) {
-      const langPack = TRANSLATIONS[userSettingsState.language] || TRANSLATIONS.en;
-      return langPack[key] !== undefined ? langPack[key] : (TRANSLATIONS.en[key] || key);
     }
 
-    function formatBytes(bytes) {
-      if (!bytes || bytes <= 0) return '0 B';
-      const mb = bytes / (1024 * 1024);
-      if (mb >= 0.01) return `${mb.toFixed(2)} MB`;
-      return `${(bytes / 1024).toFixed(1)} KB`;
-    }
-
-    function showToast(message, tone = 'info') {
-      const banner = document.getElementById('toast-banner');
-      const dot = document.getElementById('toast-dot');
-      const text = document.getElementById('toast-text');
-      if (!banner || !dot || !text) return;
-
-      text.textContent = message;
-      dot.className = 'h-2 w-2 shrink-0 rounded-full ' + (
-        tone === 'success' ? 'bg-emerald-300 shadow-[0_0_8px_rgba(110,231,183,0.9)]' :
-        tone === 'warn' ? 'bg-amber-300 shadow-[0_0_8px_rgba(252,211,77,0.9)]' :
-        'bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.9)]'
-      );
-
-      banner.classList.remove('opacity-0', 'pointer-events-none');
-      banner.classList.add('opacity-100');
-
-      clearTimeout(window.__toastTimer);
-      window.__toastTimer = setTimeout(() => {
-        banner.classList.remove('opacity-100');
-        banner.classList.add('opacity-0', 'pointer-events-none');
-      }, 2600);
-    }
-
-    /**
-     * Switch active UI language and update direction (LTR/RTL) and labels across the app.
-     */
-    function changeAppLanguage(langCode) {
-      if (!TRANSLATIONS[langCode]) return;
-      userSettingsState.language = langCode;
-      const pack = TRANSLATIONS[langCode];
-
-      document.documentElement.lang = langCode;
-      document.documentElement.dir = pack.dir || 'ltr';
-
-      const selectEl = document.getElementById('language-select');
-      if (selectEl) selectEl.value = langCode;
-
-      document.querySelectorAll('[data-i18n]').forEach((el) => {
-        const key = el.getAttribute('data-i18n');
-        if (key) el.textContent = t(key);
-      });
-
-      document.querySelectorAll('[data-i18n-placeholder]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-placeholder');
-        if (key) el.setAttribute('placeholder', t(key));
-      });
-
-      document.querySelectorAll('[data-i18n-aria]').forEach((el) => {
-        const key = el.getAttribute('data-i18n-aria');
-        if (key) el.setAttribute('aria-label', t(key));
-      });
-
-      updateHeaderForTab(activeTab);
-      renderStories();
-      renderFeed();
-      renderExploreChips();
-      renderExploreGrid();
-      renderSettingsSummary();
-      showToast(`${t('languageLabel')}: ${pack.label}`, 'info');
-    }
-
-    function updateHeaderForTab(tabName) {
-      const titleEl = document.getElementById('header-title');
-      const subEl = document.getElementById('header-subtitle');
-      if (!titleEl || !subEl) return;
-
-      const map = {
-        home: [t('navHome'), t('subtitleHome')],
-        explore: [t('navExplore'), t('subtitleExplore')],
-        activity: [t('navActivity'), t('subtitleActivity')],
-        profile: [t('navProfile'), t('subtitleProfile')],
-        messages: [t('navMessages'), t('subtitleMessages')],
-        settings: [t('settingsTab'), t('subtitleSettings')]
-      };
-      const pair = map[tabName] || map.home;
-      titleEl.textContent = pair[0];
-      subEl.textContent = pair[1];
-    }
-
-    function switchTab(tabName) {
-      activeTab = tabName;
-      const views = ['home', 'explore', 'activity', 'profile', 'messages', 'settings'];
-      views.forEach((v) => {
-        const el = document.getElementById(`view-${v}`);
-        if (el) el.classList.toggle('hidden', v !== tabName);
-      });
-
-      const navTabs = ['home', 'explore', 'activity', 'profile'];
-      navTabs.forEach((n) => {
-        const btn = document.getElementById(`nav-${n}`);
-        if (!btn) return;
-        if (n === tabName) {
-          btn.className = 'nav-item-btn nav-active-pill font-semibold text-cyan-200';
-        } else {
-          btn.className = 'nav-item-btn font-medium text-slate-300/85 hover:bg-white/5 hover:text-white';
-        }
-      });
-
-      updateHeaderForTab(tabName);
-      if (tabName === 'explore') {
-        renderExploreChips();
-        renderExploreGrid();
-      }
-      if (tabName === 'profile') renderProfileGallery();
-      if (tabName === 'messages') renderMessages();
-      if (tabName === 'settings') renderSettingsSummary();
-    }
-
-    /**
-     * Render Story strip with larger glowing center avatar and connected side avatars.
-     */
-    function renderStories() {
-      const strip = document.getElementById('stories-strip');
-      if (!strip) return;
-
-      strip.innerHTML = storiesData.map((story, idx) => {
-        const ringClass = story.isCenter ? 'story-ring-center h-14 w-14 p-[2.5px]' : 'story-ring h-10 w-10 p-[2px]';
-        const labelClass = story.isCenter
-          ? 'mt-1.5 text-[11px] font-semibold text-cyan-200'
-          : 'mt-1.5 max-w-[54px] truncate text-[10px] font-medium text-slate-200/85';
-        const displayLabel = story.isCenter ? t('storyLabel') : story.name;
-        const connector = idx < storiesData.length - 1 ? '<span class="story-connector" aria-hidden="true"></span>' : '';
-
-        return `
-          <button
-            type="button"
-            onclick="openStoryModal('${story.id}')"
-            class="flex shrink-0 flex-col items-center focus:outline-none group"
-          >
-            <div class="${ringClass} rounded-full transition-transform group-hover:scale-105">
-              <img
-                src="${story.avatar}"
-                alt="${escapeHtml(displayLabel)}"
-                onerror="this.src='https://placehold.co/120x120/1e293b/e2e8f0?text=TV'"
-                class="h-full w-full rounded-full object-cover"
-              />
-            </div>
-            <span class="${labelClass}">${escapeHtml(displayLabel)}</span>
-          </button>
-          ${connector}
-        `;
-      }).join('');
-    }
-
-    function openStoryModal(storyId) {
-      const story = storiesData.find((s) => s.id === storyId);
-      if (!story) return;
-
-      document.getElementById('story-modal-avatar').src = story.avatar;
-      document.getElementById('story-modal-name').textContent = story.isCenter ? t('storyLabel') : story.name;
-      document.getElementById('story-modal-time').textContent = story.time;
-      document.getElementById('story-modal-image').src = story.image;
-      document.getElementById('story-modal-caption').textContent = story.caption;
-
-      const modal = document.getElementById('story-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeStoryModal() {
-      const modal = document.getElementById('story-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    /**
-     * Render glassmorphic feed cards with layered glass depth and reaction buttons.
-     */
-    function renderFeed() {
-      const list = document.getElementById('feed-list');
-      if (!list) return;
-
-      list.innerHTML = postsData.map((post) => {
-        const imageBlock = post.image
-          ? `
-            <div class="mt-3 overflow-hidden rounded-2xl border border-white/15 bg-slate-950/35">
-              <img
-                src="${post.image}"
-                alt="${escapeHtml(post.author)}"
-                onerror="this.src='https://placehold.co/640x360/0f172a/93c5fd?text=TinVin+Glass'"
-                class="max-h-56 w-full object-cover"
-              />
-            </div>
-          `
-          : '';
-
-        const sizePill = post.sizeBadge
-          ? `<span class="rounded-full border border-cyan-300/30 bg-cyan-400/15 px-2 py-0.5 text-[10px] font-medium text-cyan-200">${escapeHtml(post.sizeBadge)}</span>`
-          : '';
-
-        return `
-          <article class="glass-card-stack">
-            <div class="glass-panel rounded-3xl p-4">
-              <div class="flex items-center justify-between gap-2">
-                <div class="flex items-center gap-3 min-w-0">
-                  <img
-                    src="${post.avatar}"
-                    alt="${escapeHtml(post.author)}"
-                    onerror="this.src='https://placehold.co/120x120/1e293b/e2e8f0?text=TV'"
-                    class="h-10 w-10 shrink-0 rounded-full border border-cyan-300/35 object-cover"
-                  />
-                  <div class="min-w-0">
-                    <div class="flex items-center gap-1.5">
-                      <h3 class="truncate text-xs font-semibold text-white">${escapeHtml(post.author)}</h3>
-                      ${post.verified ? '<span class="inline-flex h-3.5 w-3.5 shrink-0 items-center justify-center rounded-full bg-cyan-400/25 text-[9px] font-bold text-cyan-200">✓</span>' : ''}
-                      <span class="truncate text-[11px] text-slate-300/75">${escapeHtml(post.handle)}</span>
-                    </div>
-                    <div class="flex items-center gap-1.5 text-[11px] text-cyan-200/75">
-                      <span>${escapeHtml(post.time)}</span>
-                      <span>•</span>
-                      <span>${escapeHtml(t(post.topicKey))}</span>
-                    </div>
-                  </div>
-                </div>
-                ${sizePill}
-              </div>
-
-              <p class="mt-3 rounded-2xl border border-white/10 bg-slate-950/25 px-3.5 py-2.5 text-[13px] leading-relaxed text-slate-100">
-                ${escapeHtml(post.text)}
-              </p>
-
-              ${imageBlock}
-
-              <div class="mt-3 flex items-center justify-between border-t border-white/10 pt-2.5 text-xs text-slate-300">
-                <div class="flex items-center gap-4">
-                  <button
-                    type="button"
-                    onclick="toggleLike('${post.id}')"
-                    class="flex items-center gap-1.5 rounded-xl px-2 py-1 transition ${post.liked ? 'text-fuchsia-300 bg-fuchsia-400/15' : 'hover:text-white hover:bg-white/5'}"
-                  >
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="${post.liked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-                    </svg>
-                    <span>${post.likes}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onclick="addQuickComment('${post.id}')"
-                    class="flex items-center gap-1.5 rounded-xl px-2 py-1 transition hover:bg-white/5 hover:text-cyan-200"
-                  >
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
-                    </svg>
-                    <span>${post.comments}</span>
-                  </button>
-
-                  <button
-                    type="button"
-                    onclick="sharePost('${post.id}')"
-                    class="flex items-center gap-1.5 rounded-xl px-2 py-1 transition hover:bg-white/5 hover:text-cyan-200"
-                  >
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <line x1="22" y1="2" x2="11" y2="13"></line>
-                      <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                    </svg>
-                    <span>${post.shares}</span>
-                  </button>
-                </div>
-
-                <button
-                  type="button"
-                  onclick="toggleBookmark('${post.id}')"
-                  aria-label="Bookmark"
-                  class="rounded-xl p-1.5 transition ${post.bookmarked ? 'text-cyan-300 bg-cyan-400/15' : 'hover:bg-white/5 hover:text-white'}"
-                >
-                  <svg class="h-4 w-4" viewBox="0 0 24 24" fill="${post.bookmarked ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2">
-                    <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </article>
-        `;
-      }).join('');
-
-      const countEl = document.getElementById('profile-post-count');
-      if (countEl) countEl.textContent = String(postsData.length);
-    }
-
-    function toggleLike(postId) {
-      const post = postsData.find((p) => p.id === postId);
-      if (!post) return;
-      post.liked = !post.liked;
-      post.likes += post.liked ? 1 : -1;
-      renderFeed();
-    }
-
-    function addQuickComment(postId) {
-      const post = postsData.find((p) => p.id === postId);
-      if (!post) return;
-      post.comments += 1;
-      renderFeed();
-      showToast('+1', 'success');
-    }
-
-    function sharePost(postId) {
-      const post = postsData.find((p) => p.id === postId);
-      if (!post) return;
-      post.shares += 1;
-      renderFeed();
-      showToast(post.author, 'info');
-    }
-
-    function toggleBookmark(postId) {
-      const post = postsData.find((p) => p.id === postId);
-      if (!post) return;
-      post.bookmarked = !post.bookmarked;
-      renderFeed();
-    }
-
-    function renderExploreChips() {
-      const wrap = document.getElementById('explore-chips');
-      if (!wrap) return;
-      const keys = ['topicAll', 'topicGlass', 'topicCosmos', 'topicOrbs'];
-      wrap.innerHTML = keys.map((k) => {
-        const selected = activeExploreTopic === k;
-        const cls = selected
-          ? 'rounded-full border border-cyan-300/45 bg-cyan-400/20 px-3 py-1 text-[11px] font-semibold text-cyan-200'
-          : 'rounded-full border border-white/15 bg-white/5 px-3 py-1 text-[11px] font-medium text-slate-300 hover:bg-white/10';
-        return `<button type="button" onclick="setExploreTopic('${k}')" class="${cls}">${escapeHtml(t(k))}</button>`;
-      }).join('');
-    }
-
-    function setExploreTopic(topicKey) {
-      activeExploreTopic = topicKey;
-      renderExploreChips();
-      renderExploreGrid();
-    }
-
-    function renderExploreGrid() {
-      const grid = document.getElementById('explore-grid');
-      if (!grid) return;
-      const query = (document.getElementById('explore-search')?.value || '').trim().toLowerCase();
-
-      const items = postsData.filter((p) => {
-        const matchesTopic = activeExploreTopic === 'topicAll' || p.topicKey === activeExploreTopic;
-        const matchesQuery = !query || p.text.toLowerCase().includes(query) || p.author.toLowerCase().includes(query);
-        return matchesTopic && matchesQuery;
-      });
-
-      if (items.length === 0) {
-        grid.innerHTML = `<div class="glass-panel col-span-2 rounded-2xl p-6 text-center text-xs text-slate-300">—</div>`;
+    function renderSession() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) {
+        authSection.style.display = "block";
+        sessionBox.classList.remove("active");
         return;
       }
-
-      grid.innerHTML = items.map((item) => `
-        <div class="glass-panel flex flex-col justify-between rounded-2xl p-3">
-          <div>
-            <div class="mb-2 flex items-center justify-between">
-              <span class="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-medium text-cyan-200">${escapeHtml(t(item.topicKey))}</span>
-              <span class="text-[10px] text-slate-300/75">${escapeHtml(item.time)}</span>
-            </div>
-            <p class="line-clamp-3 text-xs leading-relaxed text-slate-100">${escapeHtml(item.text)}</p>
-          </div>
-          <div class="mt-3 flex items-center justify-between border-t border-white/10 pt-2 text-[11px] text-slate-300/80">
-            <span class="truncate">${escapeHtml(item.author)}</span>
-            <span>♥ ${item.likes}</span>
-          </div>
-        </div>
-      `).join('');
-    }
-
-    function renderActivity() {
-      const list = document.getElementById('activity-list');
-      if (!list) return;
-      list.innerHTML = activityData.map((act) => `
-        <div class="flex items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-2.5">
-          <div class="flex items-center gap-2.5 min-w-0">
-            <span class="h-2 w-2 shrink-0 rounded-full bg-cyan-300"></span>
-            <span class="truncate text-xs text-slate-100">${escapeHtml(act.text)}</span>
-          </div>
-          <span class="ml-2 shrink-0 text-[11px] ${act.accent}">${escapeHtml(act.time)}</span>
-        </div>
-      `).join('');
-    }
-
-    function renderProfileGallery() {
-      const gallery = document.getElementById('profile-gallery');
-      if (!gallery) return;
-      const thumbs = postsData.filter((p) => p.image);
-      if (thumbs.length === 0) {
-        gallery.innerHTML = `<p class="col-span-3 py-4 text-center text-xs text-slate-300">—</p>`;
-        return;
-      }
-      gallery.innerHTML = thumbs.map((item) => `
-        <div class="aspect-square overflow-hidden rounded-xl border border-white/15 bg-slate-950/40">
-          <img
-            src="${item.image}"
-            alt="${escapeHtml(item.author)}"
-            onerror="this.src='https://placehold.co/240x240/0f172a/93c5fd?text=TV'"
-            class="h-full w-full object-cover"
-          />
-        </div>
-      `).join('');
-    }
-
-    function renderMessages() {
-      const container = document.getElementById('messages-list');
-      if (!container) return;
-      container.innerHTML = messagesData.map((m) => `
-        <button
-          type="button"
-          onclick="openMessageThread('${m.id}')"
-          class="flex w-full items-center justify-between gap-3 rounded-2xl border border-white/12 bg-white/5 p-3 text-left transition hover:border-cyan-300/35 hover:bg-white/10 active:scale-[0.99]"
-        >
-          <div class="min-w-0">
-            <div class="flex items-center gap-2">
-              <span class="truncate text-xs font-semibold text-white">${escapeHtml(m.name)}</span>
-              ${m.unread ? '<span class="h-2 w-2 rounded-full bg-cyan-300 shadow-[0_0_8px_rgba(103,232,249,0.9)]"></span>' : ''}
-            </div>
-            <p class="mt-0.5 truncate text-[11px] text-slate-300/85">${escapeHtml(m.preview)}</p>
-          </div>
-          <span class="shrink-0 text-[10px] text-cyan-200/80">${escapeHtml(m.time)}</span>
-        </button>
-      `).join('');
-
-      const dot = document.getElementById('messages-unread-dot');
-      if (dot) {
-        const hasUnread = messagesData.some((m) => m.unread);
-        dot.classList.toggle('hidden', !hasUnread);
-      }
-    }
-
-    function openMessageThread(id) {
-      const item = messagesData.find((m) => m.id === id);
-      if (!item) return;
-      item.unread = false;
-      renderMessages();
-      showToast(item.name, 'info');
-    }
-
-    function renderSettingsSummary() {
-      const langMeta = document.getElementById('settings-language-meta');
-      const nameEl = document.getElementById('settings-current-name');
-      const emailEl = document.getElementById('settings-current-email');
-      const passEl = document.getElementById('settings-password-meta');
-      const twoFaStatus = document.getElementById('settings-2fa-status');
-      const twoFaBtn = document.getElementById('toggle-2fa-btn');
-      const twoFaKnob = document.getElementById('toggle-2fa-knob');
-      const compressStatus = document.getElementById('settings-compress-status');
-      const compressBtn = document.getElementById('toggle-compress-btn');
-      const compressKnob = document.getElementById('toggle-compress-knob');
-      const privacySummary = document.getElementById('settings-privacy-summary');
-
-      const profName = document.getElementById('profile-display-name');
-      const profHandle = document.getElementById('profile-handle-label');
-
-      if (langMeta) langMeta.textContent = t('label');
-      if (nameEl) nameEl.textContent = `${userSettingsState.name} (${userSettingsState.handle})`;
-      if (emailEl) emailEl.textContent = userSettingsState.email;
-      if (passEl) passEl.textContent = userSettingsState.passwordUpdated;
-
-      if (profName) profName.textContent = userSettingsState.name;
-      if (profHandle) profHandle.textContent = `${userSettingsState.handle} • TinVin Social`;
-
-      if (twoFaBtn && twoFaKnob && twoFaStatus) {
-        twoFaBtn.setAttribute('aria-pressed', String(userSettingsState.twoFactorEnabled));
-        twoFaBtn.className = userSettingsState.twoFactorEnabled
-          ? 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-cyan-300/40 bg-cyan-400/35 p-0.5 transition'
-          : 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-white/15 bg-white/10 p-0.5 transition';
-        twoFaKnob.className = userSettingsState.twoFactorEnabled
-          ? 'h-5 w-5 translate-x-5 rounded-full bg-white shadow-[0_0_10px_rgba(103,232,249,0.9)] transition-transform'
-          : 'h-5 w-5 translate-x-0 rounded-full bg-slate-300 transition-transform';
-        twoFaStatus.textContent = userSettingsState.twoFactorEnabled ? t('twoFactorOn') : t('twoFactorOff');
-      }
-
-      if (compressBtn && compressKnob && compressStatus) {
-        compressBtn.setAttribute('aria-pressed', String(userSettingsState.autoCompressEnabled));
-        compressBtn.className = userSettingsState.autoCompressEnabled
-          ? 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-cyan-300/40 bg-cyan-400/35 p-0.5 transition'
-          : 'relative inline-flex h-6 w-11 shrink-0 cursor-pointer items-center rounded-full border border-white/15 bg-white/10 p-0.5 transition';
-        compressKnob.className = userSettingsState.autoCompressEnabled
-          ? 'h-5 w-5 translate-x-5 rounded-full bg-white shadow-[0_0_10px_rgba(103,232,249,0.9)] transition-transform'
-          : 'h-5 w-5 translate-x-0 rounded-full bg-slate-300 transition-transform';
-        compressStatus.textContent = userSettingsState.autoCompressEnabled ? t('autoCompressActive') : t('autoCompressOff');
-      }
-
-      if (privacySummary) {
-        const vis = userSettingsState.privateAccount ? t('privacyPrivate') : t('privacyPublic');
-        const dm = userSettingsState.allowDirectMessages ? t('dmOpen') : t('dmRestricted');
-        privacySummary.textContent = `${vis} • ${dm}`;
-      }
-
-      const profVerifiedBadge = document.getElementById('profile-verified-badge');
-      const profVerifiedLabel = document.getElementById('profile-verified-label');
-      const profVerifiedBtnLabel = document.getElementById('profile-verified-btn-label');
-      const settingsVerifiedBadge = document.getElementById('settings-verified-plan-badge');
-      const settingsVerifiedStatus = document.getElementById('settings-verified-status-text');
-
-      if (profVerifiedBadge && profVerifiedLabel) {
-        if (userSettingsState.verifiedActive) {
-          profVerifiedBadge.className = 'inline-flex cursor-pointer items-center gap-1 rounded-full border border-cyan-300/60 bg-cyan-400/25 px-2 py-0.5 text-[10px] font-semibold text-cyan-100 shadow-[0_0_14px_rgba(56,189,248,0.5)]';
-          profVerifiedLabel.textContent = `Verified • ${userSettingsState.verifiedPrice}`;
-        } else {
-          profVerifiedBadge.className = 'inline-flex cursor-pointer items-center gap-1 rounded-full border border-white/20 bg-white/8 px-2 py-0.5 text-[10px] font-medium text-slate-300 hover:border-cyan-300/45 hover:text-cyan-200';
-          profVerifiedLabel.textContent = 'Verified';
-        }
-      }
-
-      if (profVerifiedBtnLabel) {
-        profVerifiedBtnLabel.textContent = userSettingsState.verifiedActive ? userSettingsState.verifiedPrice : 'Verified';
-      }
-
-      if (settingsVerifiedBadge && settingsVerifiedStatus) {
-        if (userSettingsState.verifiedActive) {
-          settingsVerifiedBadge.textContent = `Active • ${userSettingsState.verifiedPrice}`;
-          settingsVerifiedStatus.textContent = `Verified (${userSettingsState.verifiedPrice})`;
-        } else {
-          settingsVerifiedBadge.textContent = '$4.99 / $9.99 / $99.99';
-          settingsVerifiedStatus.textContent = 'First-time $4.99 • Monthly $9.99 • Yearly $99.99';
-        }
-      }
-    }
-
-    function openVerifiedModal() {
-      const modal = document.getElementById('settings-modal');
-      const title = document.getElementById('settings-modal-title');
-      const subtitle = document.getElementById('settings-modal-subtitle');
-      const body = document.getElementById('settings-modal-body');
-      if (!modal || !title || !subtitle || !body) return;
-
-      title.textContent = 'Verified';
-      subtitle.textContent = 'First-time $4.99 • Monthly $9.99 • Yearly $99.99';
-
-      const plans = [
-        { id: 'first_time', label: 'First-Time', price: '$4.99', meta: 'Intro' },
-        { id: 'monthly', label: 'Monthly', price: '$9.99', meta: '/ mo' },
-        { id: 'yearly', label: 'Yearly', price: '$99.99', meta: '/ yr' }
-      ];
-
-      body.innerHTML = `
-        <div class="space-y-2.5">
-          ${plans.map((plan) => {
-            const selected = userSettingsState.verifiedActive && userSettingsState.verifiedPlan === plan.id;
-            return `
-              <button
-                type="button"
-                onclick="selectVerifiedPlan('${plan.id}', '${plan.price}')"
-                class="flex w-full items-center justify-between rounded-2xl border ${selected ? 'border-cyan-300/65 bg-cyan-400/20' : 'border-white/15 bg-white/5 hover:border-cyan-300/35 hover:bg-white/10'} px-4 py-3 text-left transition"
-              >
-                <div>
-                  <div class="text-xs font-bold text-white">✓ ${plan.label}</div>
-                  <div class="text-[11px] text-cyan-200/80">${plan.meta}</div>
-                </div>
-                <div class="text-sm font-bold text-cyan-200">${plan.price}</div>
-              </button>
-            `;
-          }).join('')}
-        </div>
-        <div class="flex justify-end gap-2 pt-2">
-          <button type="button" onclick="closeSettingsModal()" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-xs text-slate-200">${escapeHtml(t('doneBtn'))}</button>
-        </div>
-      `;
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function selectVerifiedPlan(planId, priceStr) {
-      userSettingsState.verifiedActive = true;
-      userSettingsState.verifiedPlan = planId;
-      userSettingsState.verifiedPrice = priceStr;
-      renderSettingsSummary();
-      closeSettingsModal();
-      showToast(`Verified • ${priceStr}`, 'success');
-    }
-
-    function toggleTwoFactor() {
-      userSettingsState.twoFactorEnabled = !userSettingsState.twoFactorEnabled;
-      renderSettingsSummary();
-      showToast(`${t('twoFactorLabel')}: ${userSettingsState.twoFactorEnabled ? t('twoFactorOn') : t('twoFactorOff')}`, 'success');
-    }
-
-    function toggleAutoCompress() {
-      userSettingsState.autoCompressEnabled = !userSettingsState.autoCompressEnabled;
-      renderSettingsSummary();
-      showToast(userSettingsState.autoCompressEnabled ? t('autoCompressActive') : t('autoCompressOff'), 'info');
-    }
-
-    function openSettingsModal(section) {
-      const modal = document.getElementById('settings-modal');
-      const title = document.getElementById('settings-modal-title');
-      const subtitle = document.getElementById('settings-modal-subtitle');
-      const body = document.getElementById('settings-modal-body');
-      if (!modal || !title || !subtitle || !body) return;
-
-      if (section === 'name') {
-        title.textContent = t('changeNameLabel');
-        subtitle.textContent = t('settingsSubtitle');
-        body.innerHTML = `
-          <div>
-            <input id="input-new-name" type="text" value="${escapeHtml(userSettingsState.name)}" class="w-full rounded-2xl border border-white/15 bg-slate-950/45 px-3.5 py-2.5 text-xs text-white focus:border-cyan-300/50 focus:outline-none" />
-          </div>
-          <div>
-            <input id="input-new-handle" type="text" value="${escapeHtml(userSettingsState.handle)}" class="w-full rounded-2xl border border-white/15 bg-slate-950/45 px-3.5 py-2.5 text-xs text-white focus:border-cyan-300/50 focus:outline-none" />
-          </div>
-          <div class="flex justify-end gap-2 pt-1">
-            <button type="button" onclick="closeSettingsModal()" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-xs text-slate-200">${escapeHtml(t('cancelBtn'))}</button>
-            <button type="button" onclick="saveNameChange()" class="rounded-2xl border border-cyan-300/40 bg-cyan-400/25 px-4 py-2 text-xs font-semibold text-white">${escapeHtml(t('saveBtn'))}</button>
-          </div>
-        `;
-      } else if (section === 'password') {
-        title.textContent = t('changePasswordLabel');
-        subtitle.textContent = t('accountSecurityTitle');
-        body.innerHTML = `
-          <div>
-            <input id="input-current-pass" type="password" placeholder="••••••" class="w-full rounded-2xl border border-white/15 bg-slate-950/45 px-3.5 py-2.5 text-xs text-white focus:border-cyan-300/50 focus:outline-none" />
-          </div>
-          <div>
-            <input id="input-new-pass" type="password" placeholder="••••••" class="w-full rounded-2xl border border-white/15 bg-slate-950/45 px-3.5 py-2.5 text-xs text-white focus:border-cyan-300/50 focus:outline-none" />
-          </div>
-          <div>
-            <input id="input-confirm-pass" type="password" placeholder="••••••" class="w-full rounded-2xl border border-white/15 bg-slate-950/45 px-3.5 py-2.5 text-xs text-white focus:border-cyan-300/50 focus:outline-none" />
-          </div>
-          <div class="flex justify-end gap-2 pt-1">
-            <button type="button" onclick="closeSettingsModal()" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-xs text-slate-200">${escapeHtml(t('cancelBtn'))}</button>
-            <button type="button" onclick="savePasswordChange()" class="rounded-2xl border border-cyan-300/40 bg-cyan-400/25 px-4 py-2 text-xs font-semibold text-white">${escapeHtml(t('updateAction'))}</button>
-          </div>
-        `;
-      } else if (section === 'email') {
-        title.textContent = t('emailLabel');
-        subtitle.textContent = t('accountSecurityTitle');
-        body.innerHTML = `
-          <div>
-            <input id="input-new-email" type="email" value="${escapeHtml(userSettingsState.email)}" class="w-full rounded-2xl border border-white/15 bg-slate-950/45 px-3.5 py-2.5 text-xs text-white focus:border-cyan-300/50 focus:outline-none" />
-          </div>
-          <div class="flex justify-end gap-2 pt-1">
-            <button type="button" onclick="closeSettingsModal()" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-xs text-slate-200">${escapeHtml(t('cancelBtn'))}</button>
-            <button type="button" onclick="saveEmailChange()" class="rounded-2xl border border-cyan-300/40 bg-cyan-400/25 px-4 py-2 text-xs font-semibold text-white">${escapeHtml(t('saveBtn'))}</button>
-          </div>
-        `;
-      } else if (section === 'privacy') {
-        title.textContent = t('privacyLabel');
-        subtitle.textContent = t('privacyLegalTitle');
-        body.innerHTML = `
-          <label class="flex items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-2.5 text-xs text-slate-100">
-            <span>${escapeHtml(t('privacyPrivate'))}</span>
-            <input id="priv-private-acc" type="checkbox" ${userSettingsState.privateAccount ? 'checked' : ''} class="h-4 w-4 accent-cyan-400" />
-          </label>
-          <label class="flex items-center justify-between rounded-2xl border border-white/12 bg-white/5 px-3.5 py-2.5 text-xs text-slate-100">
-            <span>${escapeHtml(t('dmOpen'))}</span>
-            <input id="priv-allow-dm" type="checkbox" ${userSettingsState.allowDirectMessages ? 'checked' : ''} class="h-4 w-4 accent-cyan-400" />
-          </label>
-          <div class="flex justify-end gap-2 pt-1">
-            <button type="button" onclick="closeSettingsModal()" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-xs text-slate-200">${escapeHtml(t('cancelBtn'))}</button>
-            <button type="button" onclick="savePrivacySettings()" class="rounded-2xl border border-fuchsia-300/40 bg-fuchsia-500/25 px-4 py-2 text-xs font-semibold text-white">${escapeHtml(t('saveBtn'))}</button>
-          </div>
-        `;
-      } else if (section === 'terms') {
-        title.textContent = t('termsLabel');
-        subtitle.textContent = t('termsSubtitle');
-        body.innerHTML = `
-          <div class="max-h-48 space-y-2 overflow-y-auto rounded-2xl border border-white/12 bg-slate-950/40 p-3.5 text-xs leading-relaxed text-slate-200">
-            <p>1. Respect community members and post only content you are authorized to share on TinVin Social.</p>
-            <p>2. Images are limited to 3 MB; oversized images may be automatically compressed below 3 MB prior to upload.</p>
-          </div>
-          <div class="flex justify-end pt-1">
-            <button type="button" onclick="closeSettingsModal()" class="rounded-2xl border border-cyan-300/40 bg-cyan-400/25 px-4 py-2 text-xs font-semibold text-white">${escapeHtml(t('doneBtn'))}</button>
-          </div>
-        `;
-      } else if (section === 'delete') {
-        title.textContent = t('deleteAccountLabel');
-        subtitle.textContent = t('deleteAccountSubtitle');
-        body.innerHTML = `
-          <div class="rounded-2xl border border-rose-400/35 bg-rose-500/15 p-3 text-xs text-rose-100">
-            DELETE
-          </div>
-          <div>
-            <input id="input-delete-confirm" type="text" placeholder="DELETE" class="w-full rounded-2xl border border-rose-300/35 bg-slate-950/50 px-3.5 py-2.5 text-xs text-white focus:border-rose-300 focus:outline-none" />
-          </div>
-          <div class="flex justify-end gap-2 pt-1">
-            <button type="button" onclick="closeSettingsModal()" class="rounded-2xl border border-white/15 bg-white/5 px-4 py-2 text-xs text-slate-200">${escapeHtml(t('cancelBtn'))}</button>
-            <button type="button" onclick="confirmDeleteAccount()" class="rounded-2xl border border-rose-300/50 bg-rose-500/35 px-4 py-2 text-xs font-semibold text-white">${escapeHtml(t('confirmDeleteBtn'))}</button>
-          </div>
-        `;
-      }
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeSettingsModal() {
-      const modal = document.getElementById('settings-modal');
-      if (!modal) return;
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function saveNameChange() {
-      const nameVal = (document.getElementById('input-new-name')?.value || '').trim();
-      let handleVal = (document.getElementById('input-new-handle')?.value || '').trim();
-      if (!nameVal) return;
-      if (handleVal && !handleVal.startsWith('@')) handleVal = `@${handleVal}`;
-      userSettingsState.name = nameVal;
-      if (handleVal) userSettingsState.handle = handleVal;
-      renderSettingsSummary();
-      closeSettingsModal();
-      showToast(t('saveBtn'), 'success');
-    }
-
-    function savePasswordChange() {
-      const cur = (document.getElementById('input-current-pass')?.value || '').trim();
-      const nw = (document.getElementById('input-new-pass')?.value || '').trim();
-      const cf = (document.getElementById('input-confirm-pass')?.value || '').trim();
-      if (!cur || nw.length < 4 || nw !== cf) {
-        showToast(t('changePasswordLabel'), 'warn');
-        return;
-      }
-      userSettingsState.passwordUpdated = t('updateAction');
-      renderSettingsSummary();
-      closeSettingsModal();
-      showToast(t('updateAction'), 'success');
-    }
-
-    function saveEmailChange() {
-      const emailVal = (document.getElementById('input-new-email')?.value || '').trim();
-      if (!emailVal || !emailVal.includes('@')) return;
-      userSettingsState.email = emailVal;
-      renderSettingsSummary();
-      closeSettingsModal();
-      showToast(t('saveBtn'), 'success');
-    }
-
-    function savePrivacySettings() {
-      userSettingsState.privateAccount = Boolean(document.getElementById('priv-private-acc')?.checked);
-      userSettingsState.allowDirectMessages = Boolean(document.getElementById('priv-allow-dm')?.checked);
-      renderSettingsSummary();
-      closeSettingsModal();
-      showToast(t('saveBtn'), 'success');
-    }
-
-    function handleLogOut() {
-      showToast(t('logOutLabel'), 'info');
-      switchTab('home');
-    }
-
-    function confirmDeleteAccount() {
-      const val = (document.getElementById('input-delete-confirm')?.value || '').trim();
-      if (val !== 'DELETE') {
-        showToast('DELETE', 'warn');
-        return;
-      }
-      postsData = [];
-      renderFeed();
-      renderProfileGallery();
-      renderExploreGrid();
-      closeSettingsModal();
-      switchTab('home');
-      showToast(t('deleteAccountLabel'), 'warn');
-    }
-
-    function openCreateModal() {
-      resetCreateForm();
-      const modal = document.getElementById('create-modal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-    }
-
-    function closeCreateModal() {
-      const modal = document.getElementById('create-modal');
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function resetCreateForm() {
-      document.getElementById('create-post-form').reset();
-      document.getElementById('file-picker-label').textContent = t('chooseImageText');
-      document.getElementById('compression-status-box').classList.add('hidden');
-      document.getElementById('image-preview-wrap').classList.add('hidden');
-      document.getElementById('image-preview-img').src = '';
-      pendingImage = {
-        dataUrl: '',
-        fileName: '',
-        originalBytes: 0,
-        finalBytes: 0,
-        compressed: false,
-        tooLargeEvenAfterCompression: false
-      };
-    }
-
-    function estimateDataUrlBytes(dataUrl) {
-      const base64Part = dataUrl.split(',')[1] || '';
-      const padding = (base64Part.match(/=+$/) || [''])[0].length;
-      return Math.max(0, Math.floor((base64Part.length * 3) / 4) - padding);
-    }
-
-    /**
-     * Auto-compress image via HTML5 Canvas so resulting JPEG stays under 3 MB.
-     */
-    async function compressImageUnder3MB(file) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onerror = () => reject(new Error('Read error'));
-        reader.onload = () => {
-          const img = new Image();
-          img.onerror = () => reject(new Error('Image error'));
-          img.onload = () => {
-            try {
-              const canvas = document.createElement('canvas');
-              const ctx = canvas.getContext('2d');
-              if (!ctx) {
-                reject(new Error('Canvas error'));
-                return;
-              }
-
-              let maxDimension = 1920;
-              let quality = 0.84;
-              let dataUrl = '';
-              let byteSize = Infinity;
-
-              for (let step = 0; step < 8; step++) {
-                let w = img.width;
-                let h = img.height;
-
-                if (w > maxDimension || h > maxDimension) {
-                  if (w >= h) {
-                    h = Math.round((h * maxDimension) / w);
-                    w = maxDimension;
-                  } else {
-                    w = Math.round((w * maxDimension) / h);
-                    h = maxDimension;
-                  }
-                }
-
-                canvas.width = Math.max(1, w);
-                canvas.height = Math.max(1, h);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
-                dataUrl = canvas.toDataURL('image/jpeg', quality);
-                byteSize = estimateDataUrlBytes(dataUrl);
-
-                if (byteSize <= MAX_IMAGE_BYTES) break;
-
-                if (quality > 0.56) {
-                  quality = Math.max(0.52, Number((quality - 0.1).toFixed(2)));
-                } else {
-                  maxDimension = Math.max(720, Math.round(maxDimension * 0.78));
-                }
-              }
-
-              resolve({
-                dataUrl,
-                byteSize,
-                underLimit: byteSize <= MAX_IMAGE_BYTES
-              });
-            } catch (err) {
-              reject(err);
-            }
-          };
-          img.src = reader.result;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function handleImageSelection(event) {
-      const file = event.target.files && event.target.files[0];
-      if (!file) return;
-
-      const statusBox = document.getElementById('compression-status-box');
-      const badge = document.getElementById('compression-badge');
-      const details = document.getElementById('compression-details');
-      const previewWrap = document.getElementById('image-preview-wrap');
-      const previewImg = document.getElementById('image-preview-img');
-
-      document.getElementById('file-picker-label').textContent = file.name;
-      statusBox.classList.remove('hidden');
-      badge.className = 'inline-flex items-center gap-1.5 rounded-full border border-cyan-300/35 bg-cyan-400/15 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-200';
-      badge.textContent = formatBytes(file.size);
-      details.textContent = '< 3.00 MB';
-
       try {
-        if (file.size <= MAX_IMAGE_BYTES) {
-          const dataUrl = await new Promise((resolve, reject) => {
-            const r = new FileReader();
-            r.onload = () => resolve(r.result);
-            r.onerror = () => reject(new Error('Read error'));
-            r.readAsDataURL(file);
-          });
-
-          pendingImage = {
-            dataUrl,
-            fileName: file.name,
-            originalBytes: file.size,
-            finalBytes: file.size,
-            compressed: false,
-            tooLargeEvenAfterCompression: false
-          };
-
-          badge.className = 'inline-flex items-center gap-1.5 rounded-full border border-emerald-300/40 bg-emerald-400/15 px-2.5 py-0.5 text-[11px] font-semibold text-emerald-200';
-          badge.textContent = formatBytes(file.size);
-          details.textContent = 'OK (< 3.00 MB)';
-          previewImg.src = dataUrl;
-          previewWrap.classList.remove('hidden');
-        } else {
-          if (!userSettingsState.autoCompressEnabled) {
-            pendingImage = {
-              dataUrl: '',
-              fileName: file.name,
-              originalBytes: file.size,
-              finalBytes: file.size,
-              compressed: false,
-              tooLargeEvenAfterCompression: true
-            };
-            badge.className = 'inline-flex items-center gap-1.5 rounded-full border border-amber-300/45 bg-amber-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-amber-200';
-            badge.textContent = `${formatBytes(file.size)} > 3.00 MB`;
-            details.textContent = t('autoCompressLabel');
-            previewWrap.classList.add('hidden');
-            return;
-          }
-
-          const result = await compressImageUnder3MB(file);
-          pendingImage = {
-            dataUrl: result.dataUrl,
-            fileName: file.name,
-            originalBytes: file.size,
-            finalBytes: result.byteSize,
-            compressed: true,
-            tooLargeEvenAfterCompression: !result.underLimit
-          };
-
-          if (result.underLimit) {
-            badge.className = 'inline-flex items-center gap-1.5 rounded-full border border-cyan-300/45 bg-cyan-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-cyan-200';
-            badge.textContent = `${formatBytes(result.byteSize)} (< 3.00 MB)`;
-            details.textContent = `${formatBytes(file.size)} -> ${formatBytes(result.byteSize)}`;
-            previewImg.src = result.dataUrl;
-            previewWrap.classList.remove('hidden');
-          } else {
-            badge.className = 'inline-flex items-center gap-1.5 rounded-full border border-amber-300/45 bg-amber-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-amber-200';
-            badge.textContent = `${formatBytes(result.byteSize)} > 3.00 MB`;
-            details.textContent = `${formatBytes(file.size)} -> ${formatBytes(result.byteSize)}`;
-            previewWrap.classList.add('hidden');
-          }
-        }
-      } catch (err) {
-        badge.className = 'inline-flex items-center gap-1.5 rounded-full border border-rose-300/45 bg-rose-400/20 px-2.5 py-0.5 text-[11px] font-semibold text-rose-200';
-        badge.textContent = 'Error';
-        details.textContent = err.message || '';
+        const data = JSON.parse(raw);
+        const label = data.username || data.email || "بەکارهێنەر";
+        sessionInfo.textContent = "چوویتە ژوورەوە وەک: " + label;
+        authSection.style.display = "none";
+        sessionBox.classList.add("active");
+      } catch {
+        localStorage.removeItem(STORAGE_KEY);
       }
     }
 
-    function handlePublishPost(event) {
+    function logout() {
+      localStorage.removeItem(STORAGE_KEY);
+      clearMessage();
+      renderSession();
+      switchView("login");
+    }
+
+    async function handleAuth(event, endpoint) {
       event.preventDefault();
-      const text = (document.getElementById('post-text-input')?.value || '').trim();
+      clearMessage();
 
-      if (!text && !pendingImage.dataUrl) {
-        showToast(t('postCaptionPlaceholder'), 'warn');
-        return;
+      const form = event.target;
+      const btn = form.querySelector(".submit-btn");
+      const payload = Object.fromEntries(new FormData(form).entries());
+
+      btn.disabled = true;
+      try {
+        const res = await fetch(WORKER_URL + endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        const data = await res.json().catch(() => ({}));
+
+        if (!res.ok) {
+          showMessage(data.error || data.message || "هەڵەیەک ڕوویدا.", "error");
+          return;
+        }
+
+        if (endpoint === "/login" || endpoint === "/signup") {
+          const sessionData = {
+            token: data.token || null,
+            email: data.email || payload.email,
+            username: data.username || payload.username || null
+          };
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(sessionData));
+          showMessage(data.message || "بە سەرکەوتوویی چوویتە ژوورەوە.", "success");
+          renderSession();
+        } else {
+          showMessage(
+            data.message || "داواکاری گەڕاندنەوەی پاسۆرد نێردرا؛ ئیمەیڵەکەت بپشکنە.",
+            "success"
+          );
+          form.reset();
+        }
+      } catch {
+        showMessage("پەیوەندی بە Workerەکە سەرکەوتوو نەبوو.", "error");
+      } finally {
+        btn.disabled = false;
       }
-
-      if (pendingImage.tooLargeEvenAfterCompression || pendingImage.finalBytes > MAX_IMAGE_BYTES) {
-        showToast('> 3.00 MB', 'warn');
-        return;
-      }
-
-      const sizeBadge = pendingImage.dataUrl
-        ? formatBytes(pendingImage.finalBytes)
-        : '';
-
-      const newPost = {
-        id: `p-${Date.now()}`,
-        author: userSettingsState.name,
-        handle: userSettingsState.handle,
-        time: '1m',
-        topicKey: 'topicGlass',
-        avatar: 'https://placehold.co/120x120/1e1b4b/e0f2fe?text=AV',
-        text: text || 'TinVin Social',
-        image: pendingImage.dataUrl || '',
-        sizeBadge,
-        likes: 1,
-        comments: 0,
-        shares: 0,
-        liked: true,
-        bookmarked: false
-      };
-
-      postsData = [newPost, ...postsData];
-      renderFeed();
-      closeCreateModal();
-      switchTab('home');
-      showToast(t('publishBtn'), 'success');
     }
 
-    function escapeHtml(str) {
-      return String(str)
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#39;');
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      renderStories();
-      renderFeed();
-      renderExploreChips();
-      renderExploreGrid();
-      renderActivity();
-      renderProfileGallery();
-      renderMessages();
-      renderSettingsSummary();
-    });
+    renderSession();
   </script>
 </body>
 </html>
