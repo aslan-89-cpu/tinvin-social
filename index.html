@@ -88,6 +88,13 @@ nav .orb{border:2px solid rgba(195,215,255,.55);background:radial-gradient(circl
 .bub.me{background:linear-gradient(135deg,#22d3ee,#6d8cff 60%,#a78bfa)}
 .sheet{z-index:60}
 .toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(20,28,69,.96);border:1px solid rgba(140,180,255,.45);color:#fff;padding:10px 16px;border-radius:99px;z-index:70;font-size:14px;max-width:86%;text-align:center}
+.pbtns{gap:8px}.pbtns .btn{flex:1 1 0;min-width:0;padding:12px 4px;white-space:nowrap;text-align:center}
+.rec{background:#dc2626!important;color:#fff!important;border-color:#dc2626!important;animation:pl 1s infinite}
+@keyframes pl{50%{opacity:.6}}
+.bub audio{width:210px;max-width:100%;height:38px;display:block}
+.cl{position:fixed;inset:0;z-index:80;background:radial-gradient(700px 460px at 12% -6%,rgba(120,80,255,.4),transparent 70%),radial-gradient(640px 460px at 105% 90%,rgba(34,211,238,.25),transparent 70%),#070a1f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+.cb{padding:16px 24px;border-radius:99px;border:1px solid rgba(140,180,255,.4);background:rgba(255,255,255,.08);color:#fff;font-size:16px;font-weight:700}
+.cb.ok{background:#16a34a;border-color:#16a34a}.cb.no{background:#dc2626;border-color:#dc2626}
 </style>
 </head>
 <body>
@@ -160,6 +167,31 @@ function ask(msg,val=""){
   });
 }
 
+/* SHARE */
+const SITE_URL=()=>location.origin.replace(/^http:/,"https:")+location.pathname;
+async function copyText(t){
+  try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(t);return true}}catch{}
+  try{
+    const a=document.createElement("textarea");a.value=t;a.setAttribute("readonly","");
+    a.style.cssText="position:fixed;top:0;left:0;opacity:0";document.body.appendChild(a);
+    a.focus();a.select();a.setSelectionRange(0,t.length);
+    const ok=document.execCommand("copy");a.remove();return ok;
+  }catch{return false}
+}
+function showLink(url){
+  const s=$("sheet");s.classList.remove("hidden");
+  s.innerHTML=`<div><p style="margin:6px 0">Copy this link</p><input id="lk" readonly value="${esc(url)}"><button id="lc">Close</button></div>`;
+  s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
+  $("lc").onclick=()=>s.classList.add("hidden");
+  setTimeout(()=>{const i=$("lk");i.focus();i.select();i.setSelectionRange(0,url.length)},60);
+}
+async function shareIt(text,url){
+  try{if(navigator.share){await navigator.share({title:"TinVin Social",text,url});return}}
+  catch(e){if(e&&e.name==="AbortError")return}
+  if(await copyText(url)){alert("Link copied");return}
+  showLink(url);
+}
+
 /* AUTH */
 $("aS").onclick=()=>{mode=mode==="login"?"signup":"login";
   $("aT").textContent=mode==="login"?"Welcome back":"Create account";
@@ -188,18 +220,18 @@ function resetMode(t){resetTok=t;mode="reset";$("aT").textContent="Set new passw
 function logout(silent){
   if(!silent&&token)api("/api/logout",{method:"POST"}).catch(()=>{});
   token="";me=null;localStorage.removeItem("tvs_token");
-  $("auth").classList.remove("hidden");$("app").classList.add("hidden");$("nav").classList.add("hidden");$("gear").classList.add("hidden");clearInterval(unT);clearInterval(chatT);
+  $("auth").classList.remove("hidden");$("app").classList.add("hidden");$("nav").classList.add("hidden");$("gear").classList.add("hidden");clearInterval(unT);clearInterval(chatT);clearInterval(sigT);if(call)endCall(false);
 }
 async function start(){
   try{me=(await api("/api/me")).user}catch{return logout(true)}
   $("auth").classList.add("hidden");$("app").classList.remove("hidden");$("nav").classList.remove("hidden");$("gear").classList.remove("hidden");
-  go("home");pollUnread();clearInterval(unT);unT=setInterval(pollUnread,15000);
+  {const dl=(location.hash.match(/^#user=(\w+)/)||[])[1];dl?go("user",dl):go("home")}pollUnread();clearInterval(unT);unT=setInterval(pollUnread,15000);sigLast=0;clearInterval(sigT);sigT=setInterval(pollSignals,2000);
 }
 
 /* NAV */
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
 function go(v,arg){
-  clearInterval(chatT);$("nav").classList.remove("hidden");
+  clearInterval(chatT);if(rec){rec.send=false;rec.mr.stop()}$("nav").classList.remove("hidden");
   if(v==="create")return create();
   document.querySelectorAll("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));
   if(v==="chats")return chats();
@@ -219,10 +251,7 @@ function card(p,refresh){
   <div class="cm hidden"></div>`;
   d.querySelector(".u").onclick=()=>go("user",p.username);
   d.querySelector("[data-l]").onclick=async()=>{await post("/api/like/"+p.id);refresh()};
-  d.querySelector("[data-s]").onclick=async()=>{
-    const data={title:"TinVin Social",text:(p.text||"Post by @"+p.username),url:location.href.split("#")[0]};
-    try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}
-  };
+  d.querySelector("[data-s]").onclick=()=>shareIt(p.text||"Post by @"+p.username,SITE_URL()+"#user="+encodeURIComponent(p.username));
   const cm=d.querySelector(".cm");
   d.querySelector("[data-c]").onclick=()=>{cm.classList.toggle("hidden");if(!cm.classList.contains("hidden"))comments(p.id,cm,refresh)};
   d.querySelector("[data-m]").onclick=()=>menu(p,refresh);
@@ -385,14 +414,14 @@ async function chats(){
     box.innerHTML="";
     l.forEach(c=>{
       const r=document.createElement("button");r.className="srow";
-      r.innerHTML=`<span class="ava2">${esc(c.username[0].toUpperCase())}</span><span class="sl"><b style="color:var(--fg)">@${esc(c.username)}${vb(c.verified)}</b><br><span class="mut">${c.from_id===me.id?"You: ":""}${esc((c.text||"").slice(0,40))}</span></span><span class="mut">${ago(c.created_at)}</span>${c.unread?`<span class="pill">${c.unread}</span>`:""}`;
+      r.innerHTML=`<span class="ava2">${esc(c.username[0].toUpperCase())}</span><span class="sl"><b style="color:var(--fg)">@${esc(c.username)}${vb(c.verified)}</b><br><span class="mut">${c.from_id===me.id?"You: ":""}${c.audio_key?"&#127908; Voice message":esc((c.text||"").slice(0,40))}</span></span><span class="mut">${ago(c.created_at)}</span>${c.unread?`<span class="pill">${c.unread}</span>`:""}`;
       r.onclick=()=>chat(c.id,c.username);box.appendChild(r);
     });
   }catch(e){$("cl").textContent=e.message}
 }
 async function chat(id,name){
   clearInterval(chatT);$("nav").classList.add("hidden");
-  $("view").innerHTML=`<div class="glass" style="padding:10px 14px"><div class="row"><button class="ic" id="cBk" style="font-size:24px" aria-label="Back">&lsaquo;</button><b>@${esc(name)}</b></div></div><div class="msgs" id="msgs"></div><div class="cbar"><input id="mI" maxlength="1000" placeholder="Message..." autocomplete="off"><button class="btn" id="mS">Send</button></div>`;
+  $("view").innerHTML=`<div class="glass" style="padding:10px 14px"><div class="row"><button class="ic" id="cBk" style="font-size:24px" aria-label="Back">&lsaquo;</button><b>@${esc(name)}</b><span class="sp"></span><button class="ic" id="cCall" aria-label="Voice call" style="font-size:22px">&#128222;</button></div></div><div class="msgs" id="msgs"></div><div class="cbar"><input id="mI" maxlength="1000" placeholder="Message..." autocomplete="off"><button class="btn ghost" id="mR" aria-label="Voice message">&#127908;</button><button class="btn" id="mS">Send</button></div>`;
   let sig="";
   const del=x=>{
     const s=$("sheet");s.classList.remove("hidden");
@@ -407,13 +436,13 @@ async function chat(id,name){
       const m=(await api("/api/messages/"+id+"?after=0")).messages,g=m.map(x=>x.id).join();
       if(g===sig)return;
       sig=g;box.innerHTML="";
-      m.forEach(x=>{const d=document.createElement("div");d.className="bub "+(x.from_id===me.id?"me":"th");d.textContent=x.text;if(x.from_id===me.id)d.onclick=()=>del(x);box.appendChild(d)});
+      m.forEach(x=>{const d=document.createElement("div");d.className="bub "+(x.from_id===me.id?"me":"th");if(x.audio_key){const a=document.createElement("audio");a.controls=true;a.preload="metadata";a.src=API+"/img/"+x.audio_key;d.appendChild(a)}else d.textContent=x.text;if(x.from_id===me.id)d.onclick=e=>{if(e.target.tagName!=="AUDIO")del(x)};box.appendChild(d)});
       window.scrollTo(0,document.body.scrollHeight);
     }catch{}
   };
   const send=async()=>{const i=$("mI"),t=i.value.trim();if(!t)return;i.value="";try{await post("/api/message/"+id,{text:t});draw()}catch(e){alert(e.message);i.value=t}};
   $("cBk").onclick=()=>go("chats");
-  $("mS").onclick=send;$("mI").onkeydown=e=>{if(e.key==="Enter")send()};
+  $("mS").onclick=send;$("mR").onclick=()=>toggleRec(id,()=>{sig="";draw()});$("cCall").onclick=()=>startCall(id,name);$("mI").onkeydown=e=>{if(e.key==="Enter")send()};
   await draw();chatT=setInterval(draw,3500);pollUnread();
 }
 
@@ -430,6 +459,124 @@ async function showUsers(title,kind,id){
   }catch(e){$("ul").textContent=e.message}
 }
 
+/* VOICE MESSAGES + CALLS */
+let rec=null,call=null,sigLast=0,sigT=null;
+async function toggleRec(id,afterSend){
+  const b=$("mR");
+  if(rec){rec.send=true;rec.mr.stop();return}
+  if(!window.isSecureContext||!navigator.mediaDevices||!window.MediaRecorder){alert("Voice needs a secure (HTTPS) connection.");return}
+  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch{alert("Microphone permission denied.");return}
+  const mt=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>MediaRecorder.isTypeSupported(t))||"";
+  const mr=new MediaRecorder(st,mt?{mimeType:mt}:undefined),ch=[],t0=Date.now();
+  rec={mr,send:false};b.classList.add("rec");
+  const tick=setInterval(()=>{const n=Math.floor((Date.now()-t0)/1000);b.textContent="\u25A0 "+n+"s";if(n>=120&&rec){rec.send=true;mr.stop()}},400);
+  mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
+  mr.onstop=async()=>{
+    clearInterval(tick);st.getTracks().forEach(t=>t.stop());
+    const bb=$("mR");if(bb){bb.classList.remove("rec");bb.innerHTML="&#127908;"}
+    const send=rec&&rec.send;rec=null;
+    if(!send||!ch.length)return;
+    try{
+      const blob=new Blob(ch,{type:mr.mimeType||mt||"audio/webm"});
+      const key=(await api("/api/upload",{method:"POST",raw:true,headers:{"Content-Type":blob.type},body:blob})).key;
+      await post("/api/message/"+id,{audio:key});afterSend();
+    }catch(e){alert(e.message)}
+  };
+  mr.start();
+}
+
+const ICE_FB=[{urls:["stun:stun.cloudflare.com:3478","stun:stun.l.google.com:19302"]}];
+const sendSig=(to,kind,data)=>post("/api/signal/"+to,{kind,data:data==null?"":JSON.stringify(data)});
+const fmtT=()=>{const n=Math.floor((Date.now()-call.t0)/1000);return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")};
+function callView(){
+  if(!call)return;
+  let v=$("clv");if(!v){v=document.createElement("div");v.id="clv";v.className="cl";document.body.appendChild(v)}
+  v.innerHTML=`<div class="ava" style="width:96px;height:96px;font-size:40px">${esc((call.name||"?")[0].toUpperCase())}</div><b style="font-size:22px">@${esc(call.name)}</b><div class="mut" id="clS" style="font-size:16px">${esc(call.status||"")}</div><div class="row" style="gap:18px;margin-top:34px">${call.ringing?`<button class="cb ok" id="clA">Accept</button><button class="cb no" id="clD">Decline</button>`:`<button class="cb" id="clM">${call.muted?"Unmute":"Mute"}</button><button class="cb no" id="clD">End</button>`}</div>`;
+  $("clD").onclick=()=>endCall(true);
+  if(call.ringing)$("clA").onclick=acceptCall;
+  else $("clM").onclick=()=>{call.muted=!call.muted;call.stream.getAudioTracks().forEach(t=>t.enabled=!call.muted);callView()};
+}
+async function makePC(){
+  let ice=ICE_FB;try{ice=(await api("/api/turn")).iceServers||ICE_FB}catch{}
+  const pc=new RTCPeerConnection({iceServers:ice});call.pc=pc;
+  call.stream.getTracks().forEach(t=>pc.addTrack(t,call.stream));
+  const peer=call.peer;
+  pc.onicecandidate=e=>{if(e.candidate)sendSig(peer,"ice",e.candidate.toJSON()).catch(()=>{})};
+  pc.ontrack=e=>{let a=$("rAud");if(!a){a=document.createElement("audio");a.id="rAud";a.autoplay=true;a.setAttribute("playsinline","");document.body.appendChild(a)}a.srcObject=e.streams[0];a.play().catch(()=>{})};
+  pc.onconnectionstatechange=()=>{
+    if(!call||call.pc!==pc)return;
+    if(pc.connectionState==="connected"&&!call.connected){
+      call.connected=true;call.t0=Date.now();clearTimeout(call.to);call.status="00:00";callView();
+      call.tick=setInterval(()=>{const el=$("clS");if(el&&call){call.status=fmtT();el.textContent=call.status}},1000);
+    }
+    if(pc.connectionState==="failed"){alert("Call failed. Check the network and try again.");endCall(true)}
+  };
+}
+async function startCall(id,name){
+  if(call)return;
+  if(!window.isSecureContext||!navigator.mediaDevices||!window.RTCPeerConnection){alert("Calls need a secure (HTTPS) connection.");return}
+  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch{alert("Microphone permission denied.");return}
+  call={peer:id,name,stream:st,role:"caller",pend:[],status:"Calling..."};callView();
+  try{
+    await makePC();
+    const off=await call.pc.createOffer();await call.pc.setLocalDescription(off);
+    await sendSig(id,"offer",{type:off.type,sdp:off.sdp});
+  }catch(e){alert(e.message);endCall(false);return}
+  call.to=setTimeout(()=>{if(call&&!call.connected){alert("No answer.");endCall(true)}},45000);
+}
+async function acceptCall(){
+  if(!call||!call.ringing)return;
+  let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch{alert("Microphone permission denied.");endCall(true);return}
+  clearTimeout(call.to);call.ringing=false;call.stream=st;call.status="Connecting...";callView();
+  try{
+    await makePC();
+    await call.pc.setRemoteDescription(call.offer);
+    for(const c of call.pend)await call.pc.addIceCandidate(c).catch(()=>{});
+    call.pend=[];
+    const ans=await call.pc.createAnswer();await call.pc.setLocalDescription(ans);
+    await sendSig(call.peer,"answer",{type:ans.type,sdp:ans.sdp});
+  }catch(e){alert(e.message);endCall(true)}
+}
+function endCall(notify){
+  if(!call)return;
+  const c=call;call=null;
+  clearTimeout(c.to);clearInterval(c.tick);
+  if(notify)sendSig(c.peer,"end").catch(()=>{});
+  try{c.pc&&c.pc.close()}catch{}
+  if(c.stream)c.stream.getTracks().forEach(t=>t.stop());
+  const a=$("rAud");if(a)a.remove();
+  const v=$("clv");if(v)v.remove();
+}
+async function onSignal(x){
+  let d=null;try{d=x.data?JSON.parse(x.data):null}catch{}
+  if(x.kind==="offer"){
+    if(x.age>40)return;
+    if(call){sendSig(x.from_id,"end").catch(()=>{});return}
+    call={peer:x.from_id,name:x.username,role:"callee",pend:[],offer:d,ringing:true,status:"Incoming voice call"};
+    callView();
+    call.to=setTimeout(()=>{if(call&&call.ringing)endCall(false)},50000);
+    return;
+  }
+  if(!call||call.peer!==x.from_id)return;
+  if(x.kind==="answer"&&call.pc){
+    await call.pc.setRemoteDescription(d).catch(()=>{});
+    for(const c of call.pend)await call.pc.addIceCandidate(c).catch(()=>{});
+    call.pend=[];
+  }else if(x.kind==="ice"){
+    if(call.pc&&call.pc.remoteDescription)await call.pc.addIceCandidate(d).catch(()=>{});
+    else call.pend.push(d);
+  }else if(x.kind==="end"){alert("Call ended");endCall(false)}
+}
+async function pollSignals(){
+  if(document.visibilityState!=="visible"||pollSignals.busy)return;
+  pollSignals.busy=true;
+  try{
+    const r=(await api("/api/signals?after="+sigLast)).signals;
+    for(const x of r){sigLast=Math.max(sigLast,x.id);await onSignal(x)}
+  }catch{}
+  pollSignals.busy=false;
+}
+
 /* PROFILE */
 async function profile(name){
   $("view").innerHTML="Loading...";
@@ -438,17 +585,16 @@ async function profile(name){
     $("view").innerHTML=`<div class="card"><h2 style="margin:0">@${esc(d.user.username)}${vb(d.user.verified)}</h2>
       <p class="mut">${esc(d.user.bio||"")}</p>
       <div class="stats"><div><b>${d.counts.posts}</b>Posts</div><div class="u" id="fW"><b>${d.counts.followers}</b>Followers</div><div class="u" id="fG"><b>${d.counts.following}</b>Following</div></div>
-      <div class="row">${own?`<button class="btn ghost sp" id="eB">Edit bio</button><button class="btn ghost sp" id="eN">Edit name</button>`:
+      <div class="row pbtns">${own?`<button class="btn ghost sp" id="eB">Edit bio</button><button class="btn ghost sp" id="eN">Edit name</button>`:
       `<button class="btn sp" id="fB">${d.is_following?"Following":"Follow"}</button><button class="btn ghost sp" id="mB">Message</button>`}
-      <button class="btn ghost sp" id="shB">Share profile</button></div></div><div id="pp"></div>`;
+      <button class="btn ghost sp" id="shB">Share</button></div></div><div id="pp"></div>`;
     const re=()=>profile(name);
     $("fW").onclick=()=>showUsers("Followers","followers",d.user.id);
     $("fG").onclick=()=>showUsers("Following","following",d.user.id);
     if(own){$("eN").onclick=async()=>{const n=await ask("New username (3-20 letters, numbers, _)",d.user.username);if(n===null||n.trim()===d.user.username)return;try{await post("/api/me",{username:n});me.username=n.trim();profile(n.trim())}catch(e){alert(e.message)}};
       $("eB").onclick=async()=>{const b=await ask("Your bio (160 characters)",d.user.bio||"");if(b!==null){await post("/api/me",{bio:b});re()}};}
     else{$("fB").onclick=async()=>{await post("/api/follow/"+d.user.id);re()};$("mB").onclick=()=>chat(d.user.id,d.user.username)}
-    $("shB").onclick=async()=>{const data={title:"TinVin Social",text:"@"+d.user.username+" on TinVin Social",url:location.href.split("#")[0]};
-      try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}};
+    $("shB").onclick=()=>shareIt("@"+d.user.username+" on TinVin Social",SITE_URL()+"#user="+encodeURIComponent(d.user.username));
     if(!d.posts.length)$("pp").innerHTML=`<p class="mut">No posts yet.</p>`;
     d.posts.forEach(p=>$("pp").appendChild(card(p,re)));
   }catch(e){$("view").textContent=e.message}
