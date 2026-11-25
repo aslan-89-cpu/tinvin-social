@@ -86,6 +86,8 @@ nav{background:rgba(10,14,42,.74);border-top:1px solid rgba(140,180,255,.32);box
 nav .on{color:#6ee7f9;text-shadow:0 0 12px rgba(94,234,212,.65)}
 nav .orb{border:2px solid rgba(195,215,255,.55);background:radial-gradient(circle at 32% 28%,#d9fbff,#7ad7ff 30%,#7c83ff 62%,#b07cff);box-shadow:0 0 30px rgba(150,120,255,.8),inset 0 0 12px rgba(255,255,255,.55)}
 .bub.me{background:linear-gradient(135deg,#22d3ee,#6d8cff 60%,#a78bfa)}
+.sheet{z-index:60}
+.toast{position:fixed;left:50%;bottom:110px;transform:translateX(-50%);background:rgba(20,28,69,.96);border:1px solid rgba(140,180,255,.45);color:#fff;padding:10px 16px;border-radius:99px;z-index:70;font-size:14px;max-width:86%;text-align:center}
 </style>
 </head>
 <body>
@@ -135,6 +137,29 @@ async function api(path,opt={}){
 }
 const post=(p,b)=>api(p,{method:"POST",body:JSON.stringify(b||{})});
 
+/* DIALOGS */
+function toast(m){const t=document.createElement("div");t.className="toast";t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2800)}
+window.alert=m=>toast(m);
+function sure(msg,ok="Yes"){
+  return new Promise(res=>{
+    const s=$("sheet");s.classList.remove("hidden");
+    s.innerHTML=`<div><p style="margin:6px 0 10px">${esc(msg)}</p><button class="btn" id="dY">${esc(ok)}</button><button id="dN">Cancel</button></div>`;
+    const done=v=>{s.classList.add("hidden");res(v)};
+    s.onclick=e=>{if(e.target===s)done(false)};
+    $("dY").onclick=()=>done(true);$("dN").onclick=()=>done(false);
+  });
+}
+function ask(msg,val=""){
+  return new Promise(res=>{
+    const s=$("sheet");s.classList.remove("hidden");
+    s.innerHTML=`<div><p style="margin:6px 0">${esc(msg)}</p><input id="dI" value="${esc(val)}" autocomplete="off"><button class="btn" id="dY">Save</button><button id="dN">Cancel</button></div>`;
+    const done=v=>{s.classList.add("hidden");res(v)};
+    s.onclick=e=>{if(e.target===s)done(null)};
+    $("dY").onclick=()=>done($("dI").value);$("dN").onclick=()=>done(null);
+    setTimeout(()=>$("dI").focus(),60);
+  });
+}
+
 /* AUTH */
 $("aS").onclick=()=>{mode=mode==="login"?"signup":"login";
   $("aT").textContent=mode==="login"?"Welcome back":"Create account";
@@ -143,7 +168,7 @@ $("aS").onclick=()=>{mode=mode==="login"?"signup":"login";
   $("aU").classList.toggle("hidden",mode==="login");$("aF").classList.toggle("hidden",mode!=="login");$("aM").textContent=""};
 $("aB").onclick=async()=>{
   $("aM").textContent="";$("aM").style.color="";
-  if(mode==="reset"){try{await post("/api/reset",{token:resetTok,password:$("aP").value});alert("Password changed. Please log in.");history.replaceState(null,"",location.pathname);location.reload()}catch(e){$("aM").textContent=e.message}return}
+  if(mode==="reset"){try{await post("/api/reset",{token:resetTok,password:$("aP").value});alert("Password changed. Please log in.");history.replaceState(null,"",location.pathname);setTimeout(()=>location.reload(),1300)}catch(e){$("aM").textContent=e.message}return}
   try{
     const d=await post("/api/"+mode,{email:$("aE").value,username:$("aU").value,password:$("aP").value});
     token=d.token;localStorage.setItem("tvs_token",token);start();
@@ -227,8 +252,8 @@ function menu(p,refresh){
     s.classList.add("hidden");
     try{
       if(b.dataset.r){await post("/api/report/"+p.id,{reason:b.dataset.r});alert("Thanks. We will review this post.")}
-      else if(b.dataset.a==="block"){if(confirm("Block @"+p.username+"?"))await post("/api/block/"+p.uid)}
-      else if(b.dataset.a==="del"){if(confirm("Delete this post?"))await api("/api/post/"+p.id,{method:"DELETE"})}
+      else if(b.dataset.a==="block"){if(await sure("Block @"+p.username+"?","Block"))await post("/api/block/"+p.uid)}
+      else if(b.dataset.a==="del"){if(await sure("Delete this post?","Delete"))await api("/api/post/"+p.id,{method:"DELETE"})}
       refresh();
     }catch(e){alert(e.message)}
   });
@@ -322,7 +347,7 @@ function viewStories(list,i=0){
     o.querySelector("[data-p]").onclick=()=>{i--;show()};
     o.querySelector("[data-n]").onclick=()=>{i++;show()};
     const dl=o.querySelector("[data-d]");
-    if(dl)dl.onclick=async()=>{clearTimeout(t);if(!confirm("Delete this story?")){show();return}try{await api("/api/story/"+x.id,{method:"DELETE"});close();go("home")}catch(e){alert(e.message)}};
+    if(dl)dl.onclick=async()=>{clearTimeout(t);if(!await sure("Delete this story?","Delete")){show();return}try{await api("/api/story/"+x.id,{method:"DELETE"});close();go("home")}catch(e){alert(e.message)}};
     t=setTimeout(()=>{i++;show()},7000);
   };
   show();
@@ -419,8 +444,8 @@ async function profile(name){
     const re=()=>profile(name);
     $("fW").onclick=()=>showUsers("Followers","followers",d.user.id);
     $("fG").onclick=()=>showUsers("Following","following",d.user.id);
-    if(own){$("eN").onclick=async()=>{const n=prompt("New username (3-20 letters, numbers, _)",d.user.username);if(n===null||n.trim()===d.user.username)return;try{await post("/api/me",{username:n});me.username=n.trim();profile(n.trim())}catch(e){alert(e.message)}};
-      $("eB").onclick=async()=>{const b=prompt("Your bio (160 characters)",d.user.bio||"");if(b!==null){await post("/api/me",{bio:b});re()}};}
+    if(own){$("eN").onclick=async()=>{const n=await ask("New username (3-20 letters, numbers, _)",d.user.username);if(n===null||n.trim()===d.user.username)return;try{await post("/api/me",{username:n});me.username=n.trim();profile(n.trim())}catch(e){alert(e.message)}};
+      $("eB").onclick=async()=>{const b=await ask("Your bio (160 characters)",d.user.bio||"");if(b!==null){await post("/api/me",{bio:b});re()}};}
     else{$("fB").onclick=async()=>{await post("/api/follow/"+d.user.id);re()};$("mB").onclick=()=>chat(d.user.id,d.user.username)}
     $("shB").onclick=async()=>{const data={title:"TinVin Social",text:"@"+d.user.username+" on TinVin Social",url:location.href.split("#")[0]};
       try{navigator.share?await navigator.share(data):(await navigator.clipboard.writeText(data.url),alert("Link copied"))}catch{}};
@@ -482,12 +507,12 @@ function settings(){
   <div class="glass">${R("lo","out","Logout")}${R("del","trash","Delete account","","d")}</div></div>`;
   const tg=(b,p)=>{$(b).onclick=()=>$(p).classList.toggle("hidden")};
   tg("sE","pE");tg("sP","pf");tg("sL","pL");
-  $("sN").onclick=async()=>{const n=prompt("New username (3-20 letters, numbers, _)",me.username);if(n===null||n.trim()===me.username)return;try{await post("/api/me",{username:n});me.username=n.trim();settings()}catch(e){alert(e.message)}};
+  $("sN").onclick=async()=>{const n=await ask("New username (3-20 letters, numbers, _)",me.username);if(n===null||n.trim()===me.username)return;try{await post("/api/me",{username:n});me.username=n.trim();settings()}catch(e){alert(e.message)}};
   $("eS").onclick=async()=>{const m=$("eM");m.style.color="";m.textContent="";try{const r=await post("/api/email",{email:$("eN").value,password:$("eP").value});me.email=r.email;settings()}catch(e){m.textContent=e.message}};
   $("pS").onclick=async()=>{const m=$("pM2");m.style.color="";m.textContent="";try{await post("/api/password",{current:$("pC").value,password:$("pN").value});m.style.color="#22c55e";m.textContent="OK";$("pC").value="";$("pN").value=""}catch(e){m.textContent=e.message}};
   document.querySelectorAll("[data-lg]").forEach(b=>b.onclick=()=>{lang=b.dataset.lg;localStorage.setItem("tvs_lang",lang);applyLang();settings()});
   $("s2").onclick=()=>alert("Two-factor authentication is coming soon.");
-  $("sA").onclick=async()=>{if(!confirm("Log out of all devices, including this one?"))return;try{await post("/api/logout-all");logout(true)}catch(e){alert(e.message)}};
+  $("sA").onclick=async()=>{if(!await sure("Log out of all devices, including this one?","Log out"))return;try{await post("/api/logout-all");logout(true)}catch(e){alert(e.message)}};
   const loadBlocks=async()=>{const box=$("bl");
     try{const l=(await api("/api/blocks")).users;
       if(!l.length){box.textContent=T("No blocked accounts.");return}
@@ -500,7 +525,7 @@ function settings(){
   $("sK").onclick=()=>{$("pK").classList.toggle("hidden");loadBlocks()};
   $("lo").onclick=()=>logout();
   $("del").onclick=async()=>{
-    if(!confirm("Delete your account and all your content? This can't be undone."))return;
+    if(!await sure("Delete your account and all your content? This can't be undone.","Delete account"))return;
     try{await api("/api/me",{method:"DELETE"});logout(true)}catch(e){alert(e.message)}
   };
 }
