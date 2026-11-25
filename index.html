@@ -421,14 +421,17 @@ async function chats(){
 }
 async function chat(id,name){
   clearInterval(chatT);$("nav").classList.add("hidden");
-  $("view").innerHTML=`<div class="glass" style="padding:10px 14px"><div class="row"><button class="ic" id="cBk" style="font-size:24px" aria-label="Back">&lsaquo;</button><b>@${esc(name)}</b><span class="sp"></span><button class="ic" id="cCall" aria-label="Voice call" style="font-size:22px">&#128222;</button></div></div><div class="msgs" id="msgs"></div><div class="cbar"><input id="mI" maxlength="1000" placeholder="Message..." autocomplete="off"><button class="btn ghost" id="mR" aria-label="Voice message">&#127908;</button><button class="btn" id="mS">Send</button></div>`;
+  $("view").innerHTML=`<div class="glass" style="padding:10px 14px"><div class="row"><button class="ic" id="cBk" style="font-size:24px" aria-label="Back">&lsaquo;</button><b>@${esc(name)}</b><span class="sp"></span><button class="ic" id="cCall" aria-label="Voice call" style="font-size:22px">&#128222;</button></div></div><div class="mut" style="font-size:11px;text-align:center;margin:-6px 0 8px">Tap a message to delete it</div><div class="msgs" id="msgs"></div><div class="cbar"><input id="mI" maxlength="1000" placeholder="Message..." autocomplete="off"><button class="btn ghost" id="mR" aria-label="Voice message">&#127908;</button><button class="btn" id="mS">Send</button></div>`;
   let sig="";
   const del=x=>{
     const s=$("sheet");s.classList.remove("hidden");
-    s.innerHTML=`<div><button class="d" id="dm">Delete message</button><button id="dc">Cancel</button></div>`;
+    const mine=x.from_id===me.id;
+    s.innerHTML=`<div>${mine?`<button class="d" data-m="all">Delete for everyone</button>`:""}<button class="d" data-m="me">Delete for me</button><button data-m="x">Cancel</button></div>`;
     s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
-    $("dc").onclick=()=>s.classList.add("hidden");
-    $("dm").onclick=async()=>{s.classList.add("hidden");try{await api("/api/message/"+x.id,{method:"DELETE"});sig="";draw()}catch(e){alert(e.message)}};
+    s.querySelectorAll("button").forEach(b=>b.onclick=async()=>{
+      s.classList.add("hidden");if(b.dataset.m==="x")return;
+      try{await api("/api/message/"+x.id+"?mode="+b.dataset.m,{method:"DELETE"});sig="";draw()}catch(e){alert(e.message)}
+    });
   };
   const draw=async()=>{
     const box=$("msgs");if(!box)return clearInterval(chatT);
@@ -436,7 +439,7 @@ async function chat(id,name){
       const m=(await api("/api/messages/"+id+"?after=0")).messages,g=m.map(x=>x.id).join();
       if(g===sig)return;
       sig=g;box.innerHTML="";
-      m.forEach(x=>{const d=document.createElement("div");d.className="bub "+(x.from_id===me.id?"me":"th");if(x.audio_key){const a=document.createElement("audio");a.controls=true;a.preload="metadata";a.src=API+"/img/"+x.audio_key;d.appendChild(a)}else d.textContent=x.text;if(x.from_id===me.id)d.onclick=e=>{if(e.target.tagName!=="AUDIO")del(x)};box.appendChild(d)});
+      m.forEach(x=>{const d=document.createElement("div");d.className="bub "+(x.from_id===me.id?"me":"th");if(x.audio_key)d.appendChild(voiceEl(x.audio_key));else d.textContent=x.text;d.onclick=e=>{if(e.target.tagName!=="AUDIO")del(x)};box.appendChild(d)});
       window.scrollTo(0,document.body.scrollHeight);
     }catch{}
   };
@@ -461,32 +464,44 @@ async function showUsers(title,kind,id){
 
 /* VOICE MESSAGES + CALLS */
 let rec=null,call=null,sigLast=0,sigT=null;
+const VC=new Map();
+function voiceEl(key){
+  const a=document.createElement("audio");a.controls=true;a.preload="auto";
+  let u=VC.get(key);
+  if(!u){u=fetch(API+"/img/"+key).then(r=>{if(!r.ok)throw 0;return r.blob()}).then(b=>URL.createObjectURL(b));VC.set(key,u)}
+  u.then(url=>{a.src=url}).catch(()=>{a.src=API+"/img/"+key});
+  return a;
+}
 async function toggleRec(id,afterSend){
   const b=$("mR");
   if(rec){rec.send=true;rec.mr.stop();return}
   if(!window.isSecureContext||!navigator.mediaDevices||!window.MediaRecorder){alert("Voice needs a secure (HTTPS) connection.");return}
   let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch{alert("Microphone permission denied.");return}
   const mt=["audio/mp4","audio/webm;codecs=opus","audio/webm"].find(t=>MediaRecorder.isTypeSupported(t))||"";
-  const mr=new MediaRecorder(st,mt?{mimeType:mt}:undefined),ch=[],t0=Date.now();
+  let mr;try{mr=new MediaRecorder(st,mt?{mimeType:mt,audioBitsPerSecond:48000}:{})}catch{mr=new MediaRecorder(st)}
+  const ch=[],t0=Date.now();
   rec={mr,send:false};b.classList.add("rec");
   const tick=setInterval(()=>{const n=Math.floor((Date.now()-t0)/1000);b.textContent="\u25A0 "+n+"s";if(n>=120&&rec){rec.send=true;mr.stop()}},400);
-  mr.ondataavailable=e=>{if(e.data.size)ch.push(e.data)};
+  mr.ondataavailable=e=>{if(e.data&&e.data.size)ch.push(e.data)};
   mr.onstop=async()=>{
     clearInterval(tick);st.getTracks().forEach(t=>t.stop());
     const bb=$("mR");if(bb){bb.classList.remove("rec");bb.innerHTML="&#127908;"}
     const send=rec&&rec.send;rec=null;
     if(!send||!ch.length)return;
+    const blob=new Blob(ch,{type:mr.mimeType||mt||"audio/webm"});
+    if(Date.now()-t0<800||blob.size<800){alert("Too short");return}
     try{
-      const blob=new Blob(ch,{type:mr.mimeType||mt||"audio/webm"});
       const key=(await api("/api/upload",{method:"POST",raw:true,headers:{"Content-Type":blob.type},body:blob})).key;
       await post("/api/message/"+id,{audio:key});afterSend();
     }catch(e){alert(e.message)}
   };
-  mr.start();
+  mr.start(1000);
 }
 
 const ICE_FB=[{urls:["stun:stun.cloudflare.com:3478","stun:stun.l.google.com:19302"]}];
-const sendSig=(to,kind,data)=>post("/api/signal/"+to,{kind,data:data==null?"":JSON.stringify(data)});
+const rid=()=>Math.random().toString(36).slice(2,10);
+const sendSig=(to,kind,data,cid)=>post("/api/signal/"+to,{kind,data:JSON.stringify({c:cid,d:data==null?null:data})});
+function qSig(c,kind,data){const p=(c.q||Promise.resolve()).then(()=>sendSig(c.peer,kind,data,c.cid));c.q=p.catch(()=>{});return p}
 const fmtT=()=>{const n=Math.floor((Date.now()-call.t0)/1000);return String(Math.floor(n/60)).padStart(2,"0")+":"+String(n%60).padStart(2,"0")};
 function callView(){
   if(!call)return;
@@ -497,69 +512,82 @@ function callView(){
   else $("clM").onclick=()=>{call.muted=!call.muted;call.stream.getAudioTracks().forEach(t=>t.enabled=!call.muted);callView()};
 }
 async function makePC(){
-  let ice=ICE_FB;try{ice=(await api("/api/turn")).iceServers||ICE_FB}catch{}
-  const pc=new RTCPeerConnection({iceServers:ice});call.pc=pc;
-  call.stream.getTracks().forEach(t=>pc.addTrack(t,call.stream));
-  const peer=call.peer;
-  pc.onicecandidate=e=>{if(e.candidate)sendSig(peer,"ice",e.candidate.toJSON()).catch(()=>{})};
+  const c=call;let ice=ICE_FB;
+  try{const r=await api("/api/turn");ice=r.iceServers||ICE_FB;c.relay=!!r.relay}catch{}
+  const pc=new RTCPeerConnection({iceServers:ice});c.pc=pc;
+  c.stream.getTracks().forEach(t=>pc.addTrack(t,c.stream));
+  pc.onicecandidate=e=>{if(e.candidate)qSig(c,"ice",e.candidate.toJSON()).catch(()=>{})};
   pc.ontrack=e=>{let a=$("rAud");if(!a){a=document.createElement("audio");a.id="rAud";a.autoplay=true;a.setAttribute("playsinline","");document.body.appendChild(a)}a.srcObject=e.streams[0];a.play().catch(()=>{})};
+  pc.oniceconnectionstatechange=()=>{
+    if(call!==c||c.connected)return;
+    c.status=(c.role==="caller"?"Calling":"Connecting")+" ("+pc.iceConnectionState+")";
+    const el=$("clS");if(el)el.textContent=c.status;
+  };
   pc.onconnectionstatechange=()=>{
-    if(!call||call.pc!==pc)return;
-    if(pc.connectionState==="connected"&&!call.connected){
-      call.connected=true;call.t0=Date.now();clearTimeout(call.to);call.status="00:00";callView();
-      call.tick=setInterval(()=>{const el=$("clS");if(el&&call){call.status=fmtT();el.textContent=call.status}},1000);
+    if(call!==c)return;
+    if(pc.connectionState==="connected"&&!c.connected){
+      c.connected=true;c.t0=Date.now();clearTimeout(c.to);c.status="00:00";callView();
+      c.tick=setInterval(()=>{const el=$("clS");if(el&&call===c){c.status=fmtT();el.textContent=c.status}},1000);
     }
-    if(pc.connectionState==="failed"){alert("Call failed. Check the network and try again.");endCall(true)}
+    if(pc.connectionState==="failed"){
+      alert("Call failed."+(c.relay?"":" No relay server is set up, so some networks cannot connect."));
+      endCall(true);
+    }
   };
 }
 async function startCall(id,name){
   if(call)return;
   if(!window.isSecureContext||!navigator.mediaDevices||!window.RTCPeerConnection){alert("Calls need a secure (HTTPS) connection.");return}
   let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch{alert("Microphone permission denied.");return}
-  call={peer:id,name,stream:st,role:"caller",pend:[],status:"Calling..."};callView();
+  const c=call={peer:id,name,stream:st,role:"caller",cid:rid(),pend:[],status:"Calling..."};callView();
   try{
     await makePC();
-    const off=await call.pc.createOffer();await call.pc.setLocalDescription(off);
-    await sendSig(id,"offer",{type:off.type,sdp:off.sdp});
+    const off=await c.pc.createOffer();
+    const sent=qSig(c,"offer",{type:off.type,sdp:off.sdp});
+    await c.pc.setLocalDescription(off);
+    await sent;
   }catch(e){alert(e.message);endCall(false);return}
-  call.to=setTimeout(()=>{if(call&&!call.connected){alert("No answer.");endCall(true)}},45000);
+  c.to=setTimeout(()=>{if(call===c&&!c.connected){alert("No answer.");endCall(true)}},45000);
 }
 async function acceptCall(){
-  if(!call||!call.ringing)return;
+  const c=call;if(!c||!c.ringing)return;
   let st;try{st=await navigator.mediaDevices.getUserMedia({audio:true})}catch{alert("Microphone permission denied.");endCall(true);return}
-  clearTimeout(call.to);call.ringing=false;call.stream=st;call.status="Connecting...";callView();
+  clearTimeout(c.to);c.ringing=false;c.stream=st;c.status="Connecting...";callView();
   try{
     await makePC();
-    await call.pc.setRemoteDescription(call.offer);
-    for(const c of call.pend)await call.pc.addIceCandidate(c).catch(()=>{});
-    call.pend=[];
-    const ans=await call.pc.createAnswer();await call.pc.setLocalDescription(ans);
-    await sendSig(call.peer,"answer",{type:ans.type,sdp:ans.sdp});
+    await c.pc.setRemoteDescription(c.offer);
+    for(const x of c.pend)await c.pc.addIceCandidate(x).catch(()=>{});
+    c.pend=[];
+    const ans=await c.pc.createAnswer();
+    const sent=qSig(c,"answer",{type:ans.type,sdp:ans.sdp});
+    await c.pc.setLocalDescription(ans);
+    await sent;
   }catch(e){alert(e.message);endCall(true)}
 }
 function endCall(notify){
   if(!call)return;
   const c=call;call=null;
   clearTimeout(c.to);clearInterval(c.tick);
-  if(notify)sendSig(c.peer,"end").catch(()=>{});
+  if(notify)qSig(c,"end").catch(()=>{});
   try{c.pc&&c.pc.close()}catch{}
   if(c.stream)c.stream.getTracks().forEach(t=>t.stop());
   const a=$("rAud");if(a)a.remove();
   const v=$("clv");if(v)v.remove();
 }
 async function onSignal(x){
-  let d=null;try{d=x.data?JSON.parse(x.data):null}catch{}
+  let m={};try{m=x.data?JSON.parse(x.data):{}}catch{}
+  const d=m.d;
   if(x.kind==="offer"){
     if(x.age>40)return;
-    if(call){sendSig(x.from_id,"end").catch(()=>{});return}
-    call={peer:x.from_id,name:x.username,role:"callee",pend:[],offer:d,ringing:true,status:"Incoming voice call"};
+    if(call){sendSig(x.from_id,"end",null,m.c).catch(()=>{});return}
+    const c=call={peer:x.from_id,name:x.username,role:"callee",cid:m.c,pend:[],offer:d,ringing:true,status:"Incoming voice call"};
     callView();
-    call.to=setTimeout(()=>{if(call&&call.ringing)endCall(false)},50000);
+    c.to=setTimeout(()=>{if(call===c&&c.ringing)endCall(false)},50000);
     return;
   }
-  if(!call||call.peer!==x.from_id)return;
+  if(!call||call.peer!==x.from_id||call.cid!==m.c)return;
   if(x.kind==="answer"&&call.pc){
-    await call.pc.setRemoteDescription(d).catch(()=>{});
+    try{await call.pc.setRemoteDescription(d)}catch(e){alert("Call error: "+e.message);endCall(true);return}
     for(const c of call.pend)await call.pc.addIceCandidate(c).catch(()=>{});
     call.pend=[];
   }else if(x.kind==="ice"){
