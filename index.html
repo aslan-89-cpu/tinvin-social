@@ -126,6 +126,9 @@ nav .orb{border:2px solid rgba(195,215,255,.55);background:radial-gradient(circl
 .cb{padding:14px 18px}
 .gold{font-family:'Playfair Display',Georgia,serif;font-style:italic;font-weight:700;background:linear-gradient(90deg,#fde68a,#f5b301 50%,#fbbf24);-webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 6px rgba(245,179,1,.45))}
 .goldcard{border-color:rgba(245,179,1,.65)!important;box-shadow:0 0 26px rgba(245,179,1,.25),inset 0 1px 0 rgba(255,255,255,.08)!important}
+.crop{position:fixed;inset:0;z-index:90;background:radial-gradient(700px 460px at 12% -6%,rgba(120,80,255,.35),transparent 70%),#05060f;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;padding:20px}
+.crop canvas{border-radius:50%;touch-action:none;box-shadow:0 0 0 3px rgba(140,180,255,.7),0 0 40px rgba(120,100,255,.45)}
+.toast{z-index:100}
 </style>
 </head>
 <body>
@@ -248,17 +251,59 @@ function viewImage(src){
   o.onclick=()=>o.remove();document.body.appendChild(o);
 }
 function pickAvatar(){
-  const i=document.createElement("input");i.type="file";i.accept="image/*";
-  i.onchange=async()=>{
-    const f=i.files[0];if(!f)return;
-    try{
-      alert("Uploading...");
-      const b=await shrink(f,512);
-      const key=(await api("/api/upload",{method:"POST",raw:true,headers:{"Content-Type":b.type},body:b})).key;
-      await post("/api/me",{avatar:key});me.avatar_key=key;profile(me.username);
-    }catch(e){alert(e.message)}
+  const open=()=>{const i=document.createElement("input");i.type="file";i.accept="image/*";i.onchange=()=>{const f=i.files[0];if(f)cropAvatar(f)};i.click()};
+  if(!me.avatar_key){open();return}
+  const s=$("sheet");s.classList.remove("hidden");
+  s.innerHTML=`<div><button id="avN">Choose a new photo</button><button class="d" id="avR">Remove photo</button><button id="avC">Cancel</button></div>`;
+  s.onclick=e=>{if(e.target===s)s.classList.add("hidden")};
+  $("avC").onclick=()=>s.classList.add("hidden");
+  $("avN").onclick=()=>{s.classList.add("hidden");open()};
+  $("avR").onclick=async()=>{s.classList.add("hidden");try{await post("/api/me",{avatar:null});me.avatar_key=null;profile(me.username)}catch(e){alert(e.message)}};
+}
+function cropAvatar(file){
+  const url=URL.createObjectURL(file),im=new Image();
+  im.onerror=()=>{URL.revokeObjectURL(url);alert("Can't open this photo.")};
+  im.onload=()=>{
+    const iw=im.naturalWidth,ih=im.naturalHeight,D=Math.min(320,Math.floor(innerWidth*.82));
+    let z=1,rot=0,ox=0,oy=0;
+    const o=document.createElement("div");o.className="crop";
+    o.innerHTML=`<b style="font-size:18px">Move and zoom</b><canvas id="cvA" width="${D}" height="${D}"></canvas>
+      <div class="row" style="width:${D}px;gap:10px"><span class="mut">&minus;</span><input id="czm" type="range" min="1" max="4" step="0.01" value="1" style="margin:0"><span class="mut">+</span><button class="btn ghost sm" id="crt">Rotate</button></div>
+      <div class="row" style="width:${D}px;gap:12px"><button class="btn ghost sp" id="ccx">Cancel</button><button class="btn sp" id="csv">Save</button></div>`;
+    document.body.appendChild(o);
+    const cv=$("cvA"),sl=$("czm"),ew=()=>rot%2?ih:iw,eh=()=>rot%2?iw:ih,minS=()=>D/Math.min(ew(),eh());
+    const clampZ=v=>Math.max(1,Math.min(4,v));
+    const clamp=()=>{const sc=minS()*z,mx=Math.max(0,(ew()*sc-D)/2),my=Math.max(0,(eh()*sc-D)/2);ox=Math.max(-mx,Math.min(mx,ox));oy=Math.max(-my,Math.min(my,oy))};
+    const paint=(c,size)=>{const k=size/D,sc=minS()*z*k,g=c.getContext("2d");g.fillStyle="#000";g.fillRect(0,0,size,size);g.save();g.translate(size/2+ox*k,size/2+oy*k);g.rotate(rot*Math.PI/2);g.scale(sc,sc);g.drawImage(im,-iw/2,-ih/2);g.restore()};
+    const redraw=()=>{clamp();paint(cv,D)};
+    const pts=new Map();let lastD=0;
+    cv.onpointerdown=e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,[e.clientX,e.clientY]);lastD=0};
+    cv.onpointermove=e=>{
+      if(!pts.has(e.pointerId))return;
+      const p=pts.get(e.pointerId);
+      if(pts.size===1){ox+=e.clientX-p[0];oy+=e.clientY-p[1]}
+      pts.set(e.pointerId,[e.clientX,e.clientY]);
+      if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a[0]-b[0],a[1]-b[1]);if(lastD)z=clampZ(z*d/lastD);lastD=d;sl.value=z}
+      redraw();
+    };
+    cv.onpointerup=cv.onpointercancel=e=>{pts.delete(e.pointerId);lastD=0};
+    cv.onwheel=e=>{e.preventDefault();z=clampZ(z*(e.deltaY<0?1.08:.92));sl.value=z;redraw()};
+    sl.oninput=()=>{z=+sl.value;redraw()};
+    $("crt").onclick=()=>{rot=(rot+1)%4;ox=0;oy=0;redraw()};
+    const close=()=>{URL.revokeObjectURL(url);o.remove()};
+    $("ccx").onclick=close;
+    $("csv").onclick=async()=>{
+      $("csv").disabled=true;
+      try{
+        const out=document.createElement("canvas");out.width=out.height=512;paint(out,512);
+        const b=await new Promise(r=>out.toBlob(r,"image/jpeg",.9));
+        const key=(await api("/api/upload",{method:"POST",raw:true,headers:{"Content-Type":"image/jpeg"},body:b})).key;
+        await post("/api/me",{avatar:key});me.avatar_key=key;close();profile(me.username);
+      }catch(e){alert(e.message);$("csv").disabled=false}
+    };
+    redraw();
   };
-  i.click();
+  im.src=url;
 }
 
 /* AUTH */
